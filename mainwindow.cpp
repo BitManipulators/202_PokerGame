@@ -12,7 +12,6 @@ MainWindow::MainWindow(QWidget *parent)
     scene = new QGraphicsScene(this);
     ui->graphicsView->setScene(scene);
 
-    // Connect UI buttons (make sure these object names match your .ui file).
     connect(ui->newGameButton, &QPushButton::clicked, this, &MainWindow::onNewGame);
     connect(ui->dealFlopButton, &QPushButton::clicked, this, &MainWindow::onDealFlop);
     connect(ui->dealTurnButton, &QPushButton::clicked, this, &MainWindow::onDealTurn);
