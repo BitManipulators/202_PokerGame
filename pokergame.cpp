@@ -10,7 +10,13 @@ void PokerGame::startNewGame() {
     player1.clearHand();
     player2.clearHand();
     communityCards.clear();
+   // dealHoleCards();
+    static bool dealerToggle = false;
+    dealerToggle = !dealerToggle;
+    setDealer(dealerToggle);
+
     dealHoleCards();
+    setStage(GameStage::PreFlop);
 }
 
 void PokerGame::dealHoleCards() {

@@ -6,121 +6,453 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>600</width>
-    <height>500</height>
+    <width>900</width>
+    <height>650</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>Texas Hold'em Poker</string>
   </property>
+  <property name="styleSheet">
+   <string>
+QMainWindow {
+  background-color: #1a5c35;
+}
+
+/* Basic button style */
+QPushButton {
+  color: white;
+  border-radius: 4px;
+  padding: 6px;
+  font-weight: bold;
+  background-color: #34495e;
+  border: 2px solid transparent;
+}
+
+/* Hover state: Increase brightness and add border */
+QPushButton:hover {
+  background-color: #3d5a73; /* a brighter blue-gray */
+  border: 2px solid #ecf0f1;
+}
+
+/* Pressed state: Darken further and maintain border */
+QPushButton:pressed {
+  background-color: #2a3d4f; /* a darker tone */
+  border: 2px solid #ecf0f1;
+}
+
+/* Checked/Active state: Use a distinct color with a visible border */
+QPushButton:checked, QPushButton:checked:hover {
+  background-color: #2980b9;
+  border: 2px solid #ecf0f1;
+}
+
+/* Focus state: Emphasize with a contrasting border */
+QPushButton:focus {
+  border: 2px solid #f1c40f;
+}
+
+QLabel {
+  color: white;
+  font-weight: bold;
+}
+
+QLineEdit {
+    color: #2c3e50; /* or another darker color */
+    padding: 4px;
+    border-radius: 4px;
+    border: 1px solid #bdc3c7;
+    background-color: #ecf0f1;
+}
+   </string>
+  </property>
   <widget class="QWidget" name="centralwidget">
-   <!-- Graphics view to display cards -->
-   <widget class="QGraphicsView" name="graphicsView">
-    <property name="geometry">
-     <rect>
-      <x>10</x>
-      <y>10</y>
-      <width>580</width>
-      <height>380</height>
-     </rect>
-    </property>
-   </widget>
-   <!-- New Game Button -->
-   <widget class="QPushButton" name="newGameButton">
-    <property name="geometry">
-     <rect>
-      <x>10</x>
-      <y>400</y>
-      <width>100</width>
-      <height>30</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>New Game</string>
-    </property>
-   </widget>
-   <!-- Deal Flop Button -->
-   <widget class="QPushButton" name="dealFlopButton">
-    <property name="geometry">
-     <rect>
-      <x>120</x>
-      <y>400</y>
-      <width>100</width>
-      <height>30</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>Deal Flop</string>
-    </property>
-   </widget>
-   <!-- Deal Turn Button -->
-   <widget class="QPushButton" name="dealTurnButton">
-    <property name="geometry">
-     <rect>
-      <x>230</x>
-      <y>400</y>
-      <width>100</width>
-      <height>30</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>Deal Turn</string>
-    </property>
-   </widget>
-   <!-- Deal River Button -->
-   <widget class="QPushButton" name="dealRiverButton">
-    <property name="geometry">
-     <rect>
-      <x>340</x>
-      <y>400</y>
-      <width>100</width>
-      <height>30</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>Deal River</string>
-    </property>
-   </widget>
-   <!-- Determine Winner Button -->
-   <widget class="QPushButton" name="determineWinnerButton">
-    <property name="geometry">
-     <rect>
-      <x>450</x>
-      <y>400</y>
-      <width>130</width>
-      <height>30</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>Determine Winner</string>
-    </property>
-   </widget>
-   <!-- Exit Button -->
-   <widget class="QPushButton" name="exitButton">
-    <property name="geometry">
-     <rect>
-      <x>450</x>
-      <y>440</y>
-      <width>130</width>
-      <height>30</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>Exit</string>
-    </property>
-   </widget>
+   <layout class="QVBoxLayout" name="verticalLayout">
+    <item>
+     <widget class="QStackedWidget" name="stackedWidget">
+      <property name="currentIndex">
+       <number>1</number>
+      </property>
+      <!-- Landing Page -->
+      <widget class="QWidget" name="landingPage">
+       <layout class="QVBoxLayout" name="landingPageLayout">
+        <item>
+         <spacer name="topSpacer">
+          <property name="orientation">
+           <enum>Qt::Vertical</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>20</width>
+            <height>40</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
+        <item alignment="Qt::AlignHCenter">
+         <widget class="QLabel" name="titleLabel">
+          <property name="font">
+           <font>
+            <pointsize>24</pointsize>
+            <bold>true</bold>
+           </font>
+          </property>
+          <property name="text">
+           <string>Texas Hold'em Poker</string>
+          </property>
+          <property name="alignment">
+           <set>Qt::AlignmentFlag::AlignCenter</set>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <spacer name="middleSpacer">
+          <property name="orientation">
+           <enum>Qt::Vertical</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>20</width>
+            <height>40</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
+        <item alignment="Qt::AlignHCenter">
+         <widget class="QPushButton" name="startNewGameButton">
+          <property name="minimumSize">
+           <size>
+            <width>200</width>
+            <height>40</height>
+           </size>
+          </property>
+          <property name="text">
+           <string>Start New Game</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <spacer name="bottomSpacer">
+          <property name="orientation">
+           <enum>Qt::Vertical</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>20</width>
+            <height>40</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
+       </layout>
+      </widget>
+
+      <!-- Game Page -->
+      <widget class="QWidget" name="gamePage">
+       <layout class="QVBoxLayout" name="gamePageLayout">
+        <item>
+         <widget class="QFrame" name="gameFrame">
+          <property name="frameShape">
+           <enum>QFrame::StyledPanel</enum>
+          </property>
+          <property name="frameShadow">
+           <enum>QFrame::Raised</enum>
+          </property>
+          <layout class="QVBoxLayout" name="gameFrameLayout">
+           <item>
+            <widget class="QLabel" name="player2Label">
+             <property name="font">
+              <font>
+               <pointsize>12</pointsize>
+               <bold>true</bold>
+              </font>
+             </property>
+             <property name="text">
+              <string>Player 2</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QGraphicsView" name="graphicsView">
+             <property name="minimumSize">
+              <size>
+               <width>0</width>
+               <height>400</height>
+              </size>
+             </property>
+             <property name="styleSheet">
+              <string>background-color: #1a5c35;</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QLabel" name="player1Label">
+             <property name="font">
+              <font>
+               <pointsize>12</pointsize>
+               <bold>true</bold>
+              </font>
+             </property>
+             <property name="text">
+              <string>Player 1</string>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </widget>
+        </item>
+
+        <!-- Game Controls -->
+        <item>
+         <widget class="QFrame" name="controlsFrame">
+          <property name="frameShape">
+           <enum>QFrame::StyledPanel</enum>
+          </property>
+          <property name="frameShadow">
+           <enum>QFrame::Raised</enum>
+          </property>
+          <layout class="QHBoxLayout" name="controlsLayout">
+           <item>
+            <widget class="QPushButton" name="newGameButton">
+             <property name="minimumSize">
+              <size>
+               <width>120</width>
+               <height>35</height>
+              </size>
+             </property>
+             <property name="text">
+              <string>New Game</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QPushButton" name="dealFlopButton">
+             <property name="minimumSize">
+              <size>
+               <width>120</width>
+               <height>35</height>
+              </size>
+             </property>
+             <property name="text">
+              <string>Deal Flop</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QPushButton" name="dealTurnButton">
+             <property name="minimumSize">
+              <size>
+               <width>120</width>
+               <height>35</height>
+              </size>
+             </property>
+             <property name="text">
+              <string>Deal Turn</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QPushButton" name="dealRiverButton">
+             <property name="minimumSize">
+              <size>
+               <width>120</width>
+               <height>35</height>
+              </size>
+             </property>
+             <property name="text">
+              <string>Deal River</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QPushButton" name="determineWinnerButton">
+             <property name="minimumSize">
+              <size>
+               <width>150</width>
+               <height>35</height>
+              </size>
+             </property>
+             <property name="text">
+              <string>Determine Winner</string>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </widget>
+        </item>
+
+        <!-- Bet Controls -->
+        <item>
+         <widget class="QFrame" name="betFrame">
+          <property name="frameShape">
+           <enum>QFrame::StyledPanel</enum>
+          </property>
+          <property name="frameShadow">
+           <enum>QFrame::Raised</enum>
+          </property>
+          <layout class="QHBoxLayout" name="betLayout">
+           <item>
+            <widget class="QLabel" name="betLabel">
+             <property name="minimumSize">
+              <size>
+               <width>100</width>
+               <height>0</height>
+              </size>
+             </property>
+             <property name="font">
+              <font>
+               <pointsize>11</pointsize>
+              </font>
+             </property>
+             <property name="text">
+              <string>Bet Amount:</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QLineEdit" name="betLineEdit">
+             <property name="minimumSize">
+              <size>
+               <width>120</width>
+               <height>35</height>
+              </size>
+             </property>
+             <property name="maximumSize">
+              <size>
+               <width>150</width>
+               <height>16777215</height>
+              </size>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QPushButton" name="foldButton">
+             <property name="minimumSize">
+              <size>
+               <width>120</width>
+               <height>35</height>
+              </size>
+             </property>
+             <property name="text">
+              <string>Fold</string>
+             </property>
+            </widget>
+             </item>
+              <item>
+            <widget class="QPushButton" name="callButton">
+             <property name="minimumSize">
+              <size>
+               <width>120</width>
+               <height>35</height>
+              </size>
+             </property>
+             <property name="text">
+              <string>Call</string>
+             </property>
+            </widget>
+             </item>
+              <item>
+            <widget class="QPushButton" name="placeBetButton">
+             <property name="minimumSize">
+              <size>
+               <width>120</width>
+               <height>35</height>
+              </size>
+             </property>
+             <property name="text">
+              <string>Raise</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <spacer name="horizontalSpacer">
+             <property name="orientation">
+              <enum>Qt::Horizontal</enum>
+             </property>
+             <property name="sizeHint" stdset="0">
+              <size>
+               <width>40</width>
+               <height>20</height>
+              </size>
+             </property>
+            </spacer>
+           </item>
+           <item>
+            <widget class="QPushButton" name="exitButton">
+             <property name="minimumSize">
+              <size>
+               <width>120</width>
+               <height>35</height>
+              </size>
+             </property>
+             <property name="text">
+              <string>Exit</string>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </widget>
+        </item>
+       </layout>
+      </widget>
+     </widget>
+    </item>
+   </layout>
   </widget>
   <widget class="QMenuBar" name="menubar">
    <property name="geometry">
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>600</width>
-     <height>21</height>
+     <width>900</width>
+     <height>30</height>
     </rect>
    </property>
+   <widget class="QMenu" name="menuFile">
+    <property name="title">
+     <string>File</string>
+    </property>
+    <addaction name="actionNew_Game"/>
+    <addaction name="separator"/>
+    <addaction name="actionExit"/>
+   </widget>
+   <widget class="QMenu" name="menuHelp">
+    <property name="title">
+     <string>Help</string>
+    </property>
+    <addaction name="actionRules"/>
+    <addaction name="actionAbout"/>
+   </widget>
+   <addaction name="menuFile"/>
+   <addaction name="menuHelp"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
+  <action name="actionNew_Game">
+   <property name="text">
+    <string>New Game</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+N</string>
+   </property>
+  </action>
+  <action name="actionExit">
+   <property name="text">
+    <string>Exit</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+Q</string>
+   </property>
+  </action>
+  <action name="actionRules">
+   <property name="text">
+    <string>Rules</string>
+   </property>
+  </action>
+  <action name="actionAbout">
+   <property name="text">
+    <string>About</string>
+   </property>
+  </action>
  </widget>
  <resources/>
  <connections/>
