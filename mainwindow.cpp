@@ -30,9 +30,7 @@ MainWindow::MainWindow(QWidget *parent)
 
     // Game page: Connect buttons.
     connect(ui->newGameButton, &QPushButton::clicked, this, &MainWindow::onNewGame);
-    connect(ui->dealFlopButton, &QPushButton::clicked, this, &MainWindow::onDealFlop);
-    connect(ui->dealTurnButton, &QPushButton::clicked, this, &MainWindow::onDealTurn);
-    connect(ui->dealRiverButton, &QPushButton::clicked, this, &MainWindow::onDealRiver);
+    connect(ui->dealButton, &QPushButton::clicked, this, &MainWindow::onDeal);
     connect(ui->determineWinnerButton, &QPushButton::clicked, this, &MainWindow::onDetermineWinner);
     connect(ui->placeBetButton, &QPushButton::clicked, this, &MainWindow::onRaise);
     connect(ui->exitButton, &QPushButton::clicked, this, &MainWindow::close);
@@ -125,31 +123,42 @@ void MainWindow::postBlinds() {
     updateChipDisplay();
 }
 
-// Deal Flop
-void MainWindow::onDealFlop() {
-    game.dealFlop();
-    currentStage = GameStage::SecondBetting;
-    game.setStage(currentStage);
+void MainWindow::onDeal() {
+    // Retrieve current stage from your game object.
+    GameStage stage = game.getStage();
 
+    // Add debug output to check the current stage
+    qDebug() << "Current stage in onDeal: " << static_cast<int>(stage);
+
+    if (stage == GameStage::Flop) {
+        // Deal the flop cards
+        game.dealFlop();
+        currentStage = GameStage::SecondBetting;
+        game.setStage(GameStage::SecondBetting);
+        qDebug() << "Dealt flop, moving to SecondBetting";
+    } else if (stage == GameStage::Turn) {
+        // Deal the turn card
+        game.dealTurn();
+        currentStage = GameStage::ThirdBetting;
+        game.setStage(GameStage::ThirdBetting);
+        qDebug() << "Dealt turn, moving to ThirdBetting";
+    } else if (stage == GameStage::River) {
+        // Deal the river card
+        game.dealRiver();
+        currentStage = GameStage::FinalBetting;
+        game.setStage(GameStage::FinalBetting);
+        qDebug() << "Dealt river, moving to FinalBetting";
+    } else if (stage == GameStage::Showdown) {
+        // Handle showdown
+        qDebug() << "At showdown stage";
+        ui->determineWinnerButton->setEnabled(true);
+    } else {
+        qDebug() << "Unknown stage for dealing: " << static_cast<int>(stage);
+    }
+
+    // First update the display
     displayGame();
-    updateUIForStage();
-}
-
-void MainWindow::onDealTurn() {
-    game.dealTurn();
-    currentStage = GameStage::ThirdBetting;
-    game.setStage(currentStage);
-
-    displayGame();
-    updateUIForStage();
-}
-
-void MainWindow::onDealRiver() {
-    game.dealRiver();
-    currentStage = GameStage::FinalBetting;
-    game.setStage(currentStage);
-
-    displayGame();
+    // Then update the UI based on the new stage
     updateUIForStage();
 }
 
@@ -202,9 +211,7 @@ void MainWindow::onDetermineWinner() {
 
     // After determining the winner, enable New Game button to allow restarting.
     ui->newGameButton->setEnabled(true);
-    ui->dealFlopButton->setEnabled(false);
-    ui->dealTurnButton->setEnabled(false);
-    ui->dealRiverButton->setEnabled(false);
+    ui->dealButton->setEnabled(false);
     ui->determineWinnerButton->setEnabled(false);
 }
 
@@ -258,15 +265,17 @@ void MainWindow::displayGame() {
     }
 }
 
+
 void MainWindow::updateUIForStage() {
     // First disable all buttons
     ui->foldButton->setEnabled(false);
     ui->callButton->setEnabled(false);
     ui->placeBetButton->setEnabled(false);
-    ui->dealFlopButton->setEnabled(false);
-    ui->dealTurnButton->setEnabled(false);
-    ui->dealRiverButton->setEnabled(false);
+    ui->dealButton->setEnabled(false);
     ui->determineWinnerButton->setEnabled(false);
+
+    // Add debug output
+    qDebug() << "Current stage in updateUIForStage: " << static_cast<int>(currentStage);
 
     // Enable buttons based on game stage
     switch (currentStage) {
@@ -279,7 +288,8 @@ void MainWindow::updateUIForStage() {
 
         case GameStage::Flop:
             // After raise/bet, enable Deal Flop
-            ui->dealFlopButton->setEnabled(true);
+            ui->dealButton->setText("Deal Flop");
+            ui->dealButton->setEnabled(true);
             break;
 
         case GameStage::SecondBetting:
@@ -291,7 +301,8 @@ void MainWindow::updateUIForStage() {
 
         case GameStage::Turn:
             // After betting, enable Deal Turn
-            ui->dealTurnButton->setEnabled(true);
+            ui->dealButton->setText("Deal Turn");
+            ui->dealButton->setEnabled(true);
             break;
 
         case GameStage::ThirdBetting:
@@ -303,7 +314,8 @@ void MainWindow::updateUIForStage() {
 
         case GameStage::River:
             // After betting, enable Deal River
-            ui->dealRiverButton->setEnabled(true);
+            ui->dealButton->setText("Deal River");
+            ui->dealButton->setEnabled(true);
             break;
 
         case GameStage::FinalBetting:
@@ -317,11 +329,17 @@ void MainWindow::updateUIForStage() {
             // After final betting, enable Determine Winner
             ui->determineWinnerButton->setEnabled(true);
             break;
+
+        default:
+            qDebug() << "Unknown stage in updateUIForStage: " << static_cast<int>(currentStage);
+            break;
     }
 
     // Update chip display
     updateChipDisplay();
 }
+
+
 void MainWindow::onFold() {
     // Determine who folded and who wins
     if (isPlayer1Turn) {

@@ -21,9 +21,7 @@ public:
 private slots:
     void onStartNewGame();
     void onNewGame();
-    void onDealFlop();
-    void onDealTurn();
-    void onDealRiver();
+    void onDeal();
     void onDetermineWinner();
     void onFold();
     void onCall();
