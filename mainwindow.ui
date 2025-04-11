@@ -73,13 +73,12 @@ QLineEdit {
       <property name="currentIndex">
        <number>1</number>
       </property>
-      <!-- Landing Page -->
       <widget class="QWidget" name="landingPage">
        <layout class="QVBoxLayout" name="landingPageLayout">
         <item>
          <spacer name="topSpacer">
           <property name="orientation">
-           <enum>Qt::Vertical</enum>
+           <enum>Qt::Orientation::Vertical</enum>
           </property>
           <property name="sizeHint" stdset="0">
            <size>
@@ -89,7 +88,7 @@ QLineEdit {
           </property>
          </spacer>
         </item>
-        <item alignment="Qt::AlignHCenter">
+        <item alignment="Qt::AlignmentFlag::AlignHCenter">
          <widget class="QLabel" name="titleLabel">
           <property name="font">
            <font>
@@ -108,7 +107,7 @@ QLineEdit {
         <item>
          <spacer name="middleSpacer">
           <property name="orientation">
-           <enum>Qt::Vertical</enum>
+           <enum>Qt::Orientation::Vertical</enum>
           </property>
           <property name="sizeHint" stdset="0">
            <size>
@@ -118,7 +117,7 @@ QLineEdit {
           </property>
          </spacer>
         </item>
-        <item alignment="Qt::AlignHCenter">
+        <item alignment="Qt::AlignmentFlag::AlignHCenter">
          <widget class="QPushButton" name="startNewGameButton">
           <property name="minimumSize">
            <size>
@@ -134,7 +133,7 @@ QLineEdit {
         <item>
          <spacer name="bottomSpacer">
           <property name="orientation">
-           <enum>Qt::Vertical</enum>
+           <enum>Qt::Orientation::Vertical</enum>
           </property>
           <property name="sizeHint" stdset="0">
            <size>
@@ -146,17 +145,15 @@ QLineEdit {
         </item>
        </layout>
       </widget>
-
-      <!-- Game Page -->
       <widget class="QWidget" name="gamePage">
        <layout class="QVBoxLayout" name="gamePageLayout">
         <item>
          <widget class="QFrame" name="gameFrame">
           <property name="frameShape">
-           <enum>QFrame::StyledPanel</enum>
+           <enum>QFrame::Shape::StyledPanel</enum>
           </property>
           <property name="frameShadow">
-           <enum>QFrame::Raised</enum>
+           <enum>QFrame::Shadow::Raised</enum>
           </property>
           <layout class="QVBoxLayout" name="gameFrameLayout">
            <item>
@@ -201,15 +198,13 @@ QLineEdit {
           </layout>
          </widget>
         </item>
-
-        <!-- Game Controls -->
         <item>
          <widget class="QFrame" name="controlsFrame">
           <property name="frameShape">
-           <enum>QFrame::StyledPanel</enum>
+           <enum>QFrame::Shape::StyledPanel</enum>
           </property>
           <property name="frameShadow">
-           <enum>QFrame::Raised</enum>
+           <enum>QFrame::Shadow::Raised</enum>
           </property>
           <layout class="QHBoxLayout" name="controlsLayout">
            <item>
@@ -241,15 +236,13 @@ QLineEdit {
           </layout>
          </widget>
         </item>
-
-        <!-- Bet Controls -->
         <item>
          <widget class="QFrame" name="betFrame">
           <property name="frameShape">
-           <enum>QFrame::StyledPanel</enum>
+           <enum>QFrame::Shape::StyledPanel</enum>
           </property>
           <property name="frameShadow">
-           <enum>QFrame::Raised</enum>
+           <enum>QFrame::Shadow::Raised</enum>
           </property>
           <layout class="QHBoxLayout" name="betLayout">
            <item>
@@ -298,8 +291,8 @@ QLineEdit {
               <string>Fold</string>
              </property>
             </widget>
-             </item>
-              <item>
+           </item>
+           <item>
             <widget class="QPushButton" name="callButton">
              <property name="minimumSize">
               <size>
@@ -311,8 +304,8 @@ QLineEdit {
               <string>Call</string>
              </property>
             </widget>
-             </item>
-              <item>
+           </item>
+           <item>
             <widget class="QPushButton" name="placeBetButton">
              <property name="minimumSize">
               <size>
@@ -328,7 +321,7 @@ QLineEdit {
            <item>
             <spacer name="horizontalSpacer">
              <property name="orientation">
-              <enum>Qt::Horizontal</enum>
+              <enum>Qt::Orientation::Horizontal</enum>
              </property>
              <property name="sizeHint" stdset="0">
               <size>
