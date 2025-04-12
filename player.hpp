@@ -7,11 +7,11 @@
 class Player {
 public:
     Player();
-    void addCard(const Card &card);
+    void addCard(const Card* card);
     void clearHand();
-    std::vector<Card> getHand() const;
+    std::vector<const Card*> getHand() const;
 private:
-    std::vector<Card> hand;
+    std::vector<const Card*> hand;
 };
 
 #endif // PLAYER_H

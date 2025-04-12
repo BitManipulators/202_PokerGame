@@ -6,20 +6,20 @@
 
 // Helper: convert card rank (1-13) to a numeric value with Ace high (14).
 int cardValue(const Card &card) {
-    int r = card.getRank();
-    return (r == 1) ? 14 : r;
+    Rank rank = card.getRank();
+    return (int)rank;
 }
 
 // Compare function for sorting cards in descending order.
-bool compareCardDesc(const Card &a, const Card &b) {
-    return cardValue(a) > cardValue(b);
+bool compareCardDesc(const Card* a, const Card* b) {
+    return cardValue(*a) > cardValue(*b);
 }
 
 // Checks if hand is flush (all cards same suit).
-bool isFlush(const std::vector<Card>& hand) {
-    Suit firstSuit = hand[0].getSuit();
+bool isFlush(const std::vector<const Card*>& hand) {
+    Suit firstSuit = hand[0]->getSuit();
     for (size_t i = 1; i < hand.size(); i++) {
-        if (hand[i].getSuit() != firstSuit)
+        if (hand[i]->getSuit() != firstSuit)
             return false;
     }
     return true;
@@ -27,10 +27,10 @@ bool isFlush(const std::vector<Card>& hand) {
 
 // Checks if hand is straight.
 // Returns highest card value of the straight, or 0 if not a straight.
-int isStraight(const std::vector<Card>& hand) {
+int isStraight(const std::vector<const Card*>& hand) {
     std::vector<int> values;
-    for (const Card &c : hand)
-        values.push_back(cardValue(c));
+    for (const Card* c : hand)
+        values.push_back(cardValue(*c));
 
     // Remove duplicates.
     std::sort(values.begin(), values.end());
@@ -65,11 +65,11 @@ int isStraight(const std::vector<Card>& hand) {
 
 int PokerGame::determineWinner() {
     // Combine each player's hole cards with the community cards.
-    std::vector<Card> player1Cards = player1.getHand();
-    std::vector<Card> player2Cards = player2.getHand();
+    std::vector<const Card*> player1Cards = player1.getHand();
+    std::vector<const Card*> player2Cards = player2.getHand();
 
     // Add community cards.
-    for (const Card &c : communityCards) {
+    for (const Card* c : communityCards) {
         player1Cards.push_back(c);
         player2Cards.push_back(c);
     }
@@ -93,15 +93,15 @@ int PokerGame::determineWinner() {
 
 
 // Evaluate a 5-card hand and return its evaluation.
-HandEvaluation evaluateFiveCardHand(const std::vector<Card>& hand) {
+HandEvaluation evaluateFiveCardHand(const std::vector<const Card*>& hand) {
     // Make a copy and sort descending.
-    std::vector<Card> sortedHand = hand;
+    std::vector<const Card*> sortedHand = hand;
     std::sort(sortedHand.begin(), sortedHand.end(), compareCardDesc);
 
     // Count rank frequencies.
     std::map<int, int> freq;
-    for (const Card &c : sortedHand) {
-        freq[cardValue(c)]++;
+    for (const Card* c : sortedHand) {
+        freq[cardValue(*c)]++;
     }
 
     // Create a sorted vector of pairs (frequency, rank) for tiebreakers.
@@ -145,8 +145,8 @@ HandEvaluation evaluateFiveCardHand(const std::vector<Card>& hand) {
     // Flush.
     if (flush) {
         std::vector<int> tiebreakers;
-        for (const Card &c : sortedHand) {
-            tiebreakers.push_back(cardValue(c));
+        for (const Card* c : sortedHand) {
+            tiebreakers.push_back(cardValue(*c));
         }
         return {Flush, tiebreakers};
     }
@@ -192,8 +192,8 @@ HandEvaluation evaluateFiveCardHand(const std::vector<Card>& hand) {
     // High Card.
     {
         std::vector<int> tiebreakers;
-        for (const Card &c : sortedHand) {
-            tiebreakers.push_back(cardValue(c));
+        for (const Card* c : sortedHand) {
+            tiebreakers.push_back(cardValue(*c));
         }
         return {HighCard, tiebreakers};
     }
@@ -215,7 +215,7 @@ bool HandEvaluation::operator>(const HandEvaluation &other) const {
 }
 
 // Generate all 5-card combinations from 7 cards and return the best evaluation.
-HandEvaluation bestHandFromSeven(const std::vector<Card>& sevenCards) {
+HandEvaluation bestHandFromSeven(const std::vector<const Card*>& sevenCards) {
     int n = sevenCards.size();
     if (n < 5)
         throw std::runtime_error("Need at least 5 cards to evaluate a hand.");
@@ -230,7 +230,7 @@ HandEvaluation bestHandFromSeven(const std::vector<Card>& sevenCards) {
 
     bool first = true;
     do {
-        std::vector<Card> combo;
+        std::vector<const Card*> combo;
         for (int i = 0; i < n; i++) {
             if (indices[i] == 1) {
                 combo.push_back(sevenCards[i]);

@@ -26,7 +26,7 @@ struct HandEvaluation {
     bool operator>(const HandEvaluation &other) const;
 };
 
-HandEvaluation evaluateFiveCardHand(const std::vector<Card>& hand);
-HandEvaluation bestHandFromSeven(const std::vector<Card>& sevenCards);
+HandEvaluation evaluateFiveCardHand(const std::vector<const Card*>& hand);
+HandEvaluation bestHandFromSeven(const std::vector<const Card*>& sevenCards);
 
 #endif // POKERHAND_H

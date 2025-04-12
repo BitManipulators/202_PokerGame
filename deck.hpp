@@ -8,10 +8,10 @@ class Deck {
 public:
     Deck();
     void shuffle();
-    Card dealCard();
+    const Card* dealCard();
     bool isEmpty() const;
 private:
-    std::vector<Card> cards;
+    std::vector<std::shared_ptr<const Card>> cards;
 };
 
 #endif // DECK_H

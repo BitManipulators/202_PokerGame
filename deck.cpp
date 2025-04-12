@@ -5,9 +5,9 @@
 
 Deck::Deck() {
     // Create a standard 52-card deck.
-    for (int s = Hearts; s <= Spades; s++) {
-        for (int r = 1; r <= 13; r++) {
-            cards.push_back(Card(static_cast<Suit>(s), r));
+    for (Suit suit : suits) {
+        for (Rank rank : ranks) {
+            cards.push_back(Card::getCard(suit, rank));
         }
     }
 }
@@ -17,10 +17,10 @@ void Deck::shuffle() {
     std::shuffle(cards.begin(), cards.end(), std::default_random_engine(seed));
 }
 
-Card Deck::dealCard() {
-    Card card = cards.back();
+const Card* Deck::dealCard() {
+    std::shared_ptr<const Card> card = cards.back();
     cards.pop_back();
-    return card;
+    return card.get();
 }
 
 bool Deck::isEmpty() const {
