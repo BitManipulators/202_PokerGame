@@ -1,5 +1,7 @@
 #include "pokergame.hpp"
 
+#include "poker_hand_evaluator.hpp"
+
 PokerGame::PokerGame() {
     startNewGame();
 }
@@ -60,4 +62,19 @@ Player& PokerGame::getPlayer1() {
 
 Player& PokerGame::getPlayer2() {
     return player2;
+}
+
+int PokerGame::determineWinner() {
+    PokerHandResult poker_hand_result = PokerHandEvaluator::determine_winner(
+        player1.getHand(), player2.getHand(), communityCards);
+
+    switch(poker_hand_result.winner) {
+        case PokerHandWinner::Player1:
+            return 1;
+        case PokerHandWinner::Player2:
+            return 2;
+        case PokerHandWinner::Tie:
+        default:
+            return 0;
+    }
 }

@@ -51,6 +51,8 @@ private:
     void updateChipDisplay();
     void advanceStageIfBettingComplete();
     void rotateDealerPosition();
+
+    static std::map<const Card*, QPixmap> card_image_cache;
 };
 
 #endif // MAINWINDOW_H

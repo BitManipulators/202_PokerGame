@@ -11,20 +11,30 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 find_package(QT NAMES Qt6 Qt5 REQUIRED COMPONENTS Widgets Svg REQUIRED)
 find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Widgets)
 
+qt_add_library(
+    poker_game
+    card.cpp
+    card.hpp
+    deck.cpp
+    deck.hpp
+    player.cpp
+    player.hpp
+    pokergame.cpp
+    pokergame.hpp
+    pokerhand.cpp
+    pokerhand.hpp
+    poker_hand_evaluation.cpp
+    poker_hand_evaluation.hpp
+    poker_hand_evaluator.cpp
+    poker_hand_evaluator.hpp
+    poker_hand_visitor.cpp
+    poker_hand_visitor.hpp
+)
+
 set(PROJECT_SOURCES
     main.cpp
     mainwindow.cpp
-    card.cpp
-    deck.cpp
-    player.cpp
     mainwindow.hpp
-    card.hpp
-    deck.hpp
-    player.hpp
-    pokergame.hpp
-    pokergame.cpp
-    pokerhand.hpp
-    pokerhand.cpp
     mainwindow.ui
     resources.qrc
 )
@@ -52,7 +62,8 @@ else()
     endif()
 endif()
 
-target_link_libraries(poker_gui PRIVATE Qt${QT_VERSION_MAJOR}::Widgets)
+target_link_libraries(poker_game PRIVATE Qt${QT_VERSION_MAJOR}::Widgets)
+target_link_libraries(poker_gui PRIVATE Qt${QT_VERSION_MAJOR}::Widgets poker_game)
 
 # Qt for iOS sets MACOSX_BUNDLE_GUI_IDENTIFIER automatically since Qt 6.1.
 # If you are developing for iOS or macOS you should consider setting an
@@ -104,3 +115,35 @@ if(APPLE)
 endif()
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g")
+
+include(CTest)
+include(FetchContent)
+FetchContent_Declare(
+  googletest
+  GIT_REPOSITORY https://github.com/google/googletest.git
+  GIT_TAG v1.16.0
+)
+
+set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
+FetchContent_MakeAvailable(googletest)
+
+enable_testing()
+
+set(BENCHMARK_ENABLE_TESTING OFF)
+set(BENCHMARK_ENABLE_GTEST_TESTS OFF)
+set(BENCHMARK_ENABLE_ASSEMBLY_TESTS OFF)
+
+add_executable(
+  poker_hand_evaluator_tests
+  tests/poker_hand_evaluator_tests.cpp
+)
+
+target_link_libraries(
+  poker_hand_evaluator_tests
+  GTest::gtest_main
+  poker_game
+  # Qt${QT_VERSION_MAJOR}::Widgets
+)
+
+include(GoogleTest)
+gtest_discover_tests(poker_hand_evaluator_tests)

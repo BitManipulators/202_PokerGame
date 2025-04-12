@@ -1,10 +1,12 @@
 #pragma once
 
-#include <QPixmap>
-#include <QString>
+// #include <QPixmap>
+// #include <QString>
 
+#include <array>
 #include <map>
 #include <memory>
+#include <string>
 
 enum class Suit {
     Hearts, Diamonds, Clubs, Spades
@@ -28,7 +30,9 @@ public:
 
     Suit getSuit() const;
     Rank getRank() const;
-    QPixmap getCardImage() const;
+    int getValue() const;
+    const std::string& getCardImagePath() const;
+
 private:
     // Private constructor to ensure singleton
     Card(Suit suit, Rank rank);
@@ -41,7 +45,7 @@ private:
 
     Suit suit;
     Rank rank;
-    QPixmap image;
+    std::string image_path;
 
     static std::map<std::pair<Suit, Rank>, std::shared_ptr<const Card>> card_cache;
 };
