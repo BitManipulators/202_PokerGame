@@ -215,17 +215,6 @@ void MainWindow::onDetermineWinner() {
     ui->determineWinnerButton->setEnabled(false);
 }
 
-// Loads card image if needed.
-void MainWindow::loadCardImages(Card &card) {
-    QString cardImagePath = ":/images/" + card.getCardName() + ".png";
-    QPixmap pix(cardImagePath);
-    if (pix.isNull()) {
-        qDebug() << "Failed to load image:" << cardImagePath;
-    }
-    pix = pix.scaled(100, 150, Qt::KeepAspectRatio, Qt::SmoothTransformation);
-    card.setCardImage(pix);
-}
-
 // Displays the current game state (players' hands and community cards).
 void MainWindow::displayGame() {
     scene->clear();
@@ -235,32 +224,23 @@ void MainWindow::displayGame() {
 
     auto hand1 = game.getPlayer1().getHand();
     for (size_t i = 0; i < hand1.size(); i++) {
-        Card card = hand1[i];
-        if (card.getCardImage().isNull()) {
-            loadCardImages(card);
-        }
-        QGraphicsPixmapItem *item = scene->addPixmap(card.getCardImage());
+        const Card* card = hand1[i];
+        QGraphicsPixmapItem *item = scene->addPixmap(card->getCardImage());
         item->setPos(i * spacing, yPlayer1);
     }
 
     auto hand2 = game.getPlayer2().getHand();
     for (size_t i = 0; i < hand2.size(); i++) {
-        Card card = hand2[i];
-        if (card.getCardImage().isNull()) {
-            loadCardImages(card);
-        }
-        QGraphicsPixmapItem *item = scene->addPixmap(card.getCardImage());
+        const Card* card = hand2[i];
+        QGraphicsPixmapItem *item = scene->addPixmap(card->getCardImage());
         item->setPos(i * spacing, yPlayer2);
     }
 
     auto community = game.getCommunityCards();
     int yCommunity = 175;
     for (size_t i = 0; i < community.size(); i++) {
-        Card card = community[i];
-        if (card.getCardImage().isNull()) {
-            loadCardImages(card);
-        }
-        QGraphicsPixmapItem *item = scene->addPixmap(card.getCardImage());
+        const Card* card = community[i];
+        QGraphicsPixmapItem *item = scene->addPixmap(card->getCardImage());
         item->setPos(i * spacing + 100, yCommunity);
     }
 }

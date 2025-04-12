@@ -44,7 +44,6 @@ private:
     GameStage currentStage;
     bool isPlayer1Dealer;
 
-    void loadCardImages(Card &card);
     void displayGame();
     void updateUIForStage();
     void postBlinds();

@@ -50,7 +50,7 @@ void PokerGame::dealRiver() {
     communityCards.push_back(deck.dealCard());
 }
 
-const std::vector<Card>& PokerGame::getCommunityCards() const {
+const std::vector<const Card*>& PokerGame::getCommunityCards() const {
     return communityCards;
 }
 

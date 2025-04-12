@@ -2,7 +2,7 @@
 
 Player::Player() {}
 
-void Player::addCard(const Card &card) {
+void Player::addCard(const Card* card) {
     hand.push_back(card);
 }
 
@@ -10,6 +10,6 @@ void Player::clearHand() {
     hand.clear();
 }
 
-std::vector<Card> Player::getHand() const {
+std::vector<const Card*> Player::getHand() const {
     return hand;
 }

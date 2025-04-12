@@ -25,7 +25,7 @@ public:
     void dealFlop();
     void dealTurn();
     void dealRiver();
-    const std::vector<Card>& getCommunityCards() const;
+    const std::vector<const Card*>& getCommunityCards() const;
     Player& getPlayer1();
     Player& getPlayer2();
     int determineWinner();
@@ -41,7 +41,7 @@ private:
     Deck deck;
     Player player1;
     Player player2;
-    std::vector<Card> communityCards;
+    std::vector<const Card*> communityCards;
     GameStage currentStage;
     bool player1Dealer;
 };
