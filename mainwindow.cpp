@@ -135,20 +135,20 @@ void MainWindow::onDeal() {
     if (stage == GameStage::Flop) {
         // Deal the flop cards
         game.dealFlop();
-        currentStage = GameStage::SecondBetting;
-        game.setStage(GameStage::SecondBetting);
+        currentStage = GameStage::Turn;
+        game.setStage(GameStage::Turn);
         qDebug() << "Dealt flop, moving to SecondBetting";
     } else if (stage == GameStage::Turn) {
         // Deal the turn card
         game.dealTurn();
-        currentStage = GameStage::ThirdBetting;
-        game.setStage(GameStage::ThirdBetting);
+        currentStage = GameStage::River;
+        game.setStage(GameStage::River);
         qDebug() << "Dealt turn, moving to ThirdBetting";
     } else if (stage == GameStage::River) {
         // Deal the river card
         game.dealRiver();
-        currentStage = GameStage::FinalBetting;
-        game.setStage(GameStage::FinalBetting);
+        currentStage = GameStage::Showdown;
+        game.setStage(GameStage::Showdown);
         qDebug() << "Dealt river, moving to FinalBetting";
     } else if (stage == GameStage::Showdown) {
         // Handle showdown
@@ -260,49 +260,6 @@ void MainWindow::displayGame() {
     }
 }
 
-
-// void MainWindow::updateUIForStage() {
-//     // Disable all betting buttons by default.
-//     ui->foldButton->setEnabled(false);
-//     ui->callButton->setEnabled(false);
-//     ui->placeBetButton->setEnabled(false);
-
-//     switch (game.getStage()) {
-//         case GameStage::PreFlop:
-//         //case GameStage::FirstBetting:
-//             // Allow betting actions at the start (raise/call/fold).
-//             ui->foldButton->setEnabled(true);
-//             ui->callButton->setEnabled(true);
-//             ui->placeBetButton->setEnabled(true);
-//             break;
-//         case GameStage::SecondBetting:
-//             // After flop betting: allow betting actions.
-//             ui->foldButton->setEnabled(true);
-//             ui->callButton->setEnabled(true);
-//             ui->placeBetButton->setEnabled(true);
-//             break;
-//         case GameStage::ThirdBetting:
-//             // After turn betting: allow betting actions.
-//             ui->foldButton->setEnabled(true);
-//             ui->callButton->setEnabled(true);
-//             ui->placeBetButton->setEnabled(true);
-//             break;
-//         case GameStage::FinalBetting:
-//             // Final betting round.
-//             ui->foldButton->setEnabled(true);
-//             ui->callButton->setEnabled(true);
-//             ui->placeBetButton->setEnabled(true);
-//             break;
-//         case GameStage::Showdown:
-//             // Disable betting actions during showdown; winner is determined.
-//             ui->foldButton->setEnabled(false);
-//             ui->callButton->setEnabled(false);
-//             ui->placeBetButton->setEnabled(false);
-//             ui->determineWinnerButton->setEnabled(true);
-//             break;
-//     }
-// }
-
 void MainWindow::updateUIForStage() {
     // Disable all betting buttons by default
     ui->foldButton->setEnabled(false);
@@ -324,9 +281,9 @@ void MainWindow::updateUIForStage() {
     // Enable appropriate buttons based on game stage
     switch (stage) {
         case GameStage::PreFlop:
-        case GameStage::SecondBetting:
-        case GameStage::ThirdBetting:
-        case GameStage::FinalBetting:
+        case GameStage::Flop:
+        case GameStage::Turn:
+        case GameStage::River:
             // In any betting round, enable betting controls
             ui->foldButton->setEnabled(true);
             ui->callButton->setEnabled(true);
@@ -369,72 +326,6 @@ void MainWindow::onFold() {
     ui->newGameButton->setEnabled(true);
 }
 
-
-// void MainWindow::onCall() {
-//     // For simplicity, assume the call matches the current bet.
-//     pot += currentBet;
-//     QMessageBox::information(this, "Call",
-//         QString("Called %1 chips. Pot is now %2 chips.").arg(currentBet).arg(pot));
-
-//     // Advance game stage based on the current stage.
-//     GameStage stage = game.getStage();
-
-//     if (stage == GameStage::PreFlop) {
-//         // After first betting round, deal the Flop (if not already dealt).
-//         // (If your game already dealt the flop before betting, simply change the stage.)
-//         // Here we assume the flop is already visible, so we move to the next betting round.
-//         game.setStage(GameStage::SecondBetting);
-//     } else if (stage == GameStage::SecondBetting) {
-//         // Call in second betting round: deal the Turn.
-//         game.dealTurn();
-//         game.setStage(GameStage::ThirdBetting);
-//     } else if (stage == GameStage::ThirdBetting) {
-//         // Call in third betting round: deal the River.
-//         game.dealRiver();
-//         game.setStage(GameStage::FinalBetting);
-//     } else if (stage == GameStage::FinalBetting) {
-//         // Final betting round: move to Showdown.
-//         game.setStage(GameStage::Showdown);
-//     }
-
-//     updateUIForStage();
-//     displayGame();
-// }
-
-
-// void MainWindow::onRaise() {
-//     bool ok;
-//     int raiseAmount = ui->betLineEdit->text().toInt(&ok);
-//     if (ok && raiseAmount > 0) {
-//         currentBet = raiseAmount;
-//         pot += currentBet;
-//         QMessageBox::information(this, "Raise",
-//             QString("Raised %1 chips. Pot is now %2 chips.").arg(currentBet).arg(pot));
-
-//         // Advance the stage similar to onCall().
-//         GameStage stage = game.getStage();
-//         if (stage == GameStage::PreFlop) {
-//             // Advance to post-flop betting round.
-//             game.setStage(GameStage::SecondBetting);
-//         } else if (stage == GameStage::SecondBetting) {
-//             // Deal the Turn and move to turn betting.
-//             game.dealTurn();
-//             game.setStage(GameStage::ThirdBetting);
-//         } else if (stage == GameStage::ThirdBetting) {
-//             // Deal the River and move to final betting.
-//             game.dealRiver();
-//             game.setStage(GameStage::FinalBetting);
-//         } else if (stage == GameStage::FinalBetting) {
-//             // Move to showdown.
-//             game.setStage(GameStage::Showdown);
-//         }
-//         updateUIForStage();
-//         displayGame();
-//     } else {
-//         QMessageBox::warning(this, "Invalid Bet", "Please enter a valid bet amount.");
-//     }
-// }
-
 void MainWindow::onCall() {
     // Match the current bet
     int amountToCall = currentBet - (isPlayer1Turn ? player1CurrentBet : player2CurrentBet);
@@ -458,19 +349,19 @@ void MainWindow::onCall() {
     if (stage == GameStage::PreFlop) {
         // Deal the flop
         game.dealFlop();
-        game.setStage(GameStage::SecondBetting);
+        game.setStage(GameStage::Flop);
         message = "The flop has been dealt.";
-    } else if (stage == GameStage::SecondBetting) {
+    } else if (stage == GameStage::Flop) {
         // Deal the turn
         game.dealTurn();
-        game.setStage(GameStage::ThirdBetting);
+        game.setStage(GameStage::Turn);
         message = "The turn has been dealt.";
-    } else if (stage == GameStage::ThirdBetting) {
+    } else if (stage == GameStage::Turn) {
         // Deal the river
         game.dealRiver();
-        game.setStage(GameStage::FinalBetting);
+        game.setStage(GameStage::River);
         message = "The river has been dealt.";
-    } else if (stage == GameStage::FinalBetting) {
+    } else if (stage == GameStage::River) {
         // Move to showdown
         game.setStage(GameStage::Showdown);
         message = "All betting rounds complete. Ready for showdown.";
@@ -523,19 +414,19 @@ void MainWindow::onRaise() {
     if (stage == GameStage::PreFlop) {
         // Deal the flop
         game.dealFlop();
-        game.setStage(GameStage::SecondBetting);
+        game.setStage(GameStage::Flop);
         message = "The flop has been dealt.";
-    } else if (stage == GameStage::SecondBetting) {
+    } else if (stage == GameStage::Flop) {
         // Deal the turn
         game.dealTurn();
-        game.setStage(GameStage::ThirdBetting);
+        game.setStage(GameStage::Turn);
         message = "The turn has been dealt.";
-    } else if (stage == GameStage::ThirdBetting) {
+    } else if (stage == GameStage::Turn) {
         // Deal the river
         game.dealRiver();
-        game.setStage(GameStage::FinalBetting);
+        game.setStage(GameStage::River);
         message = "The river has been dealt.";
-    } else if (stage == GameStage::FinalBetting) {
+    } else if (stage == GameStage::River) {
         // Move to showdown
         game.setStage(GameStage::Showdown);
         message = "All betting rounds complete. Ready for showdown.";
@@ -560,17 +451,14 @@ void MainWindow::advanceStageIfBettingComplete() {
             break;
 
         case GameStage::Flop:
-        case GameStage::SecondBetting:
             currentStage = GameStage::Turn;
             break;
 
         case GameStage::Turn:
-        case GameStage::ThirdBetting:
             currentStage = GameStage::River;
             break;
 
         case GameStage::River:
-        case GameStage::FinalBetting:
             currentStage = GameStage::Showdown;
             break;
 

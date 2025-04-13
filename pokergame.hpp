@@ -9,11 +9,8 @@
 enum class GameStage {
     PreFlop,        // Hole cards dealt
     Flop,           // Flop is dealt
-    SecondBetting,  // Betting round (dealer acts first)
     Turn,           // Turn card dealt
-    ThirdBetting,   // Betting round
     River,          // River card dealt
-    FinalBetting,   // Final betting round
     Showdown        // Players reveal hands; winner determined
 };
 
