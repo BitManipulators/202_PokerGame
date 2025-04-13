@@ -1,8 +1,5 @@
 #pragma once
 
-// #include <QPixmap>
-// #include <QString>
-
 #include <array>
 #include <map>
 #include <memory>
