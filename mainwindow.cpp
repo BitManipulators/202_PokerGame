@@ -5,6 +5,8 @@
 #include <QMessageBox>
 #include <QDebug>
 
+std::map<const Card*, QPixmap> card_image_cache;
+
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::MainWindow)
@@ -215,6 +217,19 @@ void MainWindow::onDetermineWinner() {
     ui->determineWinnerButton->setEnabled(false);
 }
 
+static QPixmap& loadImage(const Card* card) {
+    auto it = card_image_cache.find(card);
+    if (it == card_image_cache.end()) {
+        QPixmap pix(QString::fromStdString(card->getCardImagePath()));
+        if (pix.isNull()) {
+            qDebug() << "Failed to load image:" << card->getCardImagePath();
+        }
+        pix = pix.scaled(100, 150, Qt::KeepAspectRatio, Qt::SmoothTransformation);
+        card_image_cache[card] = pix;
+    }
+    return card_image_cache[card];
+}
+
 // Displays the current game state (players' hands and community cards).
 void MainWindow::displayGame() {
     scene->clear();
@@ -225,14 +240,14 @@ void MainWindow::displayGame() {
     auto hand1 = game.getPlayer1().getHand();
     for (size_t i = 0; i < hand1.size(); i++) {
         const Card* card = hand1[i];
-        QGraphicsPixmapItem *item = scene->addPixmap(card->getCardImage());
+        QGraphicsPixmapItem *item = scene->addPixmap(loadImage(card));
         item->setPos(i * spacing, yPlayer1);
     }
 
     auto hand2 = game.getPlayer2().getHand();
     for (size_t i = 0; i < hand2.size(); i++) {
         const Card* card = hand2[i];
-        QGraphicsPixmapItem *item = scene->addPixmap(card->getCardImage());
+        QGraphicsPixmapItem *item = scene->addPixmap(loadImage(card));
         item->setPos(i * spacing, yPlayer2);
     }
 
@@ -240,7 +255,7 @@ void MainWindow::displayGame() {
     int yCommunity = 175;
     for (size_t i = 0; i < community.size(); i++) {
         const Card* card = community[i];
-        QGraphicsPixmapItem *item = scene->addPixmap(card->getCardImage());
+        QGraphicsPixmapItem *item = scene->addPixmap(loadImage(card));
         item->setPos(i * spacing + 100, yCommunity);
     }
 }

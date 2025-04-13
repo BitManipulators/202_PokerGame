@@ -1,32 +1,19 @@
-#ifndef POKERHAND_H
-#define POKERHAND_H
+#pragma once
+
+#include "card.hpp"
+#include "poker_hand_visitable.hpp"
 
 #include <vector>
-#include "card.hpp"
 
-// Hand categories (the higher, the better).
-enum HandCategory {
-    HighCard = 1,
-    OnePair,
-    TwoPair,
-    ThreeOfAKind,
-    Straight,
-    Flush,
-    FullHouse,
-    FourOfAKind,
-    StraightFlush
+constexpr std::size_t POKER_HAND_SIZE = 5;
+
+class PokerHand : public PokerHandVisitable {
+public:
+    PokerHand(std::vector<const Card*>& cards);
+
+    const PokerHandEvaluation accept(const PokerHandVisitor& visitor) const override;
+    const std::vector<const Card*>& get_cards() const;
+
+private:
+    std::vector<const Card*> cards_;
 };
-
-struct HandEvaluation {
-    HandCategory category;
-    // A vector of tiebreaker values in descending order.
-    std::vector<int> tiebreakers;
-
-    // Compare two evaluations.
-    bool operator>(const HandEvaluation &other) const;
-};
-
-HandEvaluation evaluateFiveCardHand(const std::vector<const Card*>& hand);
-HandEvaluation bestHandFromSeven(const std::vector<const Card*>& sevenCards);
-
-#endif // POKERHAND_H
