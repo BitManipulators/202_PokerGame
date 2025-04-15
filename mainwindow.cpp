@@ -80,7 +80,7 @@ void MainWindow::onNewGame() {
     ui->newGameButton->setEnabled(false);
 
     // Set the initial stage
-    currentStage = GameStage::PreFlop;
+  //  currentStage = GameStage::PreFlop;
 
     // Set bettingRoundComplete to false
     bettingRoundComplete = false;
@@ -127,36 +127,42 @@ void MainWindow::postBlinds() {
 
 void MainWindow::onDeal() {
     // Retrieve current stage from your game object.
-    GameStage stage = game.getStage();
+   // GameStage stage = game.getStage();
 
     // Add debug output to check the current stage
-    qDebug() << "Current stage in onDeal: " << static_cast<int>(stage);
+    //qDebug() << "Current stage in onDeal: " << static_cast<int>(stage);
+   // QString message;
 
-    if (stage == GameStage::Flop) {
-        // Deal the flop cards
-        game.dealFlop();
-        currentStage = GameStage::SecondBetting;
-        game.setStage(GameStage::SecondBetting);
-        qDebug() << "Dealt flop, moving to SecondBetting";
-    } else if (stage == GameStage::Turn) {
-        // Deal the turn card
-        game.dealTurn();
-        currentStage = GameStage::ThirdBetting;
-        game.setStage(GameStage::ThirdBetting);
-        qDebug() << "Dealt turn, moving to ThirdBetting";
-    } else if (stage == GameStage::River) {
-        // Deal the river card
-        game.dealRiver();
-        currentStage = GameStage::FinalBetting;
-        game.setStage(GameStage::FinalBetting);
-        qDebug() << "Dealt river, moving to FinalBetting";
-    } else if (stage == GameStage::Showdown) {
-        // Handle showdown
-        qDebug() << "At showdown stage";
-        ui->determineWinnerButton->setEnabled(true);
-    } else {
-        qDebug() << "Unknown stage for dealing: " << static_cast<int>(stage);
-    }
+    // if (stage == GameStage::Flop) {
+    //     // Deal the flop cards
+    //     game.dealFlop();
+    //     currentStage = GameStage::SecondBetting;
+    //     game.setStage(GameStage::SecondBetting);
+    //     qDebug() << "Dealt flop, moving to SecondBetting";
+    // } else if (stage == GameStage::Turn) {
+    //     // Deal the turn card
+    //     game.dealTurn();
+    //     currentStage = GameStage::ThirdBetting;
+    //     game.setStage(GameStage::ThirdBetting);
+    //     qDebug() << "Dealt turn, moving to ThirdBetting";
+    // } else if (stage == GameStage::River) {
+    //     // Deal the river card
+    //     game.dealRiver();
+    //     currentStage = GameStage::FinalBetting;
+    //     game.setStage(GameStage::FinalBetting);
+    //     qDebug() << "Dealt river, moving to FinalBetting";
+    // } else if (stage == GameStage::Showdown) {
+    //     // Handle showdown
+    //     qDebug() << "At showdown stage";
+    //     ui->determineWinnerButton->setEnabled(true);
+    // } else {
+    //     qDebug() << "Unknown stage for dealing: " << static_cast<int>(stage);
+    // }
+
+    game.handleState();
+    QString message = game.getStateMessage();
+    //message = QString("Now in: %1").arg(game.getStateName());
+    QMessageBox::information(this, "Game Progress", QString("Now in: %1").arg(game.getStateName()));
 
     // First update the display
     displayGame();
@@ -310,7 +316,7 @@ void MainWindow::updateUIForStage() {
     ui->placeBetButton->setEnabled(false);
     ui->determineWinnerButton->setEnabled(false);
 
-    GameStage stage = game.getStage();
+    //GameStage stage = game.getStage();
 
     // Handle the current player's turn indicator
     if (isPlayer1Turn) {
@@ -322,25 +328,38 @@ void MainWindow::updateUIForStage() {
     }
 
     // Enable appropriate buttons based on game stage
-    switch (stage) {
-        case GameStage::PreFlop:
-        case GameStage::SecondBetting:
-        case GameStage::ThirdBetting:
-        case GameStage::FinalBetting:
-            // In any betting round, enable betting controls
-            ui->foldButton->setEnabled(true);
-            ui->callButton->setEnabled(true);
-            ui->placeBetButton->setEnabled(true);
-            break;
+    // switch (stage) {
+    //     case GameStage::PreFlop:
+    //     case GameStage::SecondBetting:
+    //     case GameStage::ThirdBetting:
+    //     case GameStage::FinalBetting:
+    //         // In any betting round, enable betting controls
+    //         ui->foldButton->setEnabled(true);
+    //         ui->callButton->setEnabled(true);
+    //         ui->placeBetButton->setEnabled(true);
+    //         break;
 
-        case GameStage::Showdown:
-            // At showdown, enable the determine winner button
-            ui->determineWinnerButton->setEnabled(true);
-            break;
+    //     case GameStage::Showdown:
+    //         // At showdown, enable the determine winner button
+    //         ui->determineWinnerButton->setEnabled(true);
+    //         break;
 
-        default:
-            break;
+    //     default:
+    //         break;
+    // }
+
+    // Check current state's name
+    QString state = game.getStateName();
+        if (state == "PreFlop" || state == "Flop" || state == "Turn" || state == "River") {
+        // In all betting stages, enable betting buttons
+        ui->foldButton->setEnabled(true);
+        ui->callButton->setEnabled(true);
+        ui->placeBetButton->setEnabled(true);
+    } else if (state == "Showdown") {
+        ui->determineWinnerButton->setEnabled(true);
     }
+
+    ui->statusbar->showMessage(QString("Current State: %1").arg(state));
 
     // Update chip display
     updateChipDisplay();
@@ -452,29 +471,33 @@ void MainWindow::onCall() {
     pot += amountToCall;
 
     // Advance the game based on current stage
-    GameStage stage = game.getStage();
-    QString message;
+    // GameStage stage = game.getStage();
+    // QString message;
 
-    if (stage == GameStage::PreFlop) {
-        // Deal the flop
-        game.dealFlop();
-        game.setStage(GameStage::SecondBetting);
-        message = "The flop has been dealt.";
-    } else if (stage == GameStage::SecondBetting) {
-        // Deal the turn
-        game.dealTurn();
-        game.setStage(GameStage::ThirdBetting);
-        message = "The turn has been dealt.";
-    } else if (stage == GameStage::ThirdBetting) {
-        // Deal the river
-        game.dealRiver();
-        game.setStage(GameStage::FinalBetting);
-        message = "The river has been dealt.";
-    } else if (stage == GameStage::FinalBetting) {
-        // Move to showdown
-        game.setStage(GameStage::Showdown);
-        message = "All betting rounds complete. Ready for showdown.";
-    }
+    // if (stage == GameStage::PreFlop) {
+    //     // Deal the flop
+    //     game.dealFlop();
+    //     game.setStage(GameStage::SecondBetting);
+    //     message = "The flop has been dealt.";
+    // } else if (stage == GameStage::SecondBetting) {
+    //     // Deal the turn
+    //     game.dealTurn();
+    //     game.setStage(GameStage::ThirdBetting);
+    //     message = "The turn has been dealt.";
+    // } else if (stage == GameStage::ThirdBetting) {
+    //     // Deal the river
+    //     game.dealRiver();
+    //     game.setStage(GameStage::FinalBetting);
+    //     message = "The river has been dealt.";
+    // } else if (stage == GameStage::FinalBetting) {
+    //     // Move to showdown
+    //     game.setStage(GameStage::Showdown);
+    //     message = "All betting rounds complete. Ready for showdown.";
+    // }
+
+    game.handleState();
+    QString message = game.getStateMessage();
+   // message = QString("Now in: %1").arg(game.getStateName());
 
     QMessageBox::information(this, "Game Progress", message);
 
@@ -517,29 +540,33 @@ void MainWindow::onRaise() {
     currentBet = raiseAmount;
 
     // Advance the game based on current stage
-    GameStage stage = game.getStage();
-    QString message;
+    // GameStage stage = game.getStage();
+   // QString message;
 
-    if (stage == GameStage::PreFlop) {
-        // Deal the flop
-        game.dealFlop();
-        game.setStage(GameStage::SecondBetting);
-        message = "The flop has been dealt.";
-    } else if (stage == GameStage::SecondBetting) {
-        // Deal the turn
-        game.dealTurn();
-        game.setStage(GameStage::ThirdBetting);
-        message = "The turn has been dealt.";
-    } else if (stage == GameStage::ThirdBetting) {
-        // Deal the river
-        game.dealRiver();
-        game.setStage(GameStage::FinalBetting);
-        message = "The river has been dealt.";
-    } else if (stage == GameStage::FinalBetting) {
-        // Move to showdown
-        game.setStage(GameStage::Showdown);
-        message = "All betting rounds complete. Ready for showdown.";
-    }
+    // if (stage == GameStage::PreFlop) {
+    //     // Deal the flop
+    //     game.dealFlop();
+    //     game.setStage(GameStage::SecondBetting);
+    //     message = "The flop has been dealt.";
+    // } else if (stage == GameStage::SecondBetting) {
+    //     // Deal the turn
+    //     game.dealTurn();
+    //     game.setStage(GameStage::ThirdBetting);
+    //     message = "The turn has been dealt.";
+    // } else if (stage == GameStage::ThirdBetting) {
+    //     // Deal the river
+    //     game.dealRiver();
+    //     game.setStage(GameStage::FinalBetting);
+    //     message = "The river has been dealt.";
+    // } else if (stage == GameStage::FinalBetting) {
+    //     // Move to showdown
+    //     game.setStage(GameStage::Showdown);
+    //     message = "All betting rounds complete. Ready for showdown.";
+    // }
+
+    game.handleState();
+    QString message = game.getStateMessage();
+    //message = QString("Now in: %1").arg(game.getStateName());
 
     QMessageBox::information(this, "Game Progress", message);
 
@@ -548,39 +575,39 @@ void MainWindow::onRaise() {
     updateUIForStage();
 }
 
-void MainWindow::advanceStageIfBettingComplete() {
-    if (!bettingRoundComplete) {
-        return;
-    }
+// void MainWindow::advanceStageIfBettingComplete() {
+//     if (!bettingRoundComplete) {
+//         return;
+//     }
 
-    // Advance to next game stage based on current stage
-    switch (currentStage) {
-        case GameStage::PreFlop:
-            currentStage = GameStage::Flop;
-            break;
+//     // Advance to next game stage based on current stage
+//     switch (currentStage) {
+//         case GameStage::PreFlop:
+//             currentStage = GameStage::Flop;
+//             break;
 
-        case GameStage::Flop:
-        case GameStage::SecondBetting:
-            currentStage = GameStage::Turn;
-            break;
+//         case GameStage::Flop:
+//         case GameStage::SecondBetting:
+//             currentStage = GameStage::Turn;
+//             break;
 
-        case GameStage::Turn:
-        case GameStage::ThirdBetting:
-            currentStage = GameStage::River;
-            break;
+//         case GameStage::Turn:
+//         case GameStage::ThirdBetting:
+//             currentStage = GameStage::River;
+//             break;
 
-        case GameStage::River:
-        case GameStage::FinalBetting:
-            currentStage = GameStage::Showdown;
-            break;
+//         case GameStage::River:
+//         case GameStage::FinalBetting:
+//             currentStage = GameStage::Showdown;
+//             break;
 
-        default:
-            break;
-    }
+//         default:
+//             break;
+//     }
 
-    // Update the game's stage
-    game.setStage(currentStage);
-}
+//     // Update the game's stage
+//     game.setStage(currentStage);
+// }
 
 void MainWindow::rotateDealerPosition() {
     // Toggle the dealer position

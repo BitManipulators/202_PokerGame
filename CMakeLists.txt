@@ -29,6 +29,17 @@ qt_add_library(
     poker_hand_evaluator.hpp
     poker_hand_visitor.cpp
     poker_hand_visitor.hpp
+    preflop_state.hpp
+    preflop_state.cpp
+    flop_state.hpp
+    flop_state.cpp
+    turn_state.hpp
+    turn_state.cpp
+    river_state.hpp
+    river_state.cpp
+    poker_game_state.hpp
+    showdown_state.hpp
+    showdown_state.cpp
 )
 
 set(PROJECT_SOURCES

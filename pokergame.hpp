@@ -3,8 +3,10 @@
 
 #include "deck.hpp"
 #include "player.hpp"
+#include "poker_game_state.hpp"
 
 #include <vector>
+#include <QMessageBox>
 
 enum class GameStage {
     PreFlop,        // Hole cards dealt
@@ -19,8 +21,18 @@ enum class GameStage {
 
 
 class PokerGame {
+private:
+    PokerGameState* currentState;
+    Deck deck;
+    Player player1;
+    Player player2;
+    std::vector<const Card*> communityCards;
+    GameStage currentStage;
+    bool player1Dealer;
+
 public:
     PokerGame();
+    ~PokerGame();
     void startNewGame();
     void dealHoleCards();
     void dealFlop();
@@ -38,13 +50,11 @@ public:
     void setDealer(bool isPlayer1Dealer) { player1Dealer = isPlayer1Dealer; }
     bool isPlayer1Dealer() const { return player1Dealer; }
 
-private:
-    Deck deck;
-    Player player1;
-    Player player2;
-    std::vector<const Card*> communityCards;
-    GameStage currentStage;
-    bool player1Dealer;
+    // State management
+    void setState(PokerGameState* newState);
+    void handleState(); // delegate to current state's handle()
+    const char* getStateName() const;
+    QString getStateMessage() const;
 };
 
 #endif // POKERGAME_H

@@ -1,9 +1,27 @@
 #include "pokergame.hpp"
 
 #include "poker_hand_evaluator.hpp"
+#include "preflop_state.hpp"
 
-PokerGame::PokerGame() {
+PokerGame::PokerGame(): currentState(nullptr){
     startNewGame();
+}
+
+PokerGame::~PokerGame() {
+    delete currentState;
+}
+
+void PokerGame::setState(PokerGameState* newState) {
+    if (currentState) delete currentState;
+    currentState = newState;
+}
+
+void PokerGame::handleState() {
+    if (currentState) currentState->handle(*this);
+}
+
+const char* PokerGame::getStateName() const {
+    return currentState ? currentState->name() : "Unknown";
 }
 
 void PokerGame::startNewGame() {
@@ -18,7 +36,8 @@ void PokerGame::startNewGame() {
     setDealer(dealerToggle);
 
     dealHoleCards();
-    setStage(GameStage::PreFlop);
+    setState(new PreFlopState());
+   // setStage(GameStage::PreFlop);
 }
 
 void PokerGame::dealHoleCards() {
@@ -77,4 +96,8 @@ int PokerGame::determineWinner() {
         default:
             return 0;
     }
+}
+
+QString PokerGame::getStateMessage() const {
+    return currentState ? currentState->getMessage() : "";
 }
