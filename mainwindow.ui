@@ -88,21 +88,28 @@ QLineEdit {
           </property>
          </spacer>
         </item>
+        <!-- Replace the titleLabel in the landingPage with this -->
         <item alignment="Qt::AlignmentFlag::AlignHCenter">
-         <widget class="QLabel" name="titleLabel">
-          <property name="font">
-           <font>
-            <pointsize>24</pointsize>
-            <bold>true</bold>
-           </font>
+        <widget class="QLabel" name="titleImageLabel">
+          <property name="minimumSize">
+          <size>
+            <width>600</width>
+            <height>400</height>
+          </size>
           </property>
           <property name="text">
-           <string>Texas Hold'em Poker</string>
+          <string/>
+          </property>
+          <property name="pixmap">
+          <pixmap resource="resources.qrc">:/images/texasholdem_image.png</pixmap>
+          </property>
+          <property name="scaledContents">
+          <bool>true</bool>
           </property>
           <property name="alignment">
-           <set>Qt::AlignmentFlag::AlignCenter</set>
+          <set>Qt::AlignmentFlag::AlignCenter</set>
           </property>
-         </widget>
+        </widget>
         </item>
         <item>
          <spacer name="middleSpacer">

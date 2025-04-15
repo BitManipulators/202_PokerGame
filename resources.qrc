@@ -74,5 +74,7 @@
         <file>images/black_joker.png</file>
         <file>images/red_joker.png</file>
         <file>images/back_light.png</file>
+
+        <file>images/texasholdem_image.png</file>
     </qresource>
 </RCC>
