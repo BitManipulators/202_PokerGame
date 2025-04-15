@@ -21,12 +21,12 @@ protected:
     }
 
     void advance_to_flop() {
-        GameAction::Result result = engine.call(PlayerType::Human);
+        GameAction::Result result = engine.make_move(PlayerType::Human, Call{});
         EXPECT_TRUE(result.ok);
         EXPECT_FALSE(game()->has_ended());
         EXPECT_TRUE(enum_state() == PokerEngineEnumState::PreFlop);
 
-        result = engine.call(PlayerType::Computer);
+        result = engine.make_move(PlayerType::Computer, Call{});
         EXPECT_TRUE(result.ok);
         EXPECT_FALSE(game()->has_ended());
         EXPECT_TRUE(enum_state() == PokerEngineEnumState::Flop);
@@ -35,12 +35,12 @@ protected:
     void advance_to_turn() {
         advance_to_flop();
 
-        GameAction::Result result = engine.call(PlayerType::Human);
+        GameAction::Result result = engine.make_move(PlayerType::Human, Call{});
         EXPECT_TRUE(result.ok);
         EXPECT_FALSE(game()->has_ended());
         EXPECT_TRUE(enum_state() == PokerEngineEnumState::Flop);
 
-        result = engine.call(PlayerType::Computer);
+        result = engine.make_move(PlayerType::Computer, Call{});
         EXPECT_TRUE(result.ok);
         EXPECT_FALSE(game()->has_ended());
         EXPECT_TRUE(enum_state() == PokerEngineEnumState::Turn);
@@ -49,12 +49,12 @@ protected:
     void advance_to_river() {
         advance_to_turn();
 
-        GameAction::Result result = engine.call(PlayerType::Human);
+        GameAction::Result result = engine.make_move(PlayerType::Human, Call{});
         EXPECT_TRUE(result.ok);
         EXPECT_FALSE(game()->has_ended());
         EXPECT_TRUE(enum_state() == PokerEngineEnumState::Turn);
 
-        result = engine.call(PlayerType::Computer);
+        result = engine.make_move(PlayerType::Computer, Call{});
         EXPECT_TRUE(result.ok);
         EXPECT_FALSE(game()->has_ended());
         EXPECT_TRUE(enum_state() == PokerEngineEnumState::River);
@@ -63,12 +63,12 @@ protected:
     void advance_to_showdown() {
         advance_to_river();
 
-        GameAction::Result result = engine.call(PlayerType::Human);
+        GameAction::Result result = engine.make_move(PlayerType::Human, Call{});
         EXPECT_TRUE(result.ok);
         EXPECT_FALSE(game()->has_ended());
         EXPECT_TRUE(enum_state() == PokerEngineEnumState::River);
 
-        result = engine.call(PlayerType::Computer);
+        result = engine.make_move(PlayerType::Computer, Call{});
         EXPECT_TRUE(result.ok);
         EXPECT_TRUE(game()->has_ended());
         EXPECT_TRUE(enum_state() == PokerEngineEnumState::Showdown);
@@ -79,7 +79,7 @@ protected:
 
 TEST_F(PokerEngineTests, FoldPreFlop) {
     std::size_t starting_pot = game()->get_pot();
-    GameAction::Result result = engine.fold(PlayerType::Human);
+    GameAction::Result result = engine.make_move(PlayerType::Human, Fold{});
     EXPECT_TRUE(result.ok);
     EXPECT_TRUE(game()->has_ended());
     EXPECT_TRUE(enum_state() == PokerEngineEnumState::Folded);
@@ -88,7 +88,7 @@ TEST_F(PokerEngineTests, FoldPreFlop) {
 
 TEST_F(PokerEngineTests, CallPreFlop) {
     std::size_t starting_pot = game()->get_pot();
-    GameAction::Result result = engine.call(PlayerType::Human);
+    GameAction::Result result = engine.make_move(PlayerType::Human, Call{});
     EXPECT_TRUE(result.ok);
     EXPECT_FALSE(game()->has_ended());
     EXPECT_TRUE(enum_state() == PokerEngineEnumState::PreFlop);
@@ -97,7 +97,7 @@ TEST_F(PokerEngineTests, CallPreFlop) {
 
 TEST_F(PokerEngineTests, RaisePreFlop) {
     std::size_t starting_pot = game()->get_pot();
-    GameAction::Result result = engine.raise(PlayerType::Human, 100);
+    GameAction::Result result = engine.make_move(PlayerType::Human, Raise{100});
     EXPECT_TRUE(result.ok);
     EXPECT_FALSE(game()->has_ended());
     EXPECT_TRUE(enum_state() == PokerEngineEnumState::PreFlop);
@@ -109,12 +109,12 @@ TEST_F(PokerEngineTests, CallAndCallPreFlop) {
     std::size_t human_starting_chips = game()->get_human_player().chips;
     std::size_t computer_starting_chips = game()->get_computer_player().chips;
 
-    GameAction::Result result = engine.call(PlayerType::Human);
+    GameAction::Result result = engine.make_move(PlayerType::Human, Call{});
     EXPECT_TRUE(result.ok);
     EXPECT_FALSE(game()->has_ended());
     EXPECT_TRUE(enum_state() == PokerEngineEnumState::PreFlop);
 
-    result = engine.call(PlayerType::Computer);
+    result = engine.make_move(PlayerType::Computer, Call{});
     EXPECT_TRUE(result.ok);
     EXPECT_FALSE(game()->has_ended());
     EXPECT_TRUE(enum_state() == PokerEngineEnumState::Flop);
@@ -129,12 +129,12 @@ TEST_F(PokerEngineTests, RaiseAndCallPreFlop) {
     std::size_t human_starting_chips = game()->get_human_player().chips;
     std::size_t computer_starting_chips = game()->get_computer_player().chips;
 
-    GameAction::Result result = engine.raise(PlayerType::Human, 100);
+    GameAction::Result result = engine.make_move(PlayerType::Human, Raise{100});
     EXPECT_TRUE(result.ok);
     EXPECT_FALSE(game()->has_ended());
     EXPECT_TRUE(enum_state() == PokerEngineEnumState::PreFlop);
 
-    result = engine.call(PlayerType::Computer);
+    result = engine.make_move(PlayerType::Computer, Call{});
     EXPECT_TRUE(result.ok);
     EXPECT_FALSE(game()->has_ended());
     EXPECT_TRUE(enum_state() == PokerEngineEnumState::Flop);
@@ -149,12 +149,12 @@ TEST_F(PokerEngineTests, RaiseAndRaisePreFlop) {
     std::size_t human_starting_chips = game()->get_human_player().chips;
     std::size_t computer_starting_chips = game()->get_computer_player().chips;
 
-    GameAction::Result result = engine.raise(PlayerType::Human, 100);
+    GameAction::Result result = engine.make_move(PlayerType::Human, Raise{100});
     EXPECT_TRUE(result.ok);
     EXPECT_FALSE(game()->has_ended());
     EXPECT_TRUE(enum_state() == PokerEngineEnumState::PreFlop);
 
-    result = engine.raise(PlayerType::Computer, 200);
+    result = engine.make_move(PlayerType::Computer, Raise{200});
     EXPECT_TRUE(result.ok);
     EXPECT_FALSE(game()->has_ended());
     EXPECT_TRUE(enum_state() == PokerEngineEnumState::PreFlop);
@@ -169,17 +169,17 @@ TEST_F(PokerEngineTests, RaiseAndRaiseAndFoldPreFlop) {
     std::size_t human_starting_chips = game()->get_human_player().chips;
     std::size_t computer_starting_chips = game()->get_computer_player().chips;
 
-    GameAction::Result result = engine.raise(PlayerType::Human, 100);
+    GameAction::Result result = engine.make_move(PlayerType::Human, Raise{100});
     EXPECT_TRUE(result.ok);
     EXPECT_FALSE(game()->has_ended());
     EXPECT_TRUE(enum_state() == PokerEngineEnumState::PreFlop);
 
-    result = engine.raise(PlayerType::Computer, 200);
+    result = engine.make_move(PlayerType::Computer, Raise{200});
     EXPECT_TRUE(result.ok);
     EXPECT_FALSE(game()->has_ended());
     EXPECT_TRUE(enum_state() == PokerEngineEnumState::PreFlop);
 
-    result = engine.fold(PlayerType::Human);
+    result = engine.make_move(PlayerType::Human, Fold{});
     EXPECT_TRUE(result.ok);
     EXPECT_TRUE(game()->has_ended());
     EXPECT_TRUE(enum_state() == PokerEngineEnumState::Folded);
@@ -194,18 +194,18 @@ TEST_F(PokerEngineTests, RaiseAndRaiseAndCallPreFlop) {
     std::size_t human_starting_chips = game()->get_human_player().chips;
     std::size_t computer_starting_chips = game()->get_computer_player().chips;
 
-    GameAction::Result result = engine.raise(PlayerType::Human, 100);
+    GameAction::Result result = engine.make_move(PlayerType::Human, Raise{100});
     EXPECT_TRUE(result.ok);
     EXPECT_FALSE(game()->has_ended());
     EXPECT_TRUE(enum_state() == PokerEngineEnumState::PreFlop);
 
 
-    result = engine.raise(PlayerType::Computer, 200);
+    result = engine.make_move(PlayerType::Computer, Raise{200});
     EXPECT_TRUE(result.ok);
     EXPECT_FALSE(game()->has_ended());
     EXPECT_TRUE(enum_state() == PokerEngineEnumState::PreFlop);
 
-    result = engine.call(PlayerType::Human);
+    result = engine.make_move(PlayerType::Human, Call{});
     EXPECT_TRUE(result.ok);
     EXPECT_FALSE(game()->has_ended());
     EXPECT_TRUE(enum_state() == PokerEngineEnumState::Flop);
@@ -220,17 +220,17 @@ TEST_F(PokerEngineTests, RaiseAndRaiseAndRaisePreFlop) {
     std::size_t human_starting_chips = game()->get_human_player().chips;
     std::size_t computer_starting_chips = game()->get_computer_player().chips;
 
-    GameAction::Result result = engine.raise(PlayerType::Human, 100);
+    GameAction::Result result = engine.make_move(PlayerType::Human, Raise{100});
     EXPECT_TRUE(result.ok);
     EXPECT_FALSE(game()->has_ended());
     EXPECT_TRUE(enum_state() == PokerEngineEnumState::PreFlop);
 
-    result = engine.raise(PlayerType::Computer, 200);
+    result = engine.make_move(PlayerType::Computer, Raise{200});
     EXPECT_TRUE(result.ok);
     EXPECT_FALSE(game()->has_ended());
     EXPECT_TRUE(enum_state() == PokerEngineEnumState::PreFlop);
 
-    result = engine.raise(PlayerType::Human, 400);
+    result = engine.make_move(PlayerType::Human, Raise{400});
     EXPECT_TRUE(result.ok);
     EXPECT_FALSE(game()->has_ended());
     EXPECT_TRUE(enum_state() == PokerEngineEnumState::PreFlop);
@@ -247,12 +247,12 @@ TEST_F(PokerEngineTests, CallAndCallFlop) {
     std::size_t human_starting_chips = game()->get_human_player().chips;
     std::size_t computer_starting_chips = game()->get_computer_player().chips;
 
-    GameAction::Result result = engine.call(PlayerType::Human);
+    GameAction::Result result = engine.make_move(PlayerType::Human, Call{});
     EXPECT_TRUE(result.ok);
     EXPECT_FALSE(game()->has_ended());
     EXPECT_TRUE(enum_state() == PokerEngineEnumState::Flop);
 
-    result = engine.call(PlayerType::Computer);
+    result = engine.make_move(PlayerType::Computer, Call{});
     EXPECT_TRUE(result.ok);
     EXPECT_FALSE(game()->has_ended());
     EXPECT_TRUE(enum_state() == PokerEngineEnumState::Turn);
@@ -269,12 +269,12 @@ TEST_F(PokerEngineTests, RaiseAndFoldFlop) {
     std::size_t human_starting_chips = game()->get_human_player().chips;
     std::size_t computer_starting_chips = game()->get_computer_player().chips;
 
-    GameAction::Result result = engine.raise(PlayerType::Human, 100);
+    GameAction::Result result = engine.make_move(PlayerType::Human, Raise{100});
     EXPECT_TRUE(result.ok);
     EXPECT_FALSE(game()->has_ended());
     EXPECT_TRUE(enum_state() == PokerEngineEnumState::Flop);
 
-    result = engine.fold(PlayerType::Computer);
+    result = engine.make_move(PlayerType::Computer, Fold{});
     EXPECT_TRUE(result.ok);
     EXPECT_TRUE(game()->has_ended());
     EXPECT_TRUE(enum_state() == PokerEngineEnumState::Folded);
@@ -291,12 +291,12 @@ TEST_F(PokerEngineTests, RaiseAndCallFlop) {
     std::size_t human_starting_chips = game()->get_human_player().chips;
     std::size_t computer_starting_chips = game()->get_computer_player().chips;
 
-    GameAction::Result result = engine.raise(PlayerType::Human, 100);
+    GameAction::Result result = engine.make_move(PlayerType::Human, Raise{100});
     EXPECT_TRUE(result.ok);
     EXPECT_FALSE(game()->has_ended());
     EXPECT_TRUE(enum_state() == PokerEngineEnumState::Flop);
 
-    result = engine.call(PlayerType::Computer);
+    result = engine.make_move(PlayerType::Computer, Call{});
     EXPECT_TRUE(result.ok);
     EXPECT_FALSE(game()->has_ended());
     EXPECT_TRUE(enum_state() == PokerEngineEnumState::Turn);
@@ -313,17 +313,17 @@ TEST_F(PokerEngineTests, CallAndRaiseAndCallFlop) {
     std::size_t human_starting_chips = game()->get_human_player().chips;
     std::size_t computer_starting_chips = game()->get_computer_player().chips;
 
-    GameAction::Result result = engine.call(PlayerType::Human);
+    GameAction::Result result = engine.make_move(PlayerType::Human, Call{});
     EXPECT_TRUE(result.ok);
     EXPECT_FALSE(game()->has_ended());
     EXPECT_TRUE(enum_state() == PokerEngineEnumState::Flop);
 
-    result = engine.raise(PlayerType::Computer, 100);
+    result = engine.make_move(PlayerType::Computer, Raise{100});
     EXPECT_TRUE(result.ok);
     EXPECT_FALSE(game()->has_ended());
     EXPECT_TRUE(enum_state() == PokerEngineEnumState::Flop);
 
-    result = engine.call(PlayerType::Human);
+    result = engine.make_move(PlayerType::Human, Call{});
     EXPECT_TRUE(result.ok);
     EXPECT_FALSE(game()->has_ended());
     EXPECT_TRUE(enum_state() == PokerEngineEnumState::Turn);
@@ -340,17 +340,17 @@ TEST_F(PokerEngineTests, CallAndRaiseAndFoldFlop) {
     std::size_t human_starting_chips = game()->get_human_player().chips;
     std::size_t computer_starting_chips = game()->get_computer_player().chips;
 
-    GameAction::Result result = engine.call(PlayerType::Human);
+    GameAction::Result result = engine.make_move(PlayerType::Human, Call{});
     EXPECT_TRUE(result.ok);
     EXPECT_FALSE(game()->has_ended());
     EXPECT_TRUE(enum_state() == PokerEngineEnumState::Flop);
 
-    result = engine.raise(PlayerType::Computer, 100);
+    result = engine.make_move(PlayerType::Computer, Raise{100});
     EXPECT_TRUE(result.ok);
     EXPECT_FALSE(game()->has_ended());
     EXPECT_TRUE(enum_state() == PokerEngineEnumState::Flop);
 
-    result = engine.fold(PlayerType::Human);
+    result = engine.make_move(PlayerType::Human, Fold{});
     EXPECT_TRUE(result.ok);
     EXPECT_TRUE(game()->has_ended());
     EXPECT_TRUE(enum_state() == PokerEngineEnumState::Folded);
@@ -369,12 +369,12 @@ TEST_F(PokerEngineTests, CallAndCallRiver) {
     std::size_t human_starting_chips = game()->get_human_player().chips;
     std::size_t computer_starting_chips = game()->get_computer_player().chips;
 
-    GameAction::Result result = engine.call(PlayerType::Human);
+    GameAction::Result result = engine.make_move(PlayerType::Human, Call{});
     EXPECT_TRUE(result.ok);
     EXPECT_FALSE(game()->has_ended());
     EXPECT_TRUE(enum_state() == PokerEngineEnumState::River);
 
-    result = engine.call(PlayerType::Computer);
+    result = engine.make_move(PlayerType::Computer, Call{});
     EXPECT_TRUE(result.ok);
     EXPECT_TRUE(game()->has_ended());
     EXPECT_TRUE(enum_state() == PokerEngineEnumState::Showdown);
@@ -387,19 +387,19 @@ TEST_F(PokerEngineTests, CallAndCallRiver) {
 TEST_F(PokerEngineTests, CallShowdown) {
     advance_to_showdown();
 
-    GameAction::Result result = engine.call(PlayerType::Human);
+    GameAction::Result result = engine.make_move(PlayerType::Human, Call{});
     EXPECT_FALSE(result.ok);
     EXPECT_TRUE(game()->has_ended());
     EXPECT_TRUE(enum_state() == PokerEngineEnumState::Showdown);
 
-    result = engine.call(PlayerType::Computer);
+    result = engine.make_move(PlayerType::Computer, Call{});
     EXPECT_FALSE(result.ok);
     EXPECT_TRUE(game()->has_ended());
     EXPECT_TRUE(enum_state() == PokerEngineEnumState::Showdown);
 }
 
 TEST_F(PokerEngineTests, NewGameAfterFolded) {
-    GameAction::Result result = engine.fold(PlayerType::Human);
+    GameAction::Result result = engine.make_move(PlayerType::Human, Fold{});
     EXPECT_TRUE(result.ok);
     EXPECT_TRUE(enum_state() == PokerEngineEnumState::Folded);
     EXPECT_TRUE(game()->has_ended());

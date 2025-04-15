@@ -33,6 +33,7 @@ qt_add_library(
     poker_engine_state.cpp
     poker_engine.hpp
     poker_engine.cpp
+    move.hpp
 
 )
 
