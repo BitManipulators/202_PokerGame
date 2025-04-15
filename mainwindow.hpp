@@ -4,7 +4,7 @@
 #include <QMainWindow>
 #include <QPushButton>
 #include <QGraphicsScene>
-#include "pokergame.hpp"
+#include "poker_engine.hpp"
 
 
 QT_BEGIN_NAMESPACE
@@ -21,8 +21,6 @@ public:
 private slots:
     void onStartNewGame();
     void onNewGame();
-    void onDeal();
-    void onDetermineWinner();
     void onFold();
     void onCall();
     void onRaise();
@@ -30,27 +28,11 @@ private slots:
 private:
     Ui::MainWindow *ui;
     QGraphicsScene *scene;
-    PokerGame game;
-    int pot;
-    int currentBet;
-    int player1Chips;
-    int player2Chips;
-    int smallBlind;
-    int bigBlind;
-    bool isPlayer1Turn;
-    int player1CurrentBet;
-    int player2CurrentBet;
-    bool bettingRoundComplete;
-    GameStage currentStage;
-    bool isPlayer1Dealer;
+    PokerEngine engine;
 
     void displayGame();
-    void updateUIForStage();
-    void postBlinds();
-    void startNewBettingRound();
+    void displayWinner();
     void updateChipDisplay();
-    void advanceStageIfBettingComplete();
-    void rotateDealerPosition();
 
     static std::map<const Card*, QPixmap> card_image_cache;
 };
