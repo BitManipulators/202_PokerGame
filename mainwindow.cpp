@@ -161,7 +161,7 @@ void MainWindow::displayGame() {
 void MainWindow::onFold() {
     const PokerGame& game = engine.get_game();
 
-    GameAction::Result fold_result = engine.fold(PlayerType::Human);
+    GameAction::Result fold_result = engine.make_move(PlayerType::Human, Fold{});
     if (!fold_result.ok) {
         QMessageBox::warning(this, "Error", QString::fromStdString(*fold_result.error_message));
         return;
@@ -184,14 +184,14 @@ void MainWindow::onFold() {
 void MainWindow::onCall() {
     const PokerGame& game = engine.get_game();
 
-    GameAction::Result call_result = engine.call(PlayerType::Human);
+    GameAction::Result call_result = engine.make_move(PlayerType::Human, Call{});
     if (!call_result.ok) {
         QMessageBox::warning(this, "Error", QString::fromStdString(*call_result.error_message));
         return;
     }
 
     if (!game.has_ended()) {
-        engine.call(PlayerType::Computer); // TODO: Implement ComputerPlayer moves
+        engine.make_move(PlayerType::Computer, Call{}); // TODO: Implement ComputerPlayer moves
     }
 
     // Update chip display
@@ -212,14 +212,14 @@ void MainWindow::onRaise() {
     std::size_t raiseAmount = ui->betLineEdit->text().toLong(&ok);
 
     if (ok) {
-        GameAction::Result raise_result = engine.raise(PlayerType::Human, raiseAmount);
+        GameAction::Result raise_result = engine.make_move(PlayerType::Human, Raise{raiseAmount});
         if (!raise_result.ok) {
             QMessageBox::warning(this, "Error", QString::fromStdString(*raise_result.error_message));
             return;
         }
 
         if (!game.has_ended()) {
-            engine.call(PlayerType::Computer); // TODO: Implement ComputerPlayer moves
+            engine.make_move(PlayerType::Computer, Call{}); // TODO: Implement ComputerPlayer moves
         }
 
         // Update chip display

@@ -1,5 +1,6 @@
 #pragma once
 
+#include "move.hpp"
 #include "poker_engine_state.hpp"
 #include "poker_game.hpp"
 
@@ -11,9 +12,7 @@ public:
     ~PokerEngine();
 
     GameAction::Result new_game();
-    GameAction::Result call(PlayerType player_type);
-    GameAction::Result fold(PlayerType player_type);
-    GameAction::Result raise(PlayerType player_type, const std::size_t value);
+    GameAction::Result make_move(PlayerType player_type, Move move);
 
     const PokerGame& get_game();
 

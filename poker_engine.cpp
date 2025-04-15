@@ -5,8 +5,8 @@
 PokerEngine::PokerEngine() {
     game = new PokerGame();
     block = new PokerEngineStatesBlock(*game);
-    auto [new_state, _] = block->initial_state();
-    state = new_state;
+    auto [initial_state, _] = block->initial_state();
+    state = initial_state;
 }
 
 PokerEngine::~PokerEngine() {
@@ -20,22 +20,24 @@ GameAction::Result PokerEngine::new_game() {
     return action_result;
 }
 
-GameAction::Result PokerEngine::call(PlayerType player_type) {
-    auto [call_state, action_result] = state->call(player_type);
-    state = call_state;
-    return action_result;
-}
+GameAction::Result PokerEngine::make_move(PlayerType player_type, Move move) {
+    return std::visit([this, player_type](const auto& m) {
+        using T = std::decay_t<decltype(m)>;
 
-GameAction::Result PokerEngine::fold(PlayerType player_type) {
-    auto [fold_state, action_result] = state->fold(player_type);
-    state = fold_state;
-    return action_result;
-}
-
-GameAction::Result PokerEngine::raise(PlayerType player_type, const std::size_t value) {
-    auto [raise_state, action_result] = state->raise(player_type, value);
-    state = raise_state;
-    return action_result;
+        if constexpr (std::is_same_v<T, Fold>) {
+            auto [fold_state, fold_result] = state->fold(player_type);
+            state = fold_state;
+            return fold_result;
+        } else if constexpr (std::is_same_v<T, Call>) {
+            auto [call_state, call_result] = state->call(player_type);
+            state = call_state;
+            return call_result;
+        } else if constexpr (std::is_same_v<T, Raise>) {
+            auto [raise_state, raise_result] = state->raise(player_type, m.amount);
+            state = raise_state;
+            return raise_result;
+        }
+    }, move);
 }
 
 const PokerGame& PokerEngine::get_game() {
