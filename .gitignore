@@ -1,3 +1,4 @@
 build/
 CmakeLists.txt.user
 .DS_Store
+.vscode/
