@@ -28,6 +28,7 @@ private slots:
 private:
     Ui::MainWindow *ui;
     QGraphicsScene *scene;
+    PokerGame game;
     PokerEngine engine;
 
     void displayGame();

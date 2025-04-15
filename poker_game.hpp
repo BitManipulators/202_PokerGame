@@ -31,6 +31,7 @@ inline Result ERROR(const std::string& error_message) {
 class PokerGame {
 public:
     PokerGame();
+    virtual ~PokerGame();
 
     GameAction::Result perform_call(PlayerType player_type);
     GameAction::Result perform_fold(PlayerType player_type);
@@ -43,6 +44,7 @@ public:
 
     void clear_player_actions();
     bool all_players_have_acted();
+    void set_player_move(PlayerType type, Move move);
 
     void rotate_dealer();
     void rotate_player_turn();
@@ -58,6 +60,7 @@ public:
     const std::optional<PokerHandWinner> get_winner() const;
     const std::vector<const Card*>& get_community_cards() const;
 
+    Player* get_player(PlayerType player_type);
     std::tuple<Player*, Player*> get_acting_and_other_player(PlayerType player_type);
 
 private:
@@ -66,8 +69,8 @@ private:
     std::size_t big_blind;
 
     Deck deck;
-    Player human_player;
-    Player computer_player;
+    Player* human_player;
+    Player* computer_player;
     std::vector<const Card*> community_cards;
 
     PlayerType dealer;
