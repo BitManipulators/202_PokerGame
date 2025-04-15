@@ -2,15 +2,14 @@
 
 #include "poker_engine_state.hpp"
 
-PokerEngine::PokerEngine() {
-    game = new PokerGame();
-    block = new PokerEngineStatesBlock(*game);
+PokerEngine::PokerEngine(PokerGame& poker_game)
+    : game(poker_game) {
+    block = new PokerEngineStatesBlock(game);
     auto [initial_state, _] = block->initial_state();
     state = initial_state;
 }
 
 PokerEngine::~PokerEngine() {
-    delete game;
     delete block;
 }
 
@@ -40,6 +39,11 @@ GameAction::Result PokerEngine::make_move(PlayerType player_type, Move move) {
     }, move);
 }
 
-const PokerGame& PokerEngine::get_game() {
-    return *game;
+GameAction::Result PokerEngine::make_moves() {
+    GameAction::Result result = make_move(PlayerType::Human, game.get_human_player().get_move());
+    if (!result.ok || game.has_ended()) {
+        return result;
+    }
+
+    return make_move(PlayerType::Computer, game.get_computer_player().get_move());
 }

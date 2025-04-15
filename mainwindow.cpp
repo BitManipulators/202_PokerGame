@@ -10,6 +10,8 @@ std::map<const Card*, QPixmap> card_image_cache;
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::MainWindow)
+    , game()
+    , engine(game)
 {
     ui->setupUi(this);
     scene = new QGraphicsScene(this);
@@ -38,7 +40,6 @@ MainWindow::~MainWindow() {
 
 // Update chip displays
 void MainWindow::updateChipDisplay() {
-    const PokerGame& game = engine.get_game();
     const std::size_t pot = game.get_pot();
     const Player& human_player = game.get_human_player();
     const Player& computer_player = game.get_computer_player();
@@ -82,8 +83,6 @@ void MainWindow::onNewGame() {
 // Determine Winner slot.
 void MainWindow::displayWinner() {
     try {
-        const PokerGame& game = engine.get_game();
-
         QString message;
 
         if (game.get_winner().value() == PokerHandWinner::Tie) {
@@ -133,8 +132,6 @@ void MainWindow::displayGame() {
     int yPlayer2 = 50;
     int spacing = 110;
 
-    const PokerGame& game = engine.get_game();
-
     auto hand1 = game.get_human_player().hand;
     for (size_t i = 0; i < hand1.size(); i++) {
         const Card* card = hand1[i];
@@ -159,9 +156,9 @@ void MainWindow::displayGame() {
 }
 
 void MainWindow::onFold() {
-    const PokerGame& game = engine.get_game();
+    game.set_player_move(PlayerType::Human, Fold{});
 
-    GameAction::Result fold_result = engine.make_move(PlayerType::Human, Fold{});
+    GameAction::Result fold_result = engine.make_moves();
     if (!fold_result.ok) {
         QMessageBox::warning(this, "Error", QString::fromStdString(*fold_result.error_message));
         return;
@@ -182,16 +179,12 @@ void MainWindow::onFold() {
 }
 
 void MainWindow::onCall() {
-    const PokerGame& game = engine.get_game();
+    game.set_player_move(PlayerType::Human, Call{});
 
-    GameAction::Result call_result = engine.make_move(PlayerType::Human, Call{});
+    GameAction::Result call_result = engine.make_moves();
     if (!call_result.ok) {
         QMessageBox::warning(this, "Error", QString::fromStdString(*call_result.error_message));
         return;
-    }
-
-    if (!game.has_ended()) {
-        engine.make_move(PlayerType::Computer, Call{}); // TODO: Implement ComputerPlayer moves
     }
 
     // Update chip display
@@ -206,20 +199,16 @@ void MainWindow::onCall() {
 }
 
 void MainWindow::onRaise() {
-    const PokerGame& game = engine.get_game();
-
     bool ok;
     std::size_t raiseAmount = ui->betLineEdit->text().toLong(&ok);
 
     if (ok) {
-        GameAction::Result raise_result = engine.make_move(PlayerType::Human, Raise{raiseAmount});
+        game.set_player_move(PlayerType::Human, Raise{raiseAmount});
+
+        GameAction::Result raise_result = engine.make_moves();
         if (!raise_result.ok) {
             QMessageBox::warning(this, "Error", QString::fromStdString(*raise_result.error_message));
             return;
-        }
-
-        if (!game.has_ended()) {
-            engine.make_move(PlayerType::Computer, Call{}); // TODO: Implement ComputerPlayer moves
         }
 
         // Update chip display

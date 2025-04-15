@@ -8,18 +8,17 @@ class PokerEngineTests;
 
 class PokerEngine {
 public:
-    PokerEngine();
+    PokerEngine(PokerGame &poker_game);
     ~PokerEngine();
 
     GameAction::Result new_game();
     GameAction::Result make_move(PlayerType player_type, Move move);
-
-    const PokerGame& get_game();
+    GameAction::Result make_moves();
 
     friend class PokerEngineTests;
 
 private:
-    PokerGame* game;
+    PokerGame& game;
     PokerEngineState* state;
     PokerEngineStatesBlock* block;
 };

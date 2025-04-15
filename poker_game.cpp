@@ -6,22 +6,37 @@ PokerGame::PokerGame()
     : pot(0)
     , small_blind(5)
     , big_blind(10)
-    , human_player(PlayerType::Human)
-    , computer_player(PlayerType::Computer)
+    , human_player(new HumanPlayer())
+    , computer_player(new ComputerPlayer())
     , player_turn(PlayerType::Human)
     , dealer(PlayerType::Human) {}
+
+PokerGame::~PokerGame() {
+    delete human_player;
+    delete computer_player;
+}
+
+Player* PokerGame::get_player(PlayerType player_type) {
+    switch(player_type) {
+    case PlayerType::Human:
+        return human_player;
+    case PlayerType::Computer:
+    default:
+        return computer_player;
+    }
+}
 
 std::tuple<Player*, Player*> PokerGame::get_acting_and_other_player(PlayerType player_type) {
     Player* acting_player;
     Player* other_player;
     switch(player_turn) {
     case PlayerType::Human:
-        acting_player = &human_player;
-        other_player = &computer_player;
+        acting_player = human_player;
+        other_player = computer_player;
         break;
     case PlayerType::Computer:
-        acting_player = &computer_player;
-        other_player = &human_player;
+        acting_player = computer_player;
+        other_player = human_player;
         break;
     }
 
@@ -116,8 +131,8 @@ void PokerGame::rotate_player_turn() {
 }
 
 void PokerGame::shuffle_deck() {
-    human_player.clearHand();
-    computer_player.clearHand();
+    human_player->clear_hand();
+    computer_player->clear_hand();
     community_cards.clear();
 
     deck = Deck();
@@ -126,10 +141,10 @@ void PokerGame::shuffle_deck() {
 
 void PokerGame::deal_hole_cards() {
     // Deal 2 cards to each player.
-    human_player.addCard(deck.dealCard());
-    computer_player.addCard(deck.dealCard());
-    human_player.addCard(deck.dealCard());
-    computer_player.addCard(deck.dealCard());
+    human_player->add_card(deck.dealCard());
+    computer_player->add_card(deck.dealCard());
+    human_player->add_card(deck.dealCard());
+    computer_player->add_card(deck.dealCard());
 }
 
 void PokerGame::deal_flop() {
@@ -159,12 +174,12 @@ void PokerGame::deal_river() {
 }
 
 void PokerGame::clear_player_actions() {
-    human_player.has_acted = false;
-    computer_player.has_acted = false;
+    human_player->has_acted = false;
+    computer_player->has_acted = false;
 }
 
 bool PokerGame::all_players_have_acted() {
-    return human_player.has_acted && computer_player.has_acted;
+    return human_player->has_acted && computer_player->has_acted;
 }
 
 const bool PokerGame::has_ended() const {
@@ -184,36 +199,36 @@ const std::vector<const Card*>& PokerGame::get_community_cards() const {
 }
 
 const Player& PokerGame::get_human_player() const {
-    return human_player;
+    return *human_player;
 }
 
 const Player& PokerGame::get_computer_player() const {
-    return computer_player;
+    return *computer_player;
 }
 
 void PokerGame::determine_winner() {
-    PokerHandResult poker_hand_result = PokerHandEvaluator::determine_winner(human_player.hand, computer_player.hand, community_cards);
+    PokerHandResult poker_hand_result = PokerHandEvaluator::determine_winner(human_player->hand, computer_player->hand, community_cards);
     winner = poker_hand_result.winner;
     hand_evaluation = poker_hand_result.evaluation;
 
     switch(winner.value()) {
     case PokerHandWinner::Tie:
-        human_player.chips += pot / 2;
-        computer_player.chips += pot / 2;
+        human_player->chips += pot / 2;
+        computer_player->chips += pot / 2;
         break;
     case PokerHandWinner::Player1:
-        human_player.chips += pot;
+        human_player->chips += pot;
         break;
     case PokerHandWinner::Player2:
-        computer_player.chips += pot;
+        computer_player->chips += pot;
         break;
     }
 }
 
 void PokerGame::prepare_new_game() {
     pot = 0;
-    human_player.current_bet = 0;
-    computer_player.current_bet = 0;
+    human_player->current_bet = 0;
+    computer_player->current_bet = 0;
     winner = {};
     hand_evaluation = {};
 }
@@ -222,11 +237,11 @@ void PokerGame::post_blinds() {
     Player* big_blind_player;
     Player* small_blind_player;
     if (dealer == PlayerType::Human) {
-        big_blind_player = &human_player;
-        small_blind_player = &computer_player;
+        big_blind_player = human_player;
+        small_blind_player = computer_player;
     } else {
-        big_blind_player = &computer_player;
-        small_blind_player = &human_player;
+        big_blind_player = computer_player;
+        small_blind_player = human_player;
     }
 
     std::size_t big_blind_amount = std::min(big_blind, big_blind_player->chips);
@@ -237,4 +252,8 @@ void PokerGame::post_blinds() {
 
     pot += big_blind_amount;
     pot += small_blind_amount;
+}
+
+void PokerGame::set_player_move(PlayerType player_type, Move move) {
+    get_player(player_type)->set_move(move);
 }
