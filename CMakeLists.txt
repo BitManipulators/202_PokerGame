@@ -19,8 +19,8 @@ qt_add_library(
     deck.hpp
     player.cpp
     player.hpp
-    pokergame.cpp
-    pokergame.hpp
+    poker_game.cpp
+    poker_game.hpp
     pokerhand.cpp
     pokerhand.hpp
     poker_hand_evaluation.cpp
@@ -29,6 +29,11 @@ qt_add_library(
     poker_hand_evaluator.hpp
     poker_hand_visitor.cpp
     poker_hand_visitor.hpp
+    poker_engine_state.hpp
+    poker_engine_state.cpp
+    poker_engine.hpp
+    poker_engine.cpp
+
 )
 
 set(PROJECT_SOURCES
@@ -142,7 +147,17 @@ target_link_libraries(
   poker_hand_evaluator_tests
   GTest::gtest_main
   poker_game
-  # Qt${QT_VERSION_MAJOR}::Widgets
+)
+
+add_executable(
+  poker_engine_tests
+  tests/poker_engine_tests.cpp
+)
+
+target_link_libraries(
+  poker_engine_tests
+  GTest::gtest_main
+  poker_game
 )
 
 include(GoogleTest)

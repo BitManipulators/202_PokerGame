@@ -1,17 +1,22 @@
-#ifndef PLAYER_H
-#define PLAYER_H
-
+#pragma once
 #include <vector>
 #include "card.hpp"
 
-class Player {
-public:
-    Player();
-    void addCard(const Card* card);
-    void clearHand();
-    std::vector<const Card*> getHand() const;
-private:
-    std::vector<const Card*> hand;
+enum class PlayerType {
+    Human,
+    Computer
 };
 
-#endif // PLAYER_H
+class Player {
+public:
+    Player(PlayerType player_type);
+
+    void addCard(const Card* card);
+    void clearHand();
+
+    bool has_acted;
+    std::size_t chips;
+    std::size_t current_bet;
+    std::vector<const Card*> hand;
+    PlayerType player_type;
+};
