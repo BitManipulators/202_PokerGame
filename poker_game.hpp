@@ -60,6 +60,8 @@ public:
     const std::optional<PokerHandWinner> get_winner() const;
     const std::vector<const Card*>& get_community_cards() const;
 
+    std::string get_winning_hand_description() const;
+
     Player* get_player(PlayerType player_type);
     std::tuple<Player*, Player*> get_acting_and_other_player(PlayerType player_type);
 
