@@ -130,66 +130,6 @@ static QPixmap& loadImage(const Card* card) {
     return card_image_cache[card];
 }
 
-// Displays the current game state (players' hands and community cards).
-// void MainWindow::displayGame() {
-//     scene->clear();
-//     int yPlayer1 = 300;
-//     int yPlayer2 = 50;
-//     int spacing = 120;
-//     int xStart = 50;
-
-//     bool game_ended = game.has_ended();
-//     std::optional<PokerHandWinner> winner = game.get_winner();
-
-//     auto hand1 = game.get_human_player().hand;
-
-//     for (size_t i = 0; i < hand1.size(); i++) {
-//         const Card* card = hand1[i];
-//         QGraphicsPixmapItem *item = scene->addPixmap(loadImage(card));
-//         item->setPos(xStart + i * spacing, yPlayer1);
-
-//         // Highlight player 1's cards if they are the winner
-//         if (game_ended && winner.has_value() && winner.value() == PokerHandWinner::Player1) {
-//             // Add a golden glow effect or border
-//             QGraphicsRectItem *highlight = scene->addRect(
-//                 xStart + i * spacing - 5, yPlayer1 - 5,
-//                 130, 190,
-//                 QPen(QColor(255, 215, 0, 200), 3)  // Gold color with some transparency
-//             );
-//             highlight->setZValue(-1);  // Put highlight behind the card
-//         }
-//     }
-
-//     auto hand2 = game.get_computer_player().hand;
-
-//     for (size_t i = 0; i < hand2.size(); i++) {
-//         QGraphicsPixmapItem *item;
-
-//         if (game_ended) {
-//             // Show actual cards when game has ended
-//             const Card* card = hand2[i];
-//             item = scene->addPixmap(loadImage(card));
-//         } else {
-//             // Show card backs during gameplay
-//             static QPixmap cardBackImage(":/images/back_light.png");
-//             // Scale the back image to match other cards
-//             cardBackImage = cardBackImage.scaled(100, 150, Qt::KeepAspectRatio, Qt::SmoothTransformation);
-//             item = scene->addPixmap(cardBackImage);
-//         }
-
-//         item->setPos(xStart + i * spacing, yPlayer2);
-
-//         // Highlight player 2's cards if they are the winner
-//         if (game_ended && winner.has_value() && winner.value() == PokerHandWinner::Player2) {
-//             QGraphicsRectItem *highlight = scene->addRect(
-//                 xStart + i * spacing - 5, yPlayer2 - 5,
-//                 110, 160,
-//                 QPen(QColor(255, 215, 0, 200), 3)  // Gold color
-//             );
-//             highlight->setZValue(-1);
-//         }
-//     }
-
 void MainWindow::displayGame() {
     scene->clear();
 
@@ -273,33 +213,6 @@ void MainWindow::displayGame() {
         }
     }
 }
-
-//     auto community = game.get_community_cards();
-//     int yCommunity = 175;
-//     // int communityStartX = (scene->width() - (community.size() * spacing)) / 2;
-//     // if (communityStartX < 0) communityStartX = xStart + 60; // Fallback if calculation is negative
-
-//     // for (size_t i = 0; i < community.size(); i++) {
-//     //     const Card* card = community[i];
-//     //     QGraphicsPixmapItem *item = scene->addPixmap(loadImage(card));
-//     //     item->setPos(i * spacing + communityStartX, yCommunity);
-//     // }
-
-//     // // Update the scene size to fit all cards
-//     // scene->setSceneRect(scene->itemsBoundingRect().adjusted(-20, -20, 20, 20));
-//     int sceneWidth = scene->width() > 0 ? scene->width() : 1000; // Fallback width
-//     int communityStartX = (sceneWidth - ((community.size()-1) * spacing + 100)) / 2;
-//     if (communityStartX < xStart) communityStartX = xStart;
-
-//     for (size_t i = 0; i < community.size(); i++) {
-//         const Card* card = community[i];
-//         QGraphicsPixmapItem *item = scene->addPixmap(loadImage(card));
-//         item->setPos(communityStartX + i * spacing, yCommunity);
-//     }
-
-//     // Increase scene size to better fit all cards
-//     scene->setSceneRect(scene->itemsBoundingRect().adjusted(-30, -30, 30, 30));
-// }
 
 void MainWindow::onFold() {
     game.set_player_move(PlayerType::Human, Fold{});
