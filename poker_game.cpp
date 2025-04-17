@@ -257,3 +257,10 @@ void PokerGame::post_blinds() {
 void PokerGame::set_player_move(PlayerType player_type, Move move) {
     get_player(player_type)->set_move(move);
 }
+
+std::string PokerGame::get_winning_hand_description() const {
+    if (!winner.has_value() || !hand_evaluation.has_value()) {
+        return "Unknown hand";
+    }
+    return hand_evaluation.value().to_string();
+}

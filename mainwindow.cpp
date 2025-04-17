@@ -84,13 +84,18 @@ void MainWindow::onNewGame() {
 void MainWindow::displayWinner() {
     try {
         QString message;
+        std::string handDescription = game.get_winning_hand_description();
 
         if (game.get_winner().value() == PokerHandWinner::Tie) {
-            message = "It's a tie! Split pot.";
+           message = QString("It's a tie!.\nHand: %1").arg(QString::fromStdString(handDescription));
         } else if (game.get_winner().value() == PokerHandWinner::Player1) {
-            message = QString("Player 1 wins %1 chips!").arg(game.get_pot());
+            message = QString("Player 1 wins %1 chips!\nWinning hand: %2")
+            .arg(game.get_pot())
+            .arg(QString::fromStdString(handDescription));
         } else {
-            message = QString("Player 2 wins %1 chips!").arg(game.get_pot());
+            message = QString("Player 2 wins %1 chips!\nWinning hand: %2")
+            .arg(game.get_pot())
+            .arg(QString::fromStdString(handDescription));
         }
 
         QMessageBox::information(this, "Result", message);
@@ -140,9 +145,23 @@ void MainWindow::displayGame() {
     }
 
     auto hand2 = game.get_computer_player().hand;
+    bool game_ended = game.has_ended();
+
     for (size_t i = 0; i < hand2.size(); i++) {
-        const Card* card = hand2[i];
-        QGraphicsPixmapItem *item = scene->addPixmap(loadImage(card));
+        QGraphicsPixmapItem *item;
+
+        if (game_ended) {
+            // Show actual cards when game has ended
+            const Card* card = hand2[i];
+            item = scene->addPixmap(loadImage(card));
+        } else {
+            // Show card backs during gameplay
+            static QPixmap cardBackImage(":/images/back_light.png");
+            // Scale the back image to match other cards
+            cardBackImage = cardBackImage.scaled(100, 150, Qt::KeepAspectRatio, Qt::SmoothTransformation);
+            item = scene->addPixmap(cardBackImage);
+        }
+
         item->setPos(i * spacing, yPlayer2);
     }
 
