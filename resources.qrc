@@ -76,5 +76,6 @@
         <file>images/back_light.png</file>
 
         <file>images/texasholdem_image.png</file>
+        <file>images/felt_texture.png</file>
     </qresource>
 </RCC>

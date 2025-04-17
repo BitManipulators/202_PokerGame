@@ -4,6 +4,14 @@
 #include <QGraphicsPixmapItem>
 #include <QMessageBox>
 #include <QDebug>
+#include <QPushButton>
+#include <QDialog>
+#include <QStyle>
+#include <QGraphicsColorizeEffect>
+#include <QGraphicsDropShadowEffect>
+#include <QPropertyAnimation>
+#include <QSequentialAnimationGroup>
+
 
 std::map<const Card*, QPixmap> card_image_cache;
 
@@ -16,6 +24,18 @@ MainWindow::MainWindow(QWidget *parent)
     ui->setupUi(this);
     scene = new QGraphicsScene(this);
     ui->graphicsView->setScene(scene);
+
+    // Set up the graphics view
+    QGraphicsScene *backgroundScene = new QGraphicsScene(this);
+    ui->graphicsView->setBackgroundBrush(QBrush(QColor(25, 80, 50)));
+
+    QPixmap texturePix(":/images/felt_texture.png");
+    if (!texturePix.isNull()) {
+        texturePix = texturePix.scaled(ui->graphicsView->width(), ui->graphicsView->height(),
+                                      Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
+        QBrush textureBrush(texturePix);
+        ui->graphicsView->setBackgroundBrush(textureBrush);
+    }
 
     // Landing page: Connect start new game button.
     connect(ui->startNewGameButton, &QPushButton::clicked, this, &MainWindow::onStartNewGame);
@@ -70,7 +90,6 @@ void MainWindow::onNewGame() {
 
     // Disable New Game button and Determine Winner button after game starts.
     ui->newGameButton->setDisabled(true);
-    ui->determineWinnerButton->setDisabled(true);
 
     // Enable Fold, Call, and Place Bet buttons after game starts.
     ui->foldButton->setEnabled(true);
@@ -98,7 +117,19 @@ void MainWindow::displayWinner() {
             .arg(QString::fromStdString(handDescription));
         }
 
-        QMessageBox::information(this, "Result", message);
+        QMessageBox msgBox(QMessageBox::Information, "Result", message, QMessageBox::Ok, this);
+
+        // Center the message box
+        msgBox.setGeometry(
+            QStyle::alignedRect(
+                Qt::LeftToRight,
+                Qt::AlignCenter,
+                msgBox.sizeHint(),
+                this->geometry()
+            )
+        );
+
+        msgBox.exec();
 
         // Reset the pot and bet amount
         ui->betLineEdit->setText("");  // Clear the bet input
@@ -180,6 +211,7 @@ void MainWindow::displayGame() {
                 cardWidth + 10, 180,
                 QPen(QColor(255, 215, 0, 200), 3)
             );
+             createGlowEffect(item);
             highlight->setZValue(-1);
         }
     }
@@ -209,6 +241,7 @@ void MainWindow::displayGame() {
                 cardWidth + 10, 180,
                 QPen(QColor(255, 215, 0, 200), 3)
             );
+            createGlowEffect(item);
             highlight->setZValue(-1);
         }
     }
@@ -280,4 +313,34 @@ void MainWindow::onRaise() {
             displayWinner();
         }
     }
+}
+
+void MainWindow::createGlowEffect(QGraphicsPixmapItem *cardItem) {
+    // Create the glow effect
+    QGraphicsColorizeEffect *glowEffect = new QGraphicsColorizeEffect();
+    glowEffect->setColor(QColor(255, 215, 0));  // Gold color
+    glowEffect->setStrength(0.3);
+    cardItem->setGraphicsEffect(glowEffect);
+
+    // Create animation for the glow effect
+    QPropertyAnimation *glowAnimation = new QPropertyAnimation(glowEffect, "strength");
+    glowAnimation->setDuration(1500);  // 1.5 seconds per cycle
+    glowAnimation->setStartValue(0.1);
+    glowAnimation->setEndValue(0.5);
+    glowAnimation->setLoopCount(-1);  // Infinite looping
+    glowAnimation->setEasingCurve(QEasingCurve::InOutSine);
+
+    // Make animation go back and forth
+    QSequentialAnimationGroup *glowGroup = new QSequentialAnimationGroup(this);
+    glowGroup->addAnimation(glowAnimation);
+
+    QPropertyAnimation *reverseGlow = new QPropertyAnimation(glowEffect, "strength");
+    reverseGlow->setDuration(1500);
+    reverseGlow->setStartValue(0.5);
+    reverseGlow->setEndValue(0.1);
+    reverseGlow->setEasingCurve(QEasingCurve::InOutSine);
+
+    glowGroup->addAnimation(reverseGlow);
+    glowGroup->setLoopCount(-1);  // Infinite looping
+    glowGroup->start();
 }
