@@ -11,6 +11,7 @@
 #include <QGraphicsDropShadowEffect>
 #include <QPropertyAnimation>
 #include <QSequentialAnimationGroup>
+#include <QScreen>
 
 
 std::map<const Card*, QPixmap> card_image_cache;
@@ -22,6 +23,14 @@ MainWindow::MainWindow(QWidget *parent)
     , engine(game)
 {
     ui->setupUi(this);
+
+    this->setGeometry(
+        QStyle::alignedRect(
+            Qt::LeftToRight,
+            Qt::AlignCenter,
+            this->size(),
+            QGuiApplication::primaryScreen()->availableGeometry()));
+
     scene = new QGraphicsScene(this);
     ui->graphicsView->setScene(scene);
 
