@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>900</width>
-    <height>650</height>
+    <width>1200</width>
+    <height>900</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -21,48 +21,87 @@ QMainWindow {
 
 /* Basic button style */
 QPushButton {
+    color: white;
+    border-radius: 4px;
+    padding: 8px 16px;
+    font-weight: bold;
+    font-family: "Segoe UI", Arial, sans-serif;
+    background-color: #2c3e50;
+    border: none;
+    min-height: 40px;
+}
+
+QPushButton:hover {
+    background-color: #34495e;
+}
+QPushButton:focus {
+  border: none;
+  outline: none;
+}
+
+QPushButton:pressed {
+    background-color: #1a252f;
+}
+
+QPushButton:disabled {
+    background-color: #7f8c8d;
+    color: #bdc3c7;
+}
+
+/* Call button is now yellow instead of green */
+QPushButton#callButton {
+    background-color: #f1c40f; /* Yellow color */
+}
+
+QPushButton#callButton:hover {
+    background-color: #f39c12; /* Darker yellow on hover */
+}
+
+/* Keeping the Raise button green */
+QPushButton#placeBetButton {
+    background-color: #27ae60;
+}
+
+QPushButton#placeBetButton:hover {
+    background-color: #2ecc71;
+}
+
+QPushButton#foldButton {
+    background-color: #3498db;
+}
+
+QPushButton#foldButton:hover {
+    background-color: #2980b9;
+}
+
+QPushButton#exitButton {
+    background-color: #c0392b;
+}
+
+QMessageBox {
+  background-color: #1a5c35;
+}
+
+QMessageBox QLabel {
+  color: white;
+  font-size: 14px;
+}
+
+QMessageBox QPushButton {
+  background-color: #3498db;
   color: white;
   border-radius: 4px;
-  padding: 6px;
+  padding: 6px 12px;
+  min-width: 80px;
   font-weight: bold;
-  background-color: #34495e;
-  border: 2px solid transparent;
 }
 
-/* Hover state: Increase brightness and add border */
-QPushButton:hover {
-  background-color: #3d5a73; /* a brighter blue-gray */
-  border: 2px solid #ecf0f1;
-}
-
-/* Pressed state: Darken further and maintain border */
-QPushButton:pressed {
-  background-color: #2a3d4f; /* a darker tone */
-  border: 2px solid #ecf0f1;
-}
-
-/* Checked/Active state: Use a distinct color with a visible border */
-QPushButton:checked, QPushButton:checked:hover {
+QMessageBox QPushButton:hover {
   background-color: #2980b9;
-  border: 2px solid #ecf0f1;
 }
 
-/* Focus state: Emphasize with a contrasting border */
-QPushButton:focus {
-  border: 2px solid #f1c40f;
-}
-
-QLabel {
-  color: white;
-  font-weight: bold;
-}
-
-QLineEdit {
-    color: #2c3e50; /* or another darker color */
-    padding: 4px;
-    border-radius: 4px;
-    border: 1px solid #bdc3c7;
-    background-color: #ecf0f1;
+QMessageBox QPushButton:pressed {
+  background-color: #1c6ea4;
 }
    </string>
   </property>
@@ -88,7 +127,6 @@ QLineEdit {
           </property>
          </spacer>
         </item>
-        <!-- Replace the titleLabel in the landingPage with this -->
         <item alignment="Qt::AlignmentFlag::AlignHCenter">
         <widget class="QLabel" name="titleImageLabel">
           <property name="minimumSize">
@@ -181,7 +219,7 @@ QLineEdit {
              <property name="minimumSize">
               <size>
                <width>0</width>
-               <height>400</height>
+               <height>500</height>
               </size>
              </property>
              <property name="styleSheet">
@@ -224,19 +262,6 @@ QLineEdit {
              </property>
              <property name="text">
               <string>New Game</string>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="QPushButton" name="determineWinnerButton">
-             <property name="minimumSize">
-              <size>
-               <width>150</width>
-               <height>35</height>
-              </size>
-             </property>
-             <property name="text">
-              <string>Determine Winner</string>
              </property>
             </widget>
            </item>

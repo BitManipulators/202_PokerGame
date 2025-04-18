@@ -4,6 +4,14 @@
 #include <QGraphicsPixmapItem>
 #include <QMessageBox>
 #include <QDebug>
+#include <QPushButton>
+#include <QDialog>
+#include <QStyle>
+#include <QGraphicsColorizeEffect>
+#include <QGraphicsDropShadowEffect>
+#include <QPropertyAnimation>
+#include <QSequentialAnimationGroup>
+
 
 std::map<const Card*, QPixmap> card_image_cache;
 
@@ -16,6 +24,18 @@ MainWindow::MainWindow(QWidget *parent)
     ui->setupUi(this);
     scene = new QGraphicsScene(this);
     ui->graphicsView->setScene(scene);
+
+    // Set up the graphics view
+    QGraphicsScene *backgroundScene = new QGraphicsScene(this);
+    ui->graphicsView->setBackgroundBrush(QBrush(QColor(25, 80, 50)));
+
+    QPixmap texturePix(":/images/felt_texture.png");
+    if (!texturePix.isNull()) {
+        texturePix = texturePix.scaled(ui->graphicsView->width(), ui->graphicsView->height(),
+                                      Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
+        QBrush textureBrush(texturePix);
+        ui->graphicsView->setBackgroundBrush(textureBrush);
+    }
 
     // Landing page: Connect start new game button.
     connect(ui->startNewGameButton, &QPushButton::clicked, this, &MainWindow::onStartNewGame);
@@ -70,7 +90,6 @@ void MainWindow::onNewGame() {
 
     // Disable New Game button and Determine Winner button after game starts.
     ui->newGameButton->setDisabled(true);
-    ui->determineWinnerButton->setDisabled(true);
 
     // Enable Fold, Call, and Place Bet buttons after game starts.
     ui->foldButton->setEnabled(true);
@@ -98,7 +117,19 @@ void MainWindow::displayWinner() {
             .arg(QString::fromStdString(handDescription));
         }
 
-        QMessageBox::information(this, "Result", message);
+        QMessageBox msgBox(QMessageBox::Information, "Result", message, QMessageBox::Ok, this);
+
+        // Center the message box
+        msgBox.setGeometry(
+            QStyle::alignedRect(
+                Qt::LeftToRight,
+                Qt::AlignCenter,
+                msgBox.sizeHint(),
+                this->geometry()
+            )
+        );
+
+        msgBox.exec();
 
         // Reset the pot and bet amount
         ui->betLineEdit->setText("");  // Clear the bet input
@@ -123,54 +154,96 @@ static QPixmap& loadImage(const Card* card) {
         if (pix.isNull()) {
             qDebug() << "Failed to load image:" << card->getCardImagePath();
         }
-        pix = pix.scaled(100, 150, Qt::KeepAspectRatio, Qt::SmoothTransformation);
+        pix = pix.scaled(120, 180, Qt::KeepAspectRatio, Qt::SmoothTransformation);
         card_image_cache[card] = pix;
     }
 
     return card_image_cache[card];
 }
 
-// Displays the current game state (players' hands and community cards).
 void MainWindow::displayGame() {
     scene->clear();
-    int yPlayer1 = 300;
-    int yPlayer2 = 50;
-    int spacing = 110;
 
+    // Increase scene size significantly
+    scene->setSceneRect(0, 0, 900, 600);
+
+    // Better vertical positioning
+    int yPlayer1 = 420;  // Move player 1 cards lower
+    int yCommunity = 230; // Center community cards vertically
+    int yPlayer2 = 50;   // Keep player 2 cards at top
+
+    // More generous card spacing
+    int spacing = 130;
+    int cardWidth = 120;
+
+    // Calculate positions for better centering
     auto hand1 = game.get_human_player().hand;
+    auto hand2 = game.get_computer_player().hand;
+    auto community = game.get_community_cards();
+
+    // Center player 1's cards
+    int player1StartX = (scene->width() - (hand1.size() * spacing)) / 2;
+
+    // Center player 2's cards
+    int player2StartX = (scene->width() - (hand2.size() * spacing)) / 2;
+
+    // Center community cards
+    int communityStartX = (scene->width() - (community.size() * spacing)) / 2;
+
+    // Display community cards (center row)
+    for (size_t i = 0; i < community.size(); i++) {
+        const Card* card = community[i];
+        QGraphicsPixmapItem *item = scene->addPixmap(loadImage(card));
+        item->setPos(communityStartX + i * spacing, yCommunity);
+    }
+
+    // Display player 1's hand (bottom row)
     for (size_t i = 0; i < hand1.size(); i++) {
         const Card* card = hand1[i];
         QGraphicsPixmapItem *item = scene->addPixmap(loadImage(card));
-        item->setPos(i * spacing, yPlayer1);
+        item->setPos(player1StartX + i * spacing, yPlayer1);
+
+        // Highlight player 1's cards if they are the winner
+        if (game.has_ended() && game.get_winner().has_value() &&
+            game.get_winner().value() == PokerHandWinner::Player1) {
+            QGraphicsRectItem *highlight = scene->addRect(
+                player1StartX + i * spacing - 5, yPlayer1 - 5,
+                cardWidth + 10, 180,
+                QPen(QColor(255, 215, 0, 200), 3)
+            );
+             createGlowEffect(item);
+            highlight->setZValue(-1);
+        }
     }
 
-    auto hand2 = game.get_computer_player().hand;
-    bool game_ended = game.has_ended();
-
+    // Display player 2's hand (top row)
     for (size_t i = 0; i < hand2.size(); i++) {
         QGraphicsPixmapItem *item;
 
-        if (game_ended) {
+        if (game.has_ended()) {
             // Show actual cards when game has ended
             const Card* card = hand2[i];
             item = scene->addPixmap(loadImage(card));
         } else {
             // Show card backs during gameplay
             static QPixmap cardBackImage(":/images/back_light.png");
-            // Scale the back image to match other cards
-            cardBackImage = cardBackImage.scaled(100, 150, Qt::KeepAspectRatio, Qt::SmoothTransformation);
+            cardBackImage = cardBackImage.scaled(cardWidth, 180, Qt::KeepAspectRatio, Qt::SmoothTransformation);
             item = scene->addPixmap(cardBackImage);
         }
 
-        item->setPos(i * spacing, yPlayer2);
-    }
+        item->setPos(player2StartX + i * spacing, yPlayer2);
 
-    auto community = game.get_community_cards();
-    int yCommunity = 175;
-    for (size_t i = 0; i < community.size(); i++) {
-        const Card* card = community[i];
-        QGraphicsPixmapItem *item = scene->addPixmap(loadImage(card));
-        item->setPos(i * spacing + 100, yCommunity);
+        // Highlight player 2's cards if they are the winner
+        if (game.has_ended() && game.get_winner().has_value() &&
+            game.get_winner().value() == PokerHandWinner::Player2) {
+            QGraphicsRectItem *highlight = scene->addRect(
+                player2StartX + i * spacing - 5, yPlayer2 - 5,
+                cardWidth + 10, 180,
+                QPen(QColor(255, 215, 0, 200), 3)
+            );
+            createGlowEffect(item);
+            highlight->setZValue(-1);
+        }
     }
 }
 
@@ -240,4 +313,34 @@ void MainWindow::onRaise() {
             displayWinner();
         }
     }
+}
+
+void MainWindow::createGlowEffect(QGraphicsPixmapItem *cardItem) {
+    // Create the glow effect
+    QGraphicsColorizeEffect *glowEffect = new QGraphicsColorizeEffect();
+    glowEffect->setColor(QColor(255, 215, 0));  // Gold color
+    glowEffect->setStrength(0.3);
+    cardItem->setGraphicsEffect(glowEffect);
+
+    // Create animation for the glow effect
+    QPropertyAnimation *glowAnimation = new QPropertyAnimation(glowEffect, "strength");
+    glowAnimation->setDuration(1500);  // 1.5 seconds per cycle
+    glowAnimation->setStartValue(0.1);
+    glowAnimation->setEndValue(0.5);
+    glowAnimation->setLoopCount(-1);  // Infinite looping
+    glowAnimation->setEasingCurve(QEasingCurve::InOutSine);
+
+    // Make animation go back and forth
+    QSequentialAnimationGroup *glowGroup = new QSequentialAnimationGroup(this);
+    glowGroup->addAnimation(glowAnimation);
+
+    QPropertyAnimation *reverseGlow = new QPropertyAnimation(glowEffect, "strength");
+    reverseGlow->setDuration(1500);
+    reverseGlow->setStartValue(0.5);
+    reverseGlow->setEndValue(0.1);
+    reverseGlow->setEasingCurve(QEasingCurve::InOutSine);
+
+    glowGroup->addAnimation(reverseGlow);
+    glowGroup->setLoopCount(-1);  // Infinite looping
+    glowGroup->start();
 }

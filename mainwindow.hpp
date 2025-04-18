@@ -36,6 +36,8 @@ private:
     void updateChipDisplay();
 
     static std::map<const Card*, QPixmap> card_image_cache;
+
+    void createGlowEffect(QGraphicsPixmapItem *cardItem);
 };
 
 #endif // MAINWINDOW_H
