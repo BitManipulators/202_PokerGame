@@ -1,19 +1,11 @@
 #pragma once
 
 #include "poker_game.hpp"
+#include "game_constants.hpp"
 
 #include <cstddef>
 
 class PokerEngineStatesBlock;
-
-enum class PokerEngineEnumState {
-    PreFlop,
-    Flop,
-    Turn,
-    River,
-    Showdown,
-    Folded
-};
 
 class PokerEngineState {
 public:

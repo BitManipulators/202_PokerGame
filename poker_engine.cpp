@@ -1,4 +1,5 @@
 #include "poker_engine.hpp"
+#include "game_state.hpp"
 
 #include "poker_engine_state.hpp"
 
@@ -40,10 +41,16 @@ GameAction::Result PokerEngine::make_move(PlayerType player_type, Move move) {
 }
 
 GameAction::Result PokerEngine::make_moves() {
-    GameAction::Result result = make_move(PlayerType::Human, game.get_human_player().get_move());
+    
+    GameState current_state = {};
+    GameAction::Result result = make_move(PlayerType::Human, game.get_human_player().get_move(current_state));
     if (!result.ok || game.has_ended()) {
         return result;
     }
 
-    return make_move(PlayerType::Computer, game.get_computer_player().get_move());
+    current_state.community_cards = game.get_community_cards();
+    current_state.hands = game.get_computer_player().hand;
+    current_state.stage = state->enum_state_;
+    return make_move(PlayerType::Computer, game.get_computer_player().get_move(current_state));
+
 }
