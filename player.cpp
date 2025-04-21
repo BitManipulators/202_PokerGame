@@ -25,5 +25,5 @@ Move HumanPlayer::get_move(GameState current_state) const {
 
 Move ComputerPlayer::get_move(GameState current_state) const {
     std::cout << "Current stage " << static_cast<int>(current_state.stage) << std::endl;
-    return strategy->getNextMove();
+    return strategy->getNextMove(current_state);
 }

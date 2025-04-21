@@ -17,6 +17,7 @@ void Deck::shuffle() {
     std::shuffle(cards.begin(), cards.end(), std::default_random_engine(seed));
 }
 
+// suriya- comment Why shared_ptr to normal ptr 
 const Card* Deck::dealCard() {
     std::shared_ptr<const Card> card = cards.back();
     cards.pop_back();
