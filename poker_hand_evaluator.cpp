@@ -98,6 +98,21 @@ PokerHandEvaluation evaluate_poker_hands(const std::vector<PokerHand>& poker_han
 
 } // namespace
 
+PokerHandEvaluation PokerHandEvaluator::evaluate_hand(const std::vector<const Card*>& player_cards,
+                                                      const std::vector<const Card*>& community_cards) {
+
+    // Ensure we have enough cards (this assumes at least 3 community cards are dealt)
+    if (player_cards.size() != 2 || community_cards.size() < 3) {
+        throw std::runtime_error("Not enough cards to evaluate.");
+    }
+
+    std::vector<PokerHand> player_poker_hands = all_five_card_combinations(player_cards, community_cards);
+
+    PokerHandEvaluation player_best_evaluation = evaluate_poker_hands(player_poker_hands);
+
+    return player_best_evaluation;
+}
+
 PokerHandResult PokerHandEvaluator::determine_winner(const std::vector<const Card*>& player1_cards,
                                                      const std::vector<const Card*>& player2_cards,
                                                      const std::vector<const Card*>& community_cards) {
@@ -107,11 +122,8 @@ PokerHandResult PokerHandEvaluator::determine_winner(const std::vector<const Car
         throw std::runtime_error("Not enough cards to evaluate.");
     }
 
-    std::vector<PokerHand> player1_poker_hands = all_five_card_combinations(player1_cards, community_cards);
-    std::vector<PokerHand> player2_poker_hands = all_five_card_combinations(player2_cards, community_cards);
-
-    PokerHandEvaluation player1_best_evaluation = evaluate_poker_hands(player1_poker_hands);
-    PokerHandEvaluation player2_best_evaluation = evaluate_poker_hands(player2_poker_hands);
+    PokerHandEvaluation player1_best_evaluation = evaluate_hand(player1_cards, community_cards);
+    PokerHandEvaluation player2_best_evaluation = evaluate_hand(player2_cards, community_cards);
 
     if (player1_best_evaluation > player2_best_evaluation) {
         return {PokerHandWinner::Player1, player1_best_evaluation};

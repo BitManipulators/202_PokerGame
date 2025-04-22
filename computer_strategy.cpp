@@ -1,4 +1,6 @@
 #include "computer_strategy.hpp"
+#include "poker_hand_evaluator.hpp"
+
 #include <random>
 
 
@@ -64,16 +66,6 @@ Move MediumStrategy::getNextMove(GameState current_state){
 int MediumStrategy::evaluateHandStrength(const std::vector<const Card*>& hand,
                          const std::vector<const Card*>& community,
                          PokerEngineEnumState stage) {
-    std::vector<const Card*> all = hand;
-    all.insert(all.end(), community.begin(), community.end());
-
-    std::map<Rank, int> rankCounts = getRankCounts(all);
-    std::set<int> uniqueRanks;
-    for (auto* card : all)
-        uniqueRanks.insert((int)card->getRank());
-
-    int score = 0;
-
     switch (stage) {
         case PokerEngineEnumState::PreFlop:
             
@@ -83,31 +75,44 @@ int MediumStrategy::evaluateHandStrength(const std::vector<const Card*>& hand,
         case PokerEngineEnumState::Flop:
         case PokerEngineEnumState::Turn:
         case PokerEngineEnumState::River: {
-            bool pair = false, twoPair = false, trips = false, straight = false,
-                 flush = false, fullHouse = false, quads = false;
+            PokerHandEvaluation poker_hand_evaluation = PokerHandEvaluator::evaluate_hand(hand, community);
 
-            int pairs = 0;
-            for (auto& [rank, count] : rankCounts) {
-                if (count == 2) pairs++;
-                else if (count == 3) trips = true;
-                else if (count == 4) quads = true;
+            int score = 0;
+            switch(poker_hand_evaluation.category) {
+            case HighCard:
+                score = 15;
+                break;
+            case OnePair:
+                score = 30;
+                break;
+            case TwoPair:
+                score = 40;
+                break;
+            case ThreeOfAKind:
+                score = 50;
+                break;
+            case Straight:
+                score = 65;
+                break;
+            case Flush:
+                score = 70;
+                break;
+            case FullHouse:
+                score = 80;
+                break;
+            case FourOfAKind:
+                score = 90;
+                break;
+            case StraightFlush:
+                score = 95;
+                break;
+            case RoyalFlush:
+                score = 100;
+                break;
+            case Unknown:
+                score = 0;
+                break;
             }
-
-            if (pairs >= 2) twoPair = true;
-            if (pairs == 1) pair = true;
-            if (trips && pairs) fullHouse = true;
-            flush = hasFlush(all);
-            straight = hasStraight(uniqueRanks);
-
-            // Score based on hand ranking
-            if (quads) score = 90;
-            else if (fullHouse) score = 80;
-            else if (flush) score = 70;
-            else if (straight) score = 65;
-            else if (trips) score = 50;
-            else if (twoPair) score = 40;
-            else if (pair) score = 30;
-            else score = 15; // high card
 
             // Bonus: high card contribution
             int highCard = std::max((int)hand[0]->getRank(), (int)hand[1]->getRank());
@@ -160,39 +165,4 @@ int MediumStrategy::evaluatePreflop(const std::vector<const Card*>& hand) {
 
     return 30;
     
-}
-
-// Helper: Count ranks
-std::map<Rank, int> MediumStrategy::getRankCounts(const std::vector<const Card*>& cards) {
-    std::map<Rank, int> counts;
-    for (auto* card : cards)
-        counts[card->getRank()]++;
-    return counts;
-}
-
-// Helper: Check for flush
-bool MediumStrategy::hasFlush(const std::vector<const Card*>& cards) {
-    std::map<Suit, int> suitCount;
-    for (auto* card : cards)
-        suitCount[card->getSuit()]++;
-    for (auto& [suit, count] : suitCount)
-        if (count >= 5) return true;
-    return false;
-}
-
-// Helper: Check for straight
-bool MediumStrategy::hasStraight(const std::set<int>& ranksSet) {
-    std::vector<int> ranks(ranksSet.begin(), ranksSet.end());
-
-    // Ace can be low (1) or high (14)
-    if (ranksSet.count((int)Rank::Ace)) ranks.insert(ranks.begin(), 1);
-
-    for (size_t i = 0; i <= ranks.size() - 5; ++i) {
-        bool straight = true;
-        for (int j = 1; j < 5; ++j)
-            if (ranks[i + j] != ranks[i] + j)
-                straight = false;
-        if (straight) return true;
-    }
-    return false;
 }
