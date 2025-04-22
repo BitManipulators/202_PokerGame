@@ -295,6 +295,38 @@ void MainWindow::onFold() {
     }
 }
 
+// void MainWindow::onCall() {
+//     qDebug() << "Call button clicked";
+//     game.set_player_move(PlayerType::Human, Call{});
+
+//     showComputerAction("You Called!");
+
+//     // Wait 1 second before computer responds
+//     QTimer::singleShot(1000, this, [this]() {
+//         GameAction::Result call_result = engine.make_moves();
+//         Move compMove = game.get_computer_player().get_latest_move();
+
+//         if (std::holds_alternative<Call>(compMove))
+//         {
+//             showComputerAction("Computer Calls");
+//         }
+//         else if (std::holds_alternative<Fold>(compMove))
+//         {
+//             showComputerAction("Computer Folds");
+//         }
+//         else if (std::holds_alternative<Raise>(compMove))
+//         {
+//             const Raise &r = std::get<Raise>(compMove);
+//             showComputerAction(QString("Computer Raises: %1").arg(r.amount));
+//         }
+//         else
+//         {
+//             showComputerAction("Computer Moves");
+//         }
+//     });
+
+// }
+
 void MainWindow::onCall() {
     qDebug() << "Call button clicked";
     game.set_player_move(PlayerType::Human, Call{});
