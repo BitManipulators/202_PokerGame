@@ -30,6 +30,10 @@ private:
     QGraphicsScene *scene;
     PokerGame game;
     PokerEngine engine;
+    QTimer* computerActionTimer = nullptr;
+
+    QGraphicsTextItem* computerActionText = nullptr;
+    QGraphicsRectItem* computerActionBubble = nullptr;
 
     void displayGame();
     void displayWinner();
@@ -38,6 +42,10 @@ private:
     static std::map<const Card*, QPixmap> card_image_cache;
 
     void createGlowEffect(QGraphicsPixmapItem *cardItem);
+
+    void showComputerAction(const QString& action);
+    void hideComputerAction();
+
 };
 
 #endif // MAINWINDOW_H

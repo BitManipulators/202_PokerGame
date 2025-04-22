@@ -12,6 +12,8 @@
 #include <QPropertyAnimation>
 #include <QSequentialAnimationGroup>
 #include <QScreen>
+#include <QTimer>
+#include <algorithm>
 
 
 std::map<const Card*, QPixmap> card_image_cache;
@@ -64,6 +66,11 @@ MainWindow::MainWindow(QWidget *parent)
 }
 
 MainWindow::~MainWindow() {
+    hideComputerAction();
+
+    if (scene) {
+        scene->clear();
+    }
     delete ui;
 }
 
@@ -171,21 +178,17 @@ static QPixmap& loadImage(const Card* card) {
 }
 
 void MainWindow::displayGame() {
+    hideComputerAction();
     scene->clear();
-
-    // Increase scene size significantly
     scene->setSceneRect(0, 0, 900, 600);
 
-    // Better vertical positioning
-    int yPlayer1 = 420;  // Move player 1 cards lower
-    int yCommunity = 230; // Center community cards vertically
-    int yPlayer2 = 50;   // Keep player 2 cards at top
+    int yPlayer1 = 420;
+    int yCommunity = 230;
+    int yPlayer2 = 50;
 
-    // More generous card spacing
     int spacing = 130;
     int cardWidth = 120;
 
-    // Calculate positions for better centering
     auto hand1 = game.get_human_player().hand;
     auto hand2 = game.get_computer_player().hand;
     auto community = game.get_community_cards();
@@ -259,10 +262,23 @@ void MainWindow::displayGame() {
 void MainWindow::onFold() {
     game.set_player_move(PlayerType::Human, Fold{});
 
+    showComputerAction("You Folded!");
+
     GameAction::Result fold_result = engine.make_moves();
     if (!fold_result.ok) {
         QMessageBox::warning(this, "Error", QString::fromStdString(*fold_result.error_message));
         return;
+    }
+
+    if (!game.has_ended()) {
+        // Get the move directly from the computer player through the game
+        const Player& computer = game.get_computer_player();
+        // Display based on the current bet
+        if (computer.current_bet > 0) {
+            showComputerAction("Computer Calls");
+        } else {
+            showComputerAction("Computer Folds");
+        }
     }
 
     // Update chip display
@@ -280,25 +296,35 @@ void MainWindow::onFold() {
 }
 
 void MainWindow::onCall() {
+    qDebug() << "Call button clicked";
     game.set_player_move(PlayerType::Human, Call{});
 
-    GameAction::Result call_result = engine.make_moves();
-    if (!call_result.ok) {
-        QMessageBox::warning(this, "Error", QString::fromStdString(*call_result.error_message));
-        return;
-    }
+    showComputerAction("You Called!");
 
-    // Update chip display
-    updateChipDisplay();
+    QTimer::singleShot(1000, this, [this]() {
+        GameAction::Result call_result = engine.make_moves();
+        if (!call_result.ok) {
+            QMessageBox::warning(this, "Error", QString::fromStdString(*call_result.error_message));
+            return;
+        }
 
-    // Update display and UI
-    displayGame();
+        if (game.has_ended()) {
+            // No computer move, directly show winner
+            QTimer::singleShot(1000, this, [this]() {
+                updateChipDisplay();
+                displayGame();
+                displayWinner();
+            });
+            return;
+        }
 
     if (game.has_ended()) {
         displayWinner();
         game.set_player_turn(PlayerType::Human);
     }
 }
+
+
 
 void MainWindow::onRaise() {
     bool ok;
@@ -307,11 +333,26 @@ void MainWindow::onRaise() {
     if (ok) {
         game.set_player_move(PlayerType::Human, Raise{raiseAmount});
 
+        showComputerAction(QString("You Raised: %1").arg(raiseAmount));
+
         GameAction::Result raise_result = engine.make_moves();
         if (!raise_result.ok) {
             QMessageBox::warning(this, "Error", QString::fromStdString(*raise_result.error_message));
             return;
         }
+
+    if (!game.has_ended()) {
+        // Get the move directly from the computer player through the game
+        const Player& computer = game.get_computer_player();
+        // Display based on the current bet
+        if (computer.current_bet > 0) {
+            showComputerAction("Computer Calls");
+        }
+        else
+        {
+            showComputerAction("Computer Folds");
+        }
+    }
 
         // Update chip display
         updateChipDisplay();
@@ -353,4 +394,73 @@ void MainWindow::createGlowEffect(QGraphicsPixmapItem *cardItem) {
     glowGroup->addAnimation(reverseGlow);
     glowGroup->setLoopCount(-1);  // Infinite looping
     glowGroup->start();
+}
+
+
+void MainWindow::showComputerAction(const QString& action) {
+    // First hide any existing action display
+    hideComputerAction();
+
+    // If a previous timer exists, stop and delete it
+    if (computerActionTimer) {
+        computerActionTimer->stop();
+        computerActionTimer->deleteLater();
+        computerActionTimer = nullptr;
+    }
+
+    // Create a text background first (without effects)
+    int width = std::max(120, static_cast<int>(action.length() * 10));
+    computerActionBubble = scene->addRect(0, 0, width, 60,
+                                        QPen(Qt::white, 2),
+                                        QBrush(QColor(0, 0, 0, 180)));
+    computerActionBubble->setPos(scene->width() - width - 30, 80);
+    computerActionBubble->setZValue(10);
+
+    // Create the text showing the action
+    computerActionText = scene->addText(action, QFont("Arial", 12, QFont::Bold));
+    computerActionText->setDefaultTextColor(Qt::white);
+
+    // Center the text in the bubble
+    QRectF textRect = computerActionText->boundingRect();
+    computerActionText->setPos(
+        computerActionBubble->pos().x() + (computerActionBubble->rect().width() - textRect.width()) / 2,
+        computerActionBubble->pos().y() + (computerActionBubble->rect().height() - textRect.height()) / 2
+    );
+    computerActionText->setZValue(11);
+
+    // Now create and start the new timer
+    computerActionTimer = new QTimer(this);
+    computerActionTimer->setSingleShot(true);
+    connect(computerActionTimer, &QTimer::timeout, this, [this]() {
+        hideComputerAction();
+        if (computerActionTimer) {
+            computerActionTimer->deleteLater();
+            computerActionTimer = nullptr;
+        }
+    });
+    computerActionTimer->start(3000);
+}
+
+void MainWindow::hideComputerAction() {
+    if (computerActionTimer) {
+        computerActionTimer->stop();
+        computerActionTimer->deleteLater();
+        computerActionTimer = nullptr;
+    }
+
+    if (computerActionText) {
+        if (scene) {
+            scene->removeItem(computerActionText);
+        }
+        delete computerActionText;
+        computerActionText = nullptr;
+    }
+
+    if (computerActionBubble) {
+        if (scene) {
+            scene->removeItem(computerActionBubble);
+        }
+        delete computerActionBubble;
+        computerActionBubble = nullptr;
+    }
 }
