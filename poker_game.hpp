@@ -61,6 +61,9 @@ public:
     const std::vector<const Card*>& get_community_cards() const;
 
     std::string get_winning_hand_description() const;
+    PlayerType get_player_turn() const;
+    void set_player_turn(PlayerType type) ;
+
 
     Player* get_player(PlayerType player_type);
     std::tuple<Player*, Player*> get_acting_and_other_player(PlayerType player_type);

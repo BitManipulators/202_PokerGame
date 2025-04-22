@@ -18,10 +18,10 @@ void Player::set_move(Move move) {
     latest_move = move;
 }
 
-Move HumanPlayer::get_move() const {
+Move HumanPlayer::get_move(GameState current_state) const {
     return latest_move;
 }
 
-Move ComputerPlayer::get_move() const {
-    return Call{}; // TODO Implement ComputerPlayer Strategies to make moves
+Move ComputerPlayer::get_move(GameState current_state) const {
+    return strategy->getNextMove(current_state);
 }

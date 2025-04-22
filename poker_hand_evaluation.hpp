@@ -1,6 +1,7 @@
 #pragma once
 
 #include <vector>
+#include <string>
 
 // Hand categories (the higher, the better).
 enum PokerHandEvaluationCategory {

@@ -8,6 +8,7 @@ set(CMAKE_AUTORCC ON)
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
+
 find_package(QT NAMES Qt6 Qt5 REQUIRED COMPONENTS Widgets Svg REQUIRED)
 find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Widgets)
 
@@ -17,6 +18,8 @@ qt_add_library(
     card.hpp
     deck.cpp
     deck.hpp
+    computer_strategy.hpp
+    computer_strategy.cpp
     player.cpp
     player.hpp
     poker_game.cpp
@@ -34,7 +37,7 @@ qt_add_library(
     poker_engine.hpp
     poker_engine.cpp
     move.hpp
-
+    
 )
 
 set(PROJECT_SOURCES
@@ -161,5 +164,16 @@ target_link_libraries(
   poker_game
 )
 
+add_executable(
+  poker_computer_strategy_tests
+  tests/poker_computer_strategy_test.cpp
+)
+
+target_link_libraries(
+  poker_computer_strategy_tests
+  GTest::gtest_main
+  poker_game
+)
+
 include(GoogleTest)
-gtest_discover_tests(poker_hand_evaluator_tests)
+gtest_discover_tests(poker_computer_strategy_tests)

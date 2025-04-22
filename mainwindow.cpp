@@ -296,6 +296,7 @@ void MainWindow::onCall() {
 
     if (game.has_ended()) {
         displayWinner();
+        game.set_player_turn(PlayerType::Human);
     }
 }
 

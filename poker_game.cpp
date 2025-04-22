@@ -1,4 +1,5 @@
 #include "poker_game.hpp"
+#include "game_constants.hpp"
 
 #include "poker_hand_evaluator.hpp"
 
@@ -7,7 +8,7 @@ PokerGame::PokerGame()
     , small_blind(5)
     , big_blind(10)
     , human_player(new HumanPlayer())
-    , computer_player(new ComputerPlayer())
+    , computer_player(new ComputerPlayer(Difficulty::Medium))
     , player_turn(PlayerType::Human)
     , dealer(PlayerType::Human) {}
 
@@ -128,6 +129,15 @@ void PokerGame::rotate_player_turn() {
         player_turn = PlayerType::Human;
         break;
     }
+}
+
+PlayerType PokerGame::get_player_turn() const{
+    return player_turn;
+
+}
+
+void PokerGame::set_player_turn(PlayerType type) {
+     player_turn = type;
 }
 
 void PokerGame::shuffle_deck() {
