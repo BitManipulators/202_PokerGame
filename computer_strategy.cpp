@@ -54,9 +54,13 @@ Move MediumStrategy::getNextMove(GameState current_state){
         }
     }
 
+    if (bet <= 10) {
+        // Small blind or low bets don't fold immediately
+        return Call{};
+    }
 
     int foldChance = getRandomInt(0, 100);
-    if (foldChance < 60) {
+    if (foldChance < 30) {
         return Fold{};
     } else {
         return Call{};
@@ -120,6 +124,11 @@ int MediumStrategy::evaluateHandStrength(const std::vector<const Card*>& hand,
 
             return std::min(score, 100); // cap at 100
         }
+
+        case PokerEngineEnumState::Showdown:
+        case PokerEngineEnumState::Folded:
+            // During showdown or folded state hand strength evaluation may not matter
+            return 0;
     }
 
     return 0;
