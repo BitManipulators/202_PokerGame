@@ -97,6 +97,8 @@ void MainWindow::onNewGame() {
     updateChipDisplay();
     displayGame();
 
+    ui->computerMoveLabel->clear();
+
     // Disable New Game button and Determine Winner button after game starts.
     ui->newGameButton->setDisabled(true);
 
@@ -140,6 +142,13 @@ void MainWindow::displayWinner() {
 
         msgBox.exec();
 
+        ui->foldButton->setDisabled(true);
+        ui->callButton->setDisabled(true);
+        ui->placeBetButton->setDisabled(true);
+
+        // Enable New Game button
+        ui->newGameButton->setEnabled(true);
+
         // Reset the pot and bet amount
         ui->betLineEdit->setText("");  // Clear the bet input
 
@@ -163,7 +172,7 @@ static QPixmap& loadImage(const Card* card) {
         if (pix.isNull()) {
             qDebug() << "Failed to load image:" << card->getCardImagePath();
         }
-        pix = pix.scaled(120, 180, Qt::KeepAspectRatio, Qt::SmoothTransformation);
+        pix = pix.scaled(90, 135, Qt::KeepAspectRatio, Qt::SmoothTransformation);
         card_image_cache[card] = pix;
     }
 
@@ -182,8 +191,8 @@ void MainWindow::displayGame() {
     int yPlayer2 = 50;   // Keep player 2 cards at top
 
     // More generous card spacing
-    int spacing = 130;
-    int cardWidth = 120;
+    int spacing = 100;
+    int cardWidth = 90;
 
     // Calculate positions for better centering
     auto hand1 = game.get_human_player().hand;
@@ -217,7 +226,7 @@ void MainWindow::displayGame() {
             game.get_winner().value() == PokerHandWinner::Player1) {
             QGraphicsRectItem *highlight = scene->addRect(
                 player1StartX + i * spacing - 5, yPlayer1 - 5,
-                cardWidth + 10, 180,
+                cardWidth + 10, 135 + 10,
                 QPen(QColor(255, 215, 0, 200), 3)
             );
              createGlowEffect(item);
@@ -236,7 +245,7 @@ void MainWindow::displayGame() {
         } else {
             // Show card backs during gameplay
             static QPixmap cardBackImage(":/images/back_light.png");
-            cardBackImage = cardBackImage.scaled(cardWidth, 180, Qt::KeepAspectRatio, Qt::SmoothTransformation);
+            cardBackImage = cardBackImage.scaled(90, 135, Qt::KeepAspectRatio, Qt::SmoothTransformation);
             item = scene->addPixmap(cardBackImage);
         }
 
@@ -247,7 +256,7 @@ void MainWindow::displayGame() {
             game.get_winner().value() == PokerHandWinner::Player2) {
             QGraphicsRectItem *highlight = scene->addRect(
                 player2StartX + i * spacing - 5, yPlayer2 - 5,
-                cardWidth + 10, 180,
+                cardWidth + 10, 135 + 10,
                 QPen(QColor(255, 215, 0, 200), 3)
             );
             createGlowEffect(item);
@@ -265,17 +274,37 @@ void MainWindow::onFold() {
         return;
     }
 
-    // Update chip display
+    // Check if game ended
+    if (game.has_ended()) {
+        displayGame();
+        displayWinner();
+        ui->foldButton->setDisabled(true);
+        ui->callButton->setDisabled(true);
+        ui->placeBetButton->setDisabled(true);
+        ui->newGameButton->setEnabled(true);
+        return;
+    }
+
     updateChipDisplay();
-
-    // Enable new game button for next hand
-    ui->newGameButton->setEnabled(true);
-
-    // Update display and UI
     displayGame();
 
-    if (game.has_ended()) {
-        displayWinner();
+    const Player& computer = game.get_computer_player();
+    if (std::holds_alternative<Fold>(computer.getLatestMove())) {
+        showComputerAction("Computer folded!");
+        // Check if game has ended here
+        if (game.has_ended()) {
+            displayGame();
+            displayWinner();
+            ui->foldButton->setDisabled(true);
+            ui->callButton->setDisabled(true);
+            ui->placeBetButton->setDisabled(true);
+            ui->newGameButton->setEnabled(true);
+            return;
+        }
+    } else if (std::holds_alternative<Raise>(computer.getLatestMove())) {
+        showComputerAction(QString("Computer raised to %1 chips!").arg(computer.current_bet));
+    } else {
+        showComputerAction("Computer called!");
     }
 }
 
@@ -288,15 +317,39 @@ void MainWindow::onCall() {
         return;
     }
 
-    // Update chip display
-    updateChipDisplay();
-
-    // Update display and UI
-    displayGame();
-
-    if (game.has_ended()) {
+        if (game.has_ended()) {
+        displayGame();
         displayWinner();
-        game.set_player_turn(PlayerType::Human);
+        ui->foldButton->setDisabled(true);
+        ui->callButton->setDisabled(true);
+        ui->placeBetButton->setDisabled(true);
+        ui->newGameButton->setEnabled(true);
+        return;
+    }
+
+
+        // Update chip display
+        updateChipDisplay();
+
+        // Update display and UI
+        displayGame();
+    const Player& computer = game.get_computer_player();
+    if (std::holds_alternative<Fold>(computer.getLatestMove())) {
+        showComputerAction("Computer folded!");
+        // Check if game has ended here
+        if (game.has_ended()) {
+            displayGame();
+            displayWinner();
+            ui->foldButton->setDisabled(true);
+            ui->callButton->setDisabled(true);
+            ui->placeBetButton->setDisabled(true);
+            ui->newGameButton->setEnabled(true);
+            return;
+        }
+    } else if (std::holds_alternative<Raise>(computer.getLatestMove())) {
+        showComputerAction(QString("Computer raised to %1 chips!").arg(computer.current_bet));
+    } else {
+        showComputerAction("Computer called!");
     }
 }
 
@@ -313,15 +366,37 @@ void MainWindow::onRaise() {
             return;
         }
 
+        if (game.has_ended()) {
+        displayGame();
+        displayWinner();
+        ui->newGameButton->setEnabled(true);
+        return;
+    }
+
         // Update chip display
         updateChipDisplay();
 
         // Update display and UI
         displayGame();
 
+    const Player& computer = game.get_computer_player();
+    if (std::holds_alternative<Fold>(computer.getLatestMove())) {
+        showComputerAction("Computer folded!");
+        // Check if game has ended here
         if (game.has_ended()) {
+            displayGame();
             displayWinner();
+            ui->foldButton->setDisabled(true);
+            ui->callButton->setDisabled(true);
+            ui->placeBetButton->setDisabled(true);
+            ui->newGameButton->setEnabled(true);
+            return;
         }
+    } else if (std::holds_alternative<Raise>(computer.getLatestMove())) {
+        showComputerAction(QString("Computer raised to %1 chips!").arg(computer.current_bet));
+    } else {
+        showComputerAction("Computer called!");
+    }
     }
 }
 
@@ -353,4 +428,9 @@ void MainWindow::createGlowEffect(QGraphicsPixmapItem *cardItem) {
     glowGroup->addAnimation(reverseGlow);
     glowGroup->setLoopCount(-1);  // Infinite looping
     glowGroup->start();
+}
+
+void MainWindow::showComputerAction(const QString& action) {
+    ui->computerMoveLabel->setText(action);
+    ui->computerMoveLabel->raise();
 }

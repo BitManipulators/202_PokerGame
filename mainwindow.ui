@@ -326,6 +326,19 @@ QFrame#betFrame, QFrame#controlsFrame {
              </property>
             </widget>
            </item>
+            <item>
+            <widget class="QLabel" name="computerMoveLabel">
+                <property name="font">
+                <font>
+                    <pointsize>10</pointsize>
+                    <italic>true</italic>
+                </font>
+                </property>
+                <property name="text">
+                <string></string>
+                </property>
+            </widget>
+            </item>
            <item>
             <widget class="QGraphicsView" name="graphicsView">
              <property name="minimumSize">

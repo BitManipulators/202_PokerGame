@@ -38,6 +38,8 @@ private:
     static std::map<const Card*, QPixmap> card_image_cache;
 
     void createGlowEffect(QGraphicsPixmapItem *cardItem);
+
+    void showComputerAction(const QString& action);
 };
 
 #endif // MAINWINDOW_H

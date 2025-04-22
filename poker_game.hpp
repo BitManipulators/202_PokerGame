@@ -68,6 +68,9 @@ public:
     Player* get_player(PlayerType player_type);
     std::tuple<Player*, Player*> get_acting_and_other_player(PlayerType player_type);
 
+    PokerEngineEnumState stage;
+
+
 private:
     std::size_t pot;
     std::size_t small_blind;
