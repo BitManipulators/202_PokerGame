@@ -131,6 +131,15 @@ void PokerGame::rotate_player_turn() {
     }
 }
 
+PlayerType PokerGame::get_player_turn() const{
+    return player_turn;
+
+}
+
+void PokerGame::set_player_turn(PlayerType type) {
+     player_turn = type;
+}
+
 void PokerGame::shuffle_deck() {
     human_player->clear_hand();
     computer_player->clear_hand();

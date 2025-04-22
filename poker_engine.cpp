@@ -53,6 +53,5 @@ GameAction::Result PokerEngine::make_moves() {
     current_state.stage = state->enum_state_;
     current_state.current_bet = game.get_human_player().current_bet;
     
-    return make_move(PlayerType::Computer, game.get_computer_player().get_move(current_state));
-
+    return make_move(PlayerType::Computer, game.get_computer_player().get_move(current_state)); 
 }
