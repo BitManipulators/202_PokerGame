@@ -6,6 +6,19 @@
 
 class PokerEngineTests;
 
+enum class ResultState{
+    HUMAN_PLAYER_ACTION,
+    HUMAN_PLAYER_ACTION_ERROR,
+    GAME_ENDED
+};
+
+
+struct ControllerResult{
+    ResultState state;
+    std::optional<Move> move;
+    std::optional<std::string> error_message;
+};
+
 class PokerEngine {
 public:
     PokerEngine(PokerGame &poker_game);
@@ -13,7 +26,7 @@ public:
 
     GameAction::Result new_game();
     GameAction::Result make_move(PlayerType player_type, Move move);
-    GameAction::Result make_moves();
+    ControllerResult make_moves();
 
     friend class PokerEngineTests;
 

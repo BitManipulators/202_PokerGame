@@ -1,3 +1,4 @@
+#include <iostream>
 #include "poker_engine.hpp"
 #include "game_state.hpp"
 #include <queue>
@@ -42,30 +43,46 @@ GameAction::Result PokerEngine::make_move(PlayerType player_type, Move move) {
     }, move);
 }
 
-GameAction::Result PokerEngine::make_moves() {
+ControllerResult PokerEngine::make_moves() {
     
-    GameAction::Result result;
+    ControllerResult response ;
+    GameAction::Result engine_result;
     GameState current_state = {};
     
+    int no_player_acted = 0;
+    Move computer_move = {};
     
     while(game.get_playing_queue().size() != 0 ){
 
         Player* current_player = game.get_playing_queue().front();
         
+        
         if(current_player->player_type == PlayerType::Human ){
             
             if(game.is_human_made_ui_choice() == true){
-                result = make_move(PlayerType::Human, game.get_human_player().get_move(current_state));
+                engine_result = make_move(PlayerType::Human, game.get_human_player().get_move(current_state));
                 
-                if (!result.ok || game.has_ended()) {
+                if(game.has_ended()){
+                    game.set_human_made_ui_choice(false);
+                    return  ControllerResult{ResultState::GAME_ENDED}; 
+                }
+                if (!engine_result.ok) {
                     game.set_human_made_ui_choice(false);
                     break;
                 }
+                no_player_acted++;
             
             }else{
                 
                 std::cout << "Waiting for Human Choice"<< std::endl;
-                return GameAction::Result{true,"",GameAction::ResultState::WAIT_FOR_HUMAN_PLAYER}; 
+                //return GameAction::Result{true,"",GameAction::ResultState::WAIT_FOR_HUMAN_PLAYER}; 
+                if(no_player_acted > 0){
+                    std::cout << "Returning computer move" << std::endl;
+                    return {ResultState::HUMAN_PLAYER_ACTION,computer_move};
+                }else{
+                    return {ResultState::HUMAN_PLAYER_ACTION};
+                }
+                
             }
         
         }else if(current_player->player_type == PlayerType::Computer){
@@ -74,19 +91,33 @@ GameAction::Result PokerEngine::make_moves() {
             current_state.hands = game.get_computer_player().hand;
             current_state.stage = state->enum_state_;
             current_state.current_bet = game.get_human_player().current_bet;
-            result = make_move(PlayerType::Computer, game.get_computer_player().get_move(current_state));
+            computer_move = game.get_computer_player().get_move(current_state);
+            //computer_move = Fold{};
+            game.set_player_move(PlayerType::Computer, computer_move);
+            engine_result = make_move(PlayerType::Computer, computer_move);
             game.set_human_made_ui_choice(false);
-            if (!result.ok || game.has_ended()) {
+            
+            if(game.has_ended()){
+                return  ControllerResult{ResultState::GAME_ENDED,computer_move};                
+            }
+            if (!engine_result.ok) {
+                std::cout << " Unhandled Error " << std::endl;
                 break;
             }
+            no_player_acted++;
+            
         }
         
     }
     
-    if(!result.ok){
-        std::cout << "Action required " << result.error_message.value_or("Unkown Error") << std::endl;
+    if(!engine_result.ok){
+        std::cout << "Action required " << engine_result.error_message.value_or("Unkown Error") << std::endl;
+        return ControllerResult{ResultState::HUMAN_PLAYER_ACTION_ERROR,{},engine_result.error_message};
     }
-   
-
-    return result;    
+    if(game.has_ended()){
+       return  ControllerResult{ResultState::GAME_ENDED}; 
+    }
+    
+    std::cout << " << Default case reached << " << std::endl;
+    return  ControllerResult{ResultState::HUMAN_PLAYER_ACTION};
 }

@@ -7,7 +7,7 @@ set(CMAKE_AUTORCC ON)
 
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
-set(CMAKE_PREFIX_PATH "/home/suriya-018231499/Qt/6.8.2/gcc_64/lib/cmake")
+
 
 find_package(QT NAMES Qt6 Qt5 REQUIRED COMPONENTS Widgets Svg REQUIRED)
 find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Widgets)
@@ -37,7 +37,7 @@ qt_add_library(
     poker_engine.hpp
     poker_engine.cpp
     move.hpp
-    
+
 )
 
 set(PROJECT_SOURCES
@@ -99,28 +99,50 @@ if(QT_VERSION_MAJOR EQUAL 6)
     qt_finalize_executable(poker_gui)
 endif()
 
-
 if(APPLE)
-   set(CMAKE_C_COMPILER /usr/bin/clang)
-   set(CMAKE_CXX_COMPILER /usr/bin/clang++)
+    include_directories(SYSTEM /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/usr/include)
 
-   include_directories(SYSTEM /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/usr/include)
+    set(CMAKE_OSX_ARCHITECTURES "arm64")
 
-   set(CMAKE_OSX_ARCHITECTURES "arm64")
+    # Add C++ standard library flags for Clang
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -stdlib=libc++")
 
-   # Add C++ standard library flags for Clang
-   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -stdlib=libc++")
+  # Find Qt path from the Qt library targets
+    get_target_property(_qmake_executable Qt::qmake IMPORTED_LOCATION)
+    if(NOT _qmake_executable)
+      get_target_property(_qmake_executable Qt6::qmake IMPORTED_LOCATION)
+    endif()
 
-   add_custom_command(TARGET poker_gui POST_BUILD
-       COMMAND ${CMAKE_COMMAND} -E make_directory
-           "${CMAKE_CURRENT_BINARY_DIR}/poker_gui.app/Contents/plugins/platforms"
-       # Copy the plugin file
-       COMMAND ${CMAKE_COMMAND} -E copy_if_different
-           "/usr/local/Homebrew/Cellar/qt/6.8.2_1/share/qt/plugins/platforms/libqcocoa.dylib"
-           "${CMAKE_CURRENT_BINARY_DIR}/poker_gui.app/Contents/plugins/platforms/"
-       COMMENT "Copying Qt platform plugins to application bundle"
-   )
+    if(_qmake_executable)
+      # Extract Qt directory from qmake path
+      get_filename_component(_qt_bin_dir "${_qmake_executable}" DIRECTORY)
+      # Find macdeployqt in the same directory as qmake
+      find_program(MACDEPLOYQT_EXECUTABLE macdeployqt HINTS "${_qt_bin_dir}")
+    endif()
 
+    if(NOT MACDEPLOYQT_EXECUTABLE)
+      # Fallback search paths if qmake wasn't found
+      find_program(MACDEPLOYQT_EXECUTABLE macdeployqt
+        HINTS
+          "$ENV{QTDIR}/bin"
+          "/usr/local/opt/qt/bin"
+          "/usr/local/Homebrew/opt/qt/bin"
+          "/opt/homebrew/opt/qt/bin"
+      )
+    endif()
+
+    if(MACDEPLOYQT_EXECUTABLE)
+      # Use macdeployqt to handle all deployment tasks automatically
+      add_custom_command(TARGET poker_gui POST_BUILD
+          COMMAND "${MACDEPLOYQT_EXECUTABLE}"
+              "${CMAKE_CURRENT_BINARY_DIR}/poker_gui.app"
+              -always-overwrite
+          COMMENT "Running macdeployqt to create a standalone application bundle"
+      )
+      message(STATUS "Found macdeployqt: ${MACDEPLOYQT_EXECUTABLE}")
+    else()
+      message(WARNING "macdeployqt not found. The application bundle may not be properly created.")
+    endif()
 endif()
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g")

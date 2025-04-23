@@ -95,6 +95,9 @@ void MainWindow::onNewGame() {
     engine.new_game();
     updateChipDisplay();
     displayGame();
+
+    ui->computerMoveLabel->clear();
+
     // Disable New Game button and Determine Winner button after game starts.
     ui->newGameButton->setDisabled(true);
     callEngine();
@@ -102,8 +105,12 @@ void MainWindow::onNewGame() {
 
 void MainWindow::callEngine(){
     
-    GameAction::Result result = engine.make_moves();
-    if(result.state == GameAction::ResultState::WAIT_FOR_HUMAN_PLAYER){
+    
+    
+    ControllerResult result = engine.make_moves();
+    
+    if(result.state == ResultState::HUMAN_PLAYER_ACTION ){
+        
         
         updateChipDisplay();
         displayGame();
@@ -112,16 +119,32 @@ void MainWindow::callEngine(){
         ui->callButton->setEnabled(true);
         ui->placeBetButton->setEnabled(true);
         ui->player2Label->raise();
+
+    }
+
+    if(result.move.has_value()){
+            Move move = result.move.value();
+            // Display computer's move
+            if (std::holds_alternative<Fold>(move)) {
+                showComputerAction("Computer folded!");
+            } else if (std::holds_alternative<Raise>(move)) {
+                showComputerAction(QString("Computer raised to %1 chips!").arg(std::get<Raise>(move).amount));
+            } else {
+                showComputerAction("Computer called!");
+            }
+
     }
     
-    if (!result.ok) {
+    if (result.state == ResultState::HUMAN_PLAYER_ACTION_ERROR) {
         QMessageBox::warning(this, "Error", QString::fromStdString(*result.error_message));
         return;
     }
     
-    if (game.has_ended()) {
+    if (result.state == ResultState::GAME_ENDED) {
+        updateChipDisplay();
         displayWinner();
         ui->newGameButton->setEnabled(true);
+        
     }
 }
 
@@ -157,6 +180,13 @@ void MainWindow::displayWinner() {
 
         msgBox.exec();
 
+        ui->foldButton->setDisabled(true);
+        ui->callButton->setDisabled(true);
+        ui->placeBetButton->setDisabled(true);
+
+        // Enable New Game button
+        ui->newGameButton->setEnabled(true);
+
         // Reset the pot and bet amount
         ui->betLineEdit->setText("");  // Clear the bet input
 
@@ -180,7 +210,7 @@ static QPixmap& loadImage(const Card* card) {
         if (pix.isNull()) {
             qDebug() << "Failed to load image:" << card->getCardImagePath();
         }
-        pix = pix.scaled(120, 180, Qt::KeepAspectRatio, Qt::SmoothTransformation);
+        pix = pix.scaled(90, 135, Qt::KeepAspectRatio, Qt::SmoothTransformation);
         card_image_cache[card] = pix;
     }
 
@@ -199,8 +229,8 @@ void MainWindow::displayGame() {
     int yPlayer2 = 50;   // Keep player 2 cards at top
 
     // More generous card spacing
-    int spacing = 130;
-    int cardWidth = 120;
+    int spacing = 100;
+    int cardWidth = 90;
 
     // Calculate positions for better centering
     // Change based on order
@@ -235,7 +265,7 @@ void MainWindow::displayGame() {
             game.get_winner().value() == PokerHandWinner::Player1) {
             QGraphicsRectItem *highlight = scene->addRect(
                 player1StartX + i * spacing - 5, yPlayer1 - 5,
-                cardWidth + 10, 180,
+                cardWidth + 10, 135 + 10,
                 QPen(QColor(255, 215, 0, 200), 3)
             );
              createGlowEffect(item);
@@ -254,7 +284,7 @@ void MainWindow::displayGame() {
         } else {
             // Show card backs during gameplay
             static QPixmap cardBackImage(":/images/back_light.png");
-            cardBackImage = cardBackImage.scaled(cardWidth, 180, Qt::KeepAspectRatio, Qt::SmoothTransformation);
+            cardBackImage = cardBackImage.scaled(90, 135, Qt::KeepAspectRatio, Qt::SmoothTransformation);
             item = scene->addPixmap(cardBackImage);
         }
 
@@ -265,7 +295,7 @@ void MainWindow::displayGame() {
             game.get_winner().value() == PokerHandWinner::Player2) {
             QGraphicsRectItem *highlight = scene->addRect(
                 player2StartX + i * spacing - 5, yPlayer2 - 5,
-                cardWidth + 10, 180,
+                cardWidth + 10, 135 + 10,
                 QPen(QColor(255, 215, 0, 200), 3)
             );
             createGlowEffect(item);
@@ -280,7 +310,9 @@ void MainWindow::onFold() {
     callEngine();
 }
 
+
 void MainWindow::onCall() {
+    // Human chooses to call
     game.set_player_move(PlayerType::Human, Call{});
     game.set_human_made_ui_choice(true);
     callEngine();
@@ -329,4 +361,9 @@ void MainWindow::createGlowEffect(QGraphicsPixmapItem *cardItem) {
     glowGroup->addAnimation(reverseGlow);
     glowGroup->setLoopCount(-1);  // Infinite looping
     glowGroup->start();
+}
+
+void MainWindow::showComputerAction(const QString& action) {
+    ui->computerMoveLabel->setText(action);
+    ui->computerMoveLabel->raise();
 }

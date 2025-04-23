@@ -10,14 +10,10 @@
 
 namespace GameAction {
 
-enum class ResultState{
-    WAIT_FOR_HUMAN_PLAYER, PLAYER_FOLD, COMPUTER_FOLD,PLAYER_MOVE_ERROR 
-};
-
 struct Result {
     bool ok;
     std::optional<std::string> error_message;
-    ResultState state;
+
 };
 
 
@@ -51,6 +47,7 @@ public:
     void deal_river();
 
     void clear_player_actions();
+    void clear_player_bets();
     bool all_players_have_acted();
     void set_player_move(PlayerType type, Move move);
 
@@ -77,6 +74,9 @@ public:
     
     Player* get_player(PlayerType player_type);
     std::tuple<Player*, Player*> get_acting_and_other_player(PlayerType player_type);
+
+    PokerEngineEnumState stage;
+
 
 private:
     std::size_t pot;

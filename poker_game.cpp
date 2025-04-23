@@ -1,3 +1,4 @@
+#include <optional>
 #include "poker_game.hpp"
 #include "game_constants.hpp"
 
@@ -9,7 +10,7 @@ PokerGame::PokerGame()
     , small_blind(5)
     , big_blind(10)
     , human_player(new HumanPlayer())
-    , computer_player(new ComputerPlayer(Difficulty::Easy))
+    , computer_player(new ComputerPlayer(Difficulty::Medium))
     , dealer(PlayerType::Human) {}
 
 PokerGame::~PokerGame() {
@@ -83,7 +84,8 @@ GameAction::Result PokerGame::perform_fold(PlayerType player_type) {
 
     other_player->chips += pot;
     winner = (other_player->player_type == PlayerType::Human) ? PokerHandWinner::Player1 : PokerHandWinner::Player2;
-
+    stage = PokerEngineEnumState::Showdown;
+    //this->player_turn = std::nullopt;
     return GameAction::OK;
 }
 
@@ -180,12 +182,20 @@ void PokerGame::deal_river() {
 
 void PokerGame::clear_player_actions() {
     human_player->has_acted = false;
-    computer_player->has_acted = false;    
+    computer_player->has_acted = false;
+       
+}
+
+void PokerGame::clear_player_bets() {
+    human_player->current_bet = 0;
+    computer_player->current_bet = 0;    
 }
 
 void PokerGame::set_playing_order() {
     playing_turn_queue.push(human_player);
     playing_turn_queue.push(computer_player);
+    
+    
 }
 
 
@@ -282,6 +292,16 @@ void PokerGame::set_player_move(PlayerType player_type, Move move) {
 }
 
 std::string PokerGame::get_winning_hand_description() const {
+    
+    if (winner.has_value() && !hand_evaluation.has_value()){
+         if(winner.has_value()){
+            if(winner.value() == PokerHandWinner::Player1 ){
+                return "Computer Folded";
+            }else{
+                return "You Folded";
+            }
+         }
+    }
     if (!winner.has_value() || !hand_evaluation.has_value()) {
         return "Unknown hand";
     }
