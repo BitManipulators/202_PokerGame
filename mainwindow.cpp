@@ -104,6 +104,7 @@ void MainWindow::callEngine(){
     
     GameAction::Result result = engine.make_moves();
     if(result.state == GameAction::ResultState::WAIT_FOR_HUMAN_PLAYER){
+        
         updateChipDisplay();
         displayGame();
         // Enable Fold, Call, and Place Bet buttons after game starts.
@@ -292,6 +293,11 @@ void MainWindow::onRaise() {
         game.set_player_move(PlayerType::Human, Raise{raiseAmount});
         game.set_human_made_ui_choice(true);
         callEngine();
+    }else{
+        
+        const std::string input_empty_error = "Input the amount to be raised" ;
+        QMessageBox::warning(this, "Error", QString::fromStdString(input_empty_error));
+        return;
     }
 }
 

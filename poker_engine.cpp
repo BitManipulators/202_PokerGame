@@ -52,7 +52,6 @@ GameAction::Result PokerEngine::make_moves() {
 
         Player* current_player = game.get_playing_queue().front();
         
-        //std::cout << "Make moves is human " << (current_player->player_type == PlayerType::Human) << std::endl;
         if(current_player->player_type == PlayerType::Human ){
             
             if(game.is_human_made_ui_choice() == true){
@@ -60,13 +59,13 @@ GameAction::Result PokerEngine::make_moves() {
                 
                 if (!result.ok || game.has_ended()) {
                     game.set_human_made_ui_choice(false);
-                    return result;
+                    break;
                 }
             
             }else{
                 
                 std::cout << "Waiting for Human Choice"<< std::endl;
-                return GameAction::Result{true,"",GameAction::ResultState::WAIT_FOR_HUMAN_PLAYER}; // Need inversion of control here
+                return GameAction::Result{true,"",GameAction::ResultState::WAIT_FOR_HUMAN_PLAYER}; 
             }
         
         }else if(current_player->player_type == PlayerType::Computer){
@@ -78,11 +77,16 @@ GameAction::Result PokerEngine::make_moves() {
             result = make_move(PlayerType::Computer, game.get_computer_player().get_move(current_state));
             game.set_human_made_ui_choice(false);
             if (!result.ok || game.has_ended()) {
-                return result;
+                break;
             }
         }
         
     }
     
+    if(!result.ok){
+        std::cout << "Action required " << result.error_message.value_or("Unkown Error") << std::endl;
+    }
+   
+
     return result;    
 }

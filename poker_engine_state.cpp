@@ -38,6 +38,7 @@ std::tuple<PokerEngineState*, GameAction::Result> transition_to_preflop(PokerEng
     game.prepare_new_game();
     game.clear_player_actions();
     game.rotate_dealer();
+    game.set_playing_order();
     game.shuffle_deck();
     game.post_blinds();
     game.deal_hole_cards();
@@ -109,6 +110,7 @@ std::tuple<PokerEngineState*, GameAction::Result> PreFlopState::transition_state
     std::cout << "Transitioning to flop" << std::endl;
 
     game_.clear_player_actions();
+    game_.set_playing_order();
     game_.deal_flop();
 
     return {states_.FLOP_STATE, GameAction::OK};
@@ -118,6 +120,7 @@ std::tuple<PokerEngineState*, GameAction::Result> FlopState::transition_state() 
     std::cout << "Transitioning to turn" << std::endl;
 
     game_.clear_player_actions();
+    game_.set_playing_order();
     game_.deal_turn();
 
     return {states_.TURN_STATE, GameAction::OK};
@@ -127,6 +130,7 @@ std::tuple<PokerEngineState*, GameAction::Result> TurnState::transition_state() 
     std::cout << "Transitioning to river" << std::endl;
 
     game_.clear_player_actions();
+    game_.set_playing_order();
     game_.deal_river();
 
     return {states_.RIVER_STATE, GameAction::OK};
@@ -136,6 +140,7 @@ std::tuple<PokerEngineState*, GameAction::Result> RiverState::transition_state()
     std::cout << "Transitioning to showdown" << std::endl;
 
     game_.clear_player_actions();
+    game_.set_playing_order();
     game_.determine_winner();
 
     return {states_.SHOWDOWN_STATE, GameAction::OK};
