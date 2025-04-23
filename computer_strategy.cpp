@@ -60,7 +60,7 @@ Move MediumStrategy::getNextMove(GameState current_state){
     }
 
     int foldChance = getRandomInt(0, 100);
-    if (foldChance < 60) {
+    if (foldChance < 30) {
         return Fold{};
     } else {
         return Call{};

@@ -274,41 +274,32 @@ void MainWindow::onFold() {
         return;
     }
 
-    // Check if game ended
-    if (game.has_ended()) {
-        displayGame();
-        displayWinner();
-        ui->foldButton->setDisabled(true);
-        ui->callButton->setDisabled(true);
-        ui->placeBetButton->setDisabled(true);
-        ui->newGameButton->setEnabled(true);
-        return;
-    }
-
+    // Update display
     updateChipDisplay();
     displayGame();
 
     const Player& computer = game.get_computer_player();
-    if (std::holds_alternative<Fold>(computer.getLatestMove())) {
+    const Move& move = computer.getLatestMove();
+
+    if (std::holds_alternative<Fold>(move)) {
         showComputerAction("Computer folded!");
-        // Check if game has ended here
-        if (game.has_ended()) {
-            displayGame();
-            displayWinner();
-            ui->foldButton->setDisabled(true);
-            ui->callButton->setDisabled(true);
-            ui->placeBetButton->setDisabled(true);
-            ui->newGameButton->setEnabled(true);
-            return;
-        }
-    } else if (std::holds_alternative<Raise>(computer.getLatestMove())) {
+    } else if (std::holds_alternative<Raise>(move)) {
         showComputerAction(QString("Computer raised to %1 chips!").arg(computer.current_bet));
     } else {
         showComputerAction("Computer called!");
     }
+
+    // Only display winner if game has ended
+    if (game.has_ended()) {
+        displayGame();
+        displayWinner();
+        ui->newGameButton->setEnabled(true);
+    }
 }
 
+
 void MainWindow::onCall() {
+    // Human chooses to call
     game.set_player_move(PlayerType::Human, Call{});
 
     GameAction::Result call_result = engine.make_moves();
@@ -317,39 +308,27 @@ void MainWindow::onCall() {
         return;
     }
 
-        if (game.has_ended()) {
-        displayGame();
-        displayWinner();
-        ui->foldButton->setDisabled(true);
-        ui->callButton->setDisabled(true);
-        ui->placeBetButton->setDisabled(true);
-        ui->newGameButton->setEnabled(true);
-        return;
-    }
+    // Update chip display and board
+    updateChipDisplay();
+    displayGame();
 
-
-        // Update chip display
-        updateChipDisplay();
-
-        // Update display and UI
-        displayGame();
     const Player& computer = game.get_computer_player();
-    if (std::holds_alternative<Fold>(computer.getLatestMove())) {
+    const Move& move = computer.getLatestMove();
+
+    // Display computer's move
+    if (std::holds_alternative<Fold>(move)) {
         showComputerAction("Computer folded!");
-        // Check if game has ended here
-        if (game.has_ended()) {
-            displayGame();
-            displayWinner();
-            ui->foldButton->setDisabled(true);
-            ui->callButton->setDisabled(true);
-            ui->placeBetButton->setDisabled(true);
-            ui->newGameButton->setEnabled(true);
-            return;
-        }
-    } else if (std::holds_alternative<Raise>(computer.getLatestMove())) {
+    } else if (std::holds_alternative<Raise>(move)) {
         showComputerAction(QString("Computer raised to %1 chips!").arg(computer.current_bet));
     } else {
         showComputerAction("Computer called!");
+    }
+
+    // Check if game has ended
+    if (game.has_ended()) {
+        displayGame();
+        displayWinner();
+        ui->newGameButton->setEnabled(true);
     }
 }
 
@@ -357,46 +336,41 @@ void MainWindow::onRaise() {
     bool ok;
     std::size_t raiseAmount = ui->betLineEdit->text().toLong(&ok);
 
-    if (ok) {
-        game.set_player_move(PlayerType::Human, Raise{raiseAmount});
-
-        GameAction::Result raise_result = engine.make_moves();
-        if (!raise_result.ok) {
-            QMessageBox::warning(this, "Error", QString::fromStdString(*raise_result.error_message));
-            return;
-        }
-
-        if (game.has_ended()) {
-        displayGame();
-        displayWinner();
-        ui->newGameButton->setEnabled(true);
+    if (!ok || raiseAmount == 0) {
+        QMessageBox::warning(this, "Invalid Input", "Please enter a valid raise amount.");
         return;
     }
 
-        // Update chip display
-        updateChipDisplay();
+    game.set_player_move(PlayerType::Human, Raise{raiseAmount});
 
-        // Update display and UI
-        displayGame();
+    GameAction::Result raise_result = engine.make_moves();
+    if (!raise_result.ok) {
+        QMessageBox::warning(this, "Error", QString::fromStdString(*raise_result.error_message));
+        return;
+    }
+
+    // Update chip display and board
+    updateChipDisplay();
+    displayGame();
 
     const Player& computer = game.get_computer_player();
-    if (std::holds_alternative<Fold>(computer.getLatestMove())) {
+    const Move& move = computer.getLatestMove();
+
+    // Show computer's action
+    if (std::holds_alternative<Fold>(move)) {
         showComputerAction("Computer folded!");
-        // Check if game has ended here
-        if (game.has_ended()) {
-            displayGame();
-            displayWinner();
-            ui->foldButton->setDisabled(true);
-            ui->callButton->setDisabled(true);
-            ui->placeBetButton->setDisabled(true);
-            ui->newGameButton->setEnabled(true);
-            return;
-        }
-    } else if (std::holds_alternative<Raise>(computer.getLatestMove())) {
+    } else if (std::holds_alternative<Raise>(move)) {
         showComputerAction(QString("Computer raised to %1 chips!").arg(computer.current_bet));
     } else {
         showComputerAction("Computer called!");
     }
+
+    // Only display winner if game has ended
+    if (game.has_ended()) {
+        displayGame();
+        displayWinner();
+        ui->newGameButton->setEnabled(true);
+        return;
     }
 }
 
