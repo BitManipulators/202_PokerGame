@@ -66,7 +66,7 @@ GameAction::Result PokerGame::perform_call(PlayerType player_type) {
     pot += amount_to_call;
 
     rotate_player_turn();
-
+    notifyObservers();
     return GameAction::OK;
 }
 
@@ -81,6 +81,7 @@ GameAction::Result PokerGame::perform_fold(PlayerType player_type) {
     winner = (other_player->player_type == PlayerType::Human) ? PokerHandWinner::Player1 : PokerHandWinner::Player2;
     stage = PokerEngineEnumState::Showdown;
     //this->player_turn = std::nullopt;
+    notifyObservers();
     return GameAction::OK;
 }
 
@@ -109,6 +110,7 @@ GameAction::Result PokerGame::perform_raise(PlayerType player_type, const std::s
 
     rotate_player_turn();
 
+    notifyObservers();
     return GameAction::OK;
 }
 
@@ -158,6 +160,7 @@ void PokerGame::deal_hole_cards() {
     computer_player->add_card(deck.dealCard());
     human_player->add_card(deck.dealCard());
     computer_player->add_card(deck.dealCard());
+    notifyObservers();
 }
 
 void PokerGame::deal_flop() {
@@ -168,6 +171,7 @@ void PokerGame::deal_flop() {
     for (int i = 0; i < 3; i++) {
         community_cards.push_back(deck.dealCard());
     }
+    notifyObservers();
 }
 
 void PokerGame::deal_turn() {
@@ -176,6 +180,7 @@ void PokerGame::deal_turn() {
 
     // Deal one community card.
     community_cards.push_back(deck.dealCard());
+    notifyObservers();
 }
 
 void PokerGame::deal_river() {
@@ -184,6 +189,7 @@ void PokerGame::deal_river() {
 
     // Deal one community card.
     community_cards.push_back(deck.dealCard());
+    notifyObservers();
 }
 
 void PokerGame::clear_player_actions() {
@@ -236,6 +242,8 @@ void PokerGame::determine_winner() {
         computer_player->chips += pot;
         break;
     }
+
+    notifyObservers();
 }
 
 void PokerGame::prepare_new_game() {
@@ -260,6 +268,7 @@ void PokerGame::prepare_new_game() {
 
     // Clear any previous moves/actions
     clear_player_actions();
+    notifyObservers();
 }
 
 
@@ -282,10 +291,12 @@ void PokerGame::post_blinds() {
 
     pot += big_blind_amount;
     pot += small_blind_amount;
+    notifyObservers();
 }
 
 void PokerGame::set_player_move(PlayerType player_type, Move move) {
     get_player(player_type)->set_move(move);
+    notifyObservers();
 }
 
 std::string PokerGame::get_winning_hand_description() const {
@@ -293,4 +304,14 @@ std::string PokerGame::get_winning_hand_description() const {
         return "Unknown hand";
     }
     return hand_evaluation.value().to_string();
+}
+
+void PokerGame::add_observer(Observer* observer) {
+    observers.push_back(observer);
+}
+
+void PokerGame::notifyObservers() {
+    for (auto observer : observers) {
+        observer->onGameStateChanged();
+    }
 }

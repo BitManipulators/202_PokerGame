@@ -17,7 +17,11 @@ PokerEngine::~PokerEngine() {
 
 GameAction::Result PokerEngine::new_game() {
     auto [new_game_state, action_result] = state->new_game();
-    state = new_game_state;
+    if (action_result.ok) {
+        state = new_game_state;
+        game.notifyObservers();
+    }
+
     return action_result;
 }
 

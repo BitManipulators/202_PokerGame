@@ -34,6 +34,7 @@ std::string to_string(PokerEngineEnumState enum_state) {
 
 std::tuple<PokerEngineState*, GameAction::Result> transition_to_preflop(PokerEngineState* preflop_state, PokerGame& game) {
     std::cout << "Transitioning to preflop" << std::endl;
+    std::cout << "[DEBUG] transition_to_preflop() game instance at: " << &game << std::endl;
 
     game.prepare_new_game();
     game.clear_player_actions();
@@ -41,6 +42,7 @@ std::tuple<PokerEngineState*, GameAction::Result> transition_to_preflop(PokerEng
     game.shuffle_deck();
     game.post_blinds();
     game.deal_hole_cards();
+    game.notifyObservers();
 
     return {preflop_state, GameAction::OK};
 }

@@ -12,7 +12,7 @@
 #include <QPropertyAnimation>
 #include <QSequentialAnimationGroup>
 #include <QScreen>
-
+#include <QTimer>
 
 std::map<const Card*, QPixmap> card_image_cache;
 
@@ -59,8 +59,10 @@ MainWindow::MainWindow(QWidget *parent)
     // Start with landing page
     ui->stackedWidget->setCurrentIndex(0);
 
+    qDebug() << "[DEBUG] MainWindow registering observer for game at" << &game;
+    game.add_observer(this);
     // Update UI to show chips and pot
-    updateChipDisplay();
+    //updateChipDisplay();
 }
 
 MainWindow::~MainWindow() {
@@ -275,8 +277,8 @@ void MainWindow::onFold() {
     }
 
     // Update display
-    updateChipDisplay();
-    displayGame();
+    // updateChipDisplay();
+    // displayGame();
 
     const Player& computer = game.get_computer_player();
     const Move& move = computer.getLatestMove();
@@ -290,11 +292,11 @@ void MainWindow::onFold() {
     }
 
     // Only display winner if game has ended
-    if (game.has_ended()) {
-        displayGame();
-        displayWinner();
-        ui->newGameButton->setEnabled(true);
-    }
+    // if (game.has_ended()) {
+    //     displayGame();
+    //     displayWinner();
+    //     ui->newGameButton->setEnabled(true);
+    // }
 }
 
 
@@ -309,8 +311,8 @@ void MainWindow::onCall() {
     }
 
     // Update chip display and board
-    updateChipDisplay();
-    displayGame();
+    // updateChipDisplay();
+    // displayGame();
 
     const Player& computer = game.get_computer_player();
     const Move& move = computer.getLatestMove();
@@ -325,11 +327,11 @@ void MainWindow::onCall() {
     }
 
     // Check if game has ended
-    if (game.has_ended()) {
-        displayGame();
-        displayWinner();
-        ui->newGameButton->setEnabled(true);
-    }
+    // if (game.has_ended()) {
+    //     // displayGame();
+    //     // displayWinner();
+    //     ui->newGameButton->setEnabled(true);
+    // }
 }
 
 void MainWindow::onRaise() {
@@ -350,8 +352,8 @@ void MainWindow::onRaise() {
     }
 
     // Update chip display and board
-    updateChipDisplay();
-    displayGame();
+    // updateChipDisplay();
+    // displayGame();
 
     const Player& computer = game.get_computer_player();
     const Move& move = computer.getLatestMove();
@@ -366,12 +368,12 @@ void MainWindow::onRaise() {
     }
 
     // Only display winner if game has ended
-    if (game.has_ended()) {
-        displayGame();
-        displayWinner();
-        ui->newGameButton->setEnabled(true);
-        return;
-    }
+    // if (game.has_ended()) {
+    //     // displayGame();
+    //     // displayWinner();
+    //     ui->newGameButton->setEnabled(true);
+    //     return;
+    // }
 }
 
 void MainWindow::createGlowEffect(QGraphicsPixmapItem *cardItem) {
@@ -407,4 +409,19 @@ void MainWindow::createGlowEffect(QGraphicsPixmapItem *cardItem) {
 void MainWindow::showComputerAction(const QString& action) {
     ui->computerMoveLabel->setText(action);
     ui->computerMoveLabel->raise();
+}
+
+void MainWindow::onGameStateChanged() {
+     qDebug() << "[DEBUG] onGameStateChanged called";
+    // This function is called when the game state changes
+    // You can update the UI or perform any other actions here
+    updateChipDisplay();
+    displayGame();
+
+    if (game.has_ended()) {
+        // displayGame();
+        displayWinner();
+        ui->newGameButton->setEnabled(true);
+        return;
+    }
 }
