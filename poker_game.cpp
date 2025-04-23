@@ -1,3 +1,4 @@
+#include <optional>
 #include "poker_game.hpp"
 #include "game_constants.hpp"
 
@@ -10,7 +11,8 @@ PokerGame::PokerGame()
     , human_player(new HumanPlayer())
     , computer_player(new ComputerPlayer(Difficulty::Medium))
     , player_turn(PlayerType::Human)
-    , dealer(PlayerType::Human) {}
+    , dealer(PlayerType::Human)
+    , stage(PokerEngineEnumState::PreFlop) {}
 
 PokerGame::~PokerGame() {
     delete human_player;
@@ -77,7 +79,8 @@ GameAction::Result PokerGame::perform_fold(PlayerType player_type) {
 
     other_player->chips += pot;
     winner = (other_player->player_type == PlayerType::Human) ? PokerHandWinner::Player1 : PokerHandWinner::Player2;
-
+    stage = PokerEngineEnumState::Showdown;
+    //this->player_turn = std::nullopt;
     return GameAction::OK;
 }
 
@@ -241,7 +244,24 @@ void PokerGame::prepare_new_game() {
     computer_player->current_bet = 0;
     winner = {};
     hand_evaluation = {};
+
+    // Reset stage and player turn
+    stage = PokerEngineEnumState::PreFlop;
+
+    // Rotate dealer
+    rotate_dealer();
+
+    // Set player turn to Small Blind
+    if (dealer == PlayerType::Human) {
+        player_turn = PlayerType::Computer; // Human is dealer, so computer starts
+    } else {
+        player_turn = PlayerType::Human;    // Computer is dealer, so human starts
+    }
+
+    // Clear any previous moves/actions
+    clear_player_actions();
 }
+
 
 void PokerGame::post_blinds() {
     Player* big_blind_player;

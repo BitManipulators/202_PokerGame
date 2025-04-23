@@ -15,7 +15,7 @@ Move EasyStrategy::getNextMove(GameState current_state){
     std::random_device rd;
     std::mt19937 gen(rd());
     std::uniform_int_distribution<> distr(0,1);
-    
+
     int random_number = distr(gen);
     switch (random_number){
         case 0 :
@@ -27,39 +27,43 @@ Move EasyStrategy::getNextMove(GameState current_state){
 }
 
 Move MediumStrategy::getNextMove(GameState current_state){
-    
+
     int strength = evaluateHandStrength(current_state.hands, current_state.community_cards, current_state.stage);
     std::size_t bet = current_state.current_bet;
     if (bet == 0) {
         bet = 10;
     }
-    
+
     if (strength >= 80) {
-       
+
         int raiseChance = getRandomInt(0, 100);
-        if (raiseChance < 90) { 
+        if (raiseChance < 90) {
             return Raise{2 * bet};
         } else {
-            return Call{}; 
+            return Call{};
         }
     }
-    
+
     if (strength >= 40) {
-        
+
         int callRaiseChance = getRandomInt(0, 100);
-        if (callRaiseChance < 70) { 
+        if (callRaiseChance < 70) {
             return Call{};
-        } else { 
+        } else {
             return Raise{2 * bet};
         }
     }
-    
-    
+
+    if (bet <= 10) {
+        // Small blind or low bets don't fold immediately
+        return Call{};
+    }
+
     int foldChance = getRandomInt(0, 100);
-    if (foldChance < 60) { 
+    if (foldChance < 30) {
         return Fold{};
     } else {
-        return Call{}; 
+        return Call{};
     }
 }
 
@@ -68,7 +72,7 @@ int MediumStrategy::evaluateHandStrength(const std::vector<const Card*>& hand,
                          PokerEngineEnumState stage) {
     switch (stage) {
         case PokerEngineEnumState::PreFlop:
-            
+
             //std::cout << "Preflop" << std::endl;
             return evaluatePreflop(hand);  // returns 0-100 scale
 
@@ -120,6 +124,11 @@ int MediumStrategy::evaluateHandStrength(const std::vector<const Card*>& hand,
 
             return std::min(score, 100); // cap at 100
         }
+
+        case PokerEngineEnumState::Showdown:
+        case PokerEngineEnumState::Folded:
+            // During showdown or folded state hand strength evaluation may not matter
+            return 0;
     }
 
     return 0;
@@ -133,12 +142,12 @@ bool MediumStrategy::isSuited(const std::vector<const Card*>& hand) {
 
 // Helper: Preflop strength (0 - 100)
 int MediumStrategy::evaluatePreflop(const std::vector<const Card*>& hand) {
-    
+
     int hand1 = hand[0]->getValue();
-    int hand2 = hand[0]->getValue();
+    int hand2 = hand[1]->getValue();
     int high = std::max(hand1, hand2);
     bool ispair = hand1 == hand2;
-    
+
     if(ispair){
         if (high >= 10){
             return 90;
@@ -156,7 +165,7 @@ int MediumStrategy::evaluatePreflop(const std::vector<const Card*>& hand) {
         else if( hand1>=9 || hand2 >= 9 ){
             return 80;
         }
-       
+
     }
 
     if(high > (int)Rank::Jack){
@@ -164,5 +173,5 @@ int MediumStrategy::evaluatePreflop(const std::vector<const Card*>& hand) {
     }
 
     return 30;
-    
+
 }
