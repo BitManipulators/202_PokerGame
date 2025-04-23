@@ -25,8 +25,6 @@ class MediumStrategy : public ComputerStrategy {
 
 private:
     bool isSuited(const std::vector<const Card*>& hand);
-    bool hasStraight(const std::set<int>& ranksSet);
-    bool hasFlush(const std::vector<const Card*>& cards);
     std::map<Rank, int> getRankCounts(const std::vector<const Card*>& cards);
     int evaluatePreflop(const std::vector<const Card*>& hand);
     int evaluateHandStrength(const std::vector<const Card*>& hand,

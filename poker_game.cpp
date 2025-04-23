@@ -2,13 +2,14 @@
 #include "game_constants.hpp"
 
 #include "poker_hand_evaluator.hpp"
+#include <iostream>
 
 PokerGame::PokerGame()
     : pot(0)
     , small_blind(5)
     , big_blind(10)
     , human_player(new HumanPlayer())
-    , computer_player(new ComputerPlayer(Difficulty::Medium))
+    , computer_player(new ComputerPlayer(Difficulty::Easy))
     , player_turn(PlayerType::Human)
     , dealer(PlayerType::Human) {}
 
@@ -28,9 +29,10 @@ Player* PokerGame::get_player(PlayerType player_type) {
 }
 
 std::tuple<Player*, Player*> PokerGame::get_acting_and_other_player(PlayerType player_type) {
-    Player* acting_player;
-    Player* other_player;
-    switch(player_turn) {
+    Player* acting_player = nullptr; // Initialize to nullptr
+    Player* other_player = nullptr;  // Initialize to nullptr
+
+    switch(player_type) {
     case PlayerType::Human:
         acting_player = human_player;
         other_player = computer_player;
@@ -39,19 +41,26 @@ std::tuple<Player*, Player*> PokerGame::get_acting_and_other_player(PlayerType p
         acting_player = computer_player;
         other_player = human_player;
         break;
+    default:
+        // Handle the case where player_type is unexpected
+        std::cerr << "Invalid PlayerType!" << std::endl;
+        // Optionally throw an exception or return nullptrs
+        acting_player = nullptr;
+        other_player = nullptr;
+        break;
     }
 
     return {acting_player, other_player};
 }
 
 GameAction::Result PokerGame::perform_call(PlayerType player_type) {
-    if (player_type != player_turn) {
-        return GameAction::ERROR("Wrong players turn!");
-    }
+   
 
+    //std::cout << "Calling player type " <<  static_cast<int>(player_type) << std::endl;
     auto [calling_player, other_player] = get_acting_and_other_player(player_type);
 
     std::size_t amount_to_call = other_player->current_bet - calling_player->current_bet;
+    
     if (calling_player->chips < amount_to_call) {
         // Call all-in
         amount_to_call = calling_player->chips;
@@ -63,15 +72,21 @@ GameAction::Result PokerGame::perform_call(PlayerType player_type) {
 
     pot += amount_to_call;
 
-    rotate_player_turn();
+    std::cout  << calling_player->player_type << "  player chips after call  " << calling_player->chips << std::endl;
+    std::cout  << other_player->player_type << "  player chips after call  " << other_player->chips << std::endl;
+    
+    //rotate_player_turn();
+    playing_turn_queue.pop();
+     
+    std::cout << "player_turn_size call" << playing_turn_queue.size() << std::endl;
 
     return GameAction::OK;
 }
 
 GameAction::Result PokerGame::perform_fold(PlayerType player_type) {
-    if (player_type != player_turn) {
+    /*if (player_type != player_turn) {
         return GameAction::ERROR("Wrong players turn!");
-    }
+    }*/
 
     auto [folding_player, other_player] = get_acting_and_other_player(player_type);
 
@@ -82,16 +97,13 @@ GameAction::Result PokerGame::perform_fold(PlayerType player_type) {
 }
 
 GameAction::Result PokerGame::perform_raise(PlayerType player_type, const std::size_t raise) {
-    if (player_type != player_turn) {
-        return GameAction::ERROR("Wrong players turn!");
-    }
-
+    
     auto [raising_player, other_player] = get_acting_and_other_player(player_type);
-
+    
     if (raise < (2 * other_player->current_bet)) {
         return GameAction::ERROR("Raise must be at least 2x other player's bet!");
     }
-
+    
     std::size_t amount_raised = raise - raising_player->current_bet;
     if (amount_raised > raising_player->chips) {
         return GameAction::ERROR("Raise higher than player's chips!");
@@ -100,12 +112,18 @@ GameAction::Result PokerGame::perform_raise(PlayerType player_type, const std::s
     raising_player->chips -= amount_raised;
     raising_player->current_bet = raise;
     raising_player->has_acted = true;
-    other_player->has_acted = false;
+    
 
-    pot += amount_raised;
+    pot += raise;
 
-    rotate_player_turn();
+    std::cout << "amount to raised " << raise << std::endl;
 
+    std::cout  << raising_player->player_type << "  player chips after raise  " << raising_player->chips << std::endl;
+    std::cout  << other_player->player_type << "  player chips after raise  " << other_player->chips << std::endl;
+    
+    //rotate_player_turn();
+    playing_turn_queue.pop();
+    //std::cout << "player_turn_size raise" << playing_turn_queue.size() << std::endl;
     return GameAction::OK;
 }
 
@@ -134,6 +152,10 @@ void PokerGame::rotate_player_turn() {
 PlayerType PokerGame::get_player_turn() const{
     return player_turn;
 
+}
+
+PlayerType PokerGame::get_dealer() const{
+    return dealer;
 }
 
 void PokerGame::set_player_turn(PlayerType type) {
@@ -186,10 +208,15 @@ void PokerGame::deal_river() {
 void PokerGame::clear_player_actions() {
     human_player->has_acted = false;
     computer_player->has_acted = false;
+    playing_turn_queue.push(computer_player);
+    playing_turn_queue.push(human_player);
+    
+    
 }
 
 bool PokerGame::all_players_have_acted() {
-    return human_player->has_acted && computer_player->has_acted;
+    //return human_player->has_acted && computer_player->has_acted;
+    return playing_turn_queue.size() == 0;
 }
 
 const bool PokerGame::has_ended() const {
@@ -241,6 +268,19 @@ void PokerGame::prepare_new_game() {
     computer_player->current_bet = 0;
     winner = {};
     hand_evaluation = {};
+    //playing_turn_queue.push(human_player);
+    //playing_turn_queue.push(computer_player);
+}
+
+std::queue<Player*> PokerGame::get_playing_queue() const{
+    return playing_turn_queue;
+}
+
+bool PokerGame::is_human_made_ui_choice() const{
+     return human_player_made_ui_choice;
+}
+void PokerGame::set_human_made_ui_choice(bool flag) {
+    human_player_made_ui_choice = flag;
 }
 
 void PokerGame::post_blinds() {

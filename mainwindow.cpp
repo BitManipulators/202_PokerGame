@@ -93,19 +93,35 @@ void MainWindow::onStartNewGame() {
 // Starts a new game and updates button states.
 void MainWindow::onNewGame() {
     engine.new_game();
-
     updateChipDisplay();
     displayGame();
-
     // Disable New Game button and Determine Winner button after game starts.
     ui->newGameButton->setDisabled(true);
+    callEngine();
+}
 
-    // Enable Fold, Call, and Place Bet buttons after game starts.
-    ui->foldButton->setEnabled(true);
-    ui->callButton->setEnabled(true);
-    ui->placeBetButton->setEnabled(true);
-
-    ui->player2Label->raise();
+void MainWindow::callEngine(){
+    
+    GameAction::Result result = engine.make_moves();
+    if(result.state == GameAction::ResultState::WAIT_FOR_HUMAN_PLAYER){
+        updateChipDisplay();
+        displayGame();
+        // Enable Fold, Call, and Place Bet buttons after game starts.
+        ui->foldButton->setEnabled(true);
+        ui->callButton->setEnabled(true);
+        ui->placeBetButton->setEnabled(true);
+        ui->player2Label->raise();
+    }
+    
+    if (!result.ok) {
+        QMessageBox::warning(this, "Error", QString::fromStdString(*result.error_message));
+        return;
+    }
+    
+    if (game.has_ended()) {
+        displayWinner();
+        ui->newGameButton->setEnabled(true);
+    }
 }
 
 // Determine Winner slot.
@@ -186,6 +202,7 @@ void MainWindow::displayGame() {
     int cardWidth = 120;
 
     // Calculate positions for better centering
+    // Change based on order
     auto hand1 = game.get_human_player().hand;
     auto hand2 = game.get_computer_player().hand;
     auto community = game.get_community_cards();
@@ -258,70 +275,23 @@ void MainWindow::displayGame() {
 
 void MainWindow::onFold() {
     game.set_player_move(PlayerType::Human, Fold{});
-
-    GameAction::Result fold_result = engine.make_moves();
-    if (!fold_result.ok) {
-        QMessageBox::warning(this, "Error", QString::fromStdString(*fold_result.error_message));
-        return;
-    }
-
-    // Update chip display
-    updateChipDisplay();
-
-    // Enable new game button for next hand
-    ui->newGameButton->setEnabled(true);
-
-    // Update display and UI
-    displayGame();
-
-    if (game.has_ended()) {
-        displayWinner();
-    }
+    game.set_human_made_ui_choice(true);
+    callEngine();
 }
 
 void MainWindow::onCall() {
     game.set_player_move(PlayerType::Human, Call{});
-
-    GameAction::Result call_result = engine.make_moves();
-    if (!call_result.ok) {
-        QMessageBox::warning(this, "Error", QString::fromStdString(*call_result.error_message));
-        return;
-    }
-
-    // Update chip display
-    updateChipDisplay();
-
-    // Update display and UI
-    displayGame();
-
-    if (game.has_ended()) {
-        displayWinner();
-        game.set_player_turn(PlayerType::Human);
-    }
+    game.set_human_made_ui_choice(true);
+    callEngine();
 }
 
 void MainWindow::onRaise() {
     bool ok;
     std::size_t raiseAmount = ui->betLineEdit->text().toLong(&ok);
-
     if (ok) {
         game.set_player_move(PlayerType::Human, Raise{raiseAmount});
-
-        GameAction::Result raise_result = engine.make_moves();
-        if (!raise_result.ok) {
-            QMessageBox::warning(this, "Error", QString::fromStdString(*raise_result.error_message));
-            return;
-        }
-
-        // Update chip display
-        updateChipDisplay();
-
-        // Update display and UI
-        displayGame();
-
-        if (game.has_ended()) {
-            displayWinner();
-        }
+        game.set_human_made_ui_choice(true);
+        callEngine();
     }
 }
 

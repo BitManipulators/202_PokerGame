@@ -7,11 +7,15 @@
 #include "game_state.hpp"
 
 #include <vector>
+#include <iostream>
 
 enum class PlayerType {
     Human,
     Computer
 };
+
+std::ostream& operator<<(std::ostream& os, PlayerType const& player_type);
+
 
 class Player {
 public:

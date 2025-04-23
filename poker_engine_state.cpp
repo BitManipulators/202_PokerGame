@@ -79,6 +79,7 @@ std::tuple<PokerEngineState*, GameAction::Result> PokerEngineState::call(PlayerT
     }
 
     if (game_.all_players_have_acted()) {
+        // reset the queue 
         return transition_state();
     }
 
@@ -92,7 +93,16 @@ std::tuple<PokerEngineState*, GameAction::Result> PokerEngineState::raise(Player
 
     GameAction::Result result = game_.perform_raise(player_type, raise);
 
-    return {this, result};
+    if (!result.ok) {
+        return {this, result};
+    }
+
+    if (game_.all_players_have_acted()) {
+        // reset the queue 
+        return transition_state();
+    }
+
+    return {this, GameAction::OK};
 }
 
 std::tuple<PokerEngineState*, GameAction::Result> PreFlopState::transition_state() {

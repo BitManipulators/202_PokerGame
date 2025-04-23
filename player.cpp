@@ -1,5 +1,14 @@
 #include "player.hpp"
 
+std::ostream& operator<<(std::ostream& os, const PlayerType& type) {
+    switch (type) {
+        case PlayerType::Human:   os << "Human"; break;
+        case PlayerType::Computer: os << "Computer"; break;
+        
+    }
+    return os;
+}
+
 Player::Player(PlayerType type)
     : chips(1000)
     , current_bet(0)
@@ -25,3 +34,4 @@ Move HumanPlayer::get_move(GameState current_state) const {
 Move ComputerPlayer::get_move(GameState current_state) const {
     return strategy->getNextMove(current_state);
 }
+

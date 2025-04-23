@@ -6,13 +6,21 @@
 
 #include <optional>
 #include <vector>
+#include <queue>
 
 namespace GameAction {
+
+enum class ResultState{
+    WAIT_FOR_HUMAN_PLAYER, PLAYER_FOLD, COMPUTER_FOLD,PLAYER_MOVE_ERROR 
+};
 
 struct Result {
     bool ok;
     std::optional<std::string> error_message;
+    ResultState state;
 };
+
+
 
 static Result OK = {
     .ok = true,
@@ -62,6 +70,11 @@ public:
 
     std::string get_winning_hand_description() const;
     PlayerType get_player_turn() const;
+    PlayerType get_dealer() const;
+    std::queue<Player*> get_playing_queue() const;
+    bool is_human_made_ui_choice() const;
+    void set_human_made_ui_choice(bool flag) ;
+    
     void set_player_turn(PlayerType type) ;
 
 
@@ -80,6 +93,8 @@ private:
 
     PlayerType dealer;
     PlayerType player_turn;
+    std::queue<Player*> playing_turn_queue;
+    bool human_player_made_ui_choice = false;
 
     std::optional<PokerHandWinner> winner;
     std::optional<PokerHandEvaluation> hand_evaluation;

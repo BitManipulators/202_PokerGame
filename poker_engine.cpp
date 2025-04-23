@@ -1,5 +1,7 @@
 #include "poker_engine.hpp"
 #include "game_state.hpp"
+#include <queue>
+#include <iostream>
 
 #include "poker_engine_state.hpp"
 
@@ -42,16 +44,45 @@ GameAction::Result PokerEngine::make_move(PlayerType player_type, Move move) {
 
 GameAction::Result PokerEngine::make_moves() {
     
+    GameAction::Result result;
     GameState current_state = {};
-    GameAction::Result result = make_move(PlayerType::Human, game.get_human_player().get_move(current_state));
-    if (!result.ok || game.has_ended()) {
-        return result;
-    }
-
-    current_state.community_cards = game.get_community_cards();
-    current_state.hands = game.get_computer_player().hand;
-    current_state.stage = state->enum_state_;
-    current_state.current_bet = game.get_human_player().current_bet;
     
-    return make_move(PlayerType::Computer, game.get_computer_player().get_move(current_state)); 
+    
+    while(game.get_playing_queue().size() != 0 ){
+
+        Player* current_player = game.get_playing_queue().front();
+        
+        //std::cout << "Make moves is human " << (current_player->player_type == PlayerType::Human) << std::endl;
+        if(current_player->player_type == PlayerType::Human ){
+            
+            if(game.is_human_made_ui_choice() == true){
+                result = make_move(PlayerType::Human, game.get_human_player().get_move(current_state));
+                
+                if (!result.ok || game.has_ended()) {
+                    game.set_human_made_ui_choice(false);
+                    return result;
+                }
+            
+            }else{
+                
+                std::cout << "Waiting for Human Choice"<< std::endl;
+                return GameAction::Result{true,"",GameAction::ResultState::WAIT_FOR_HUMAN_PLAYER}; // Need inversion of control here
+            }
+        
+        }else if(current_player->player_type == PlayerType::Computer){
+            
+            current_state.community_cards = game.get_community_cards();
+            current_state.hands = game.get_computer_player().hand;
+            current_state.stage = state->enum_state_;
+            current_state.current_bet = game.get_human_player().current_bet;
+            result = make_move(PlayerType::Computer, game.get_computer_player().get_move(current_state));
+            game.set_human_made_ui_choice(false);
+            if (!result.ok || game.has_ended()) {
+                return result;
+            }
+        }
+        
+    }
+    
+    return result;    
 }

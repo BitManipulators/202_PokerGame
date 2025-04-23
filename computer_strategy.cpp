@@ -22,6 +22,9 @@ Move EasyStrategy::getNextMove(GameState current_state){
             return Call{};
         default :
             std::size_t bet = current_state.current_bet;
+            if (bet == 0) {
+                bet = 10;
+            }
             return Raise{2*bet};
     }
 }
