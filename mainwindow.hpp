@@ -10,13 +10,14 @@
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
 QT_END_NAMESPACE
-class MainWindow : public QMainWindow
+class MainWindow : public QMainWindow, public Observer
 {
     Q_OBJECT
 
 public:
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
+    void onGameEvent(const GameEvent& event) override;
 
 private slots:
     void onStartNewGame();
@@ -39,7 +40,6 @@ private:
 
     void createGlowEffect(QGraphicsPixmapItem *cardItem);
 
-    void showComputerAction(const QString& action);
 };
 
 #endif // MAINWINDOW_H

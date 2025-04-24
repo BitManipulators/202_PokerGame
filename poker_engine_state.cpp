@@ -33,7 +33,6 @@ std::string to_string(PokerEngineEnumState enum_state) {
 }
 
 std::tuple<PokerEngineState*, GameAction::Result> transition_to_preflop(PokerEngineState* preflop_state, PokerGame& game) {
-    std::cout << "Transitioning to preflop" << std::endl;
 
     game.prepare_new_game();
     game.clear_player_actions();
@@ -48,6 +47,10 @@ std::tuple<PokerEngineState*, GameAction::Result> transition_to_preflop(PokerEng
 } // namespace
 
 std::tuple<PokerEngineState*, GameAction::Result> PokerEngineStatesBlock::initial_state() {
+
+    std::string from = to_string(game_.getStage());
+    game_.setStage(PokerEngineEnumState::PreFlop);
+    game_.notifyGameEvent(std::make_shared<StateTransitionEvent>(from, "PreFlop"));
     return transition_to_preflop(PREFLOP_STATE, game_);
 }
 
@@ -56,9 +59,6 @@ std::tuple<PokerEngineState*, GameAction::Result> PokerEngineState::new_game() {
 }
 
 std::tuple<PokerEngineState*, GameAction::Result> PokerEngineState::fold(PlayerType player_type) {
-    std::cout << "Fold called in " << to_string(enum_state_)
-              << " by " << to_string(player_type)
-              << std::endl;
 
     GameAction::Result result = game_.perform_fold(player_type);
     if (!result.ok) {
@@ -69,9 +69,6 @@ std::tuple<PokerEngineState*, GameAction::Result> PokerEngineState::fold(PlayerT
 }
 
 std::tuple<PokerEngineState*, GameAction::Result> PokerEngineState::call(PlayerType player_type) {
-    std::cout << "Call called in " << to_string(enum_state_)
-              << " by " << to_string(player_type)
-              << std::endl;
 
     GameAction::Result result = game_.perform_call(player_type);
     if (!result.ok) {
@@ -86,9 +83,6 @@ std::tuple<PokerEngineState*, GameAction::Result> PokerEngineState::call(PlayerT
 }
 
 std::tuple<PokerEngineState*, GameAction::Result> PokerEngineState::raise(PlayerType player_type, const std::size_t raise) {
-    std::cout << "Raise called in " << to_string(enum_state_)
-              << " by " << to_string(player_type)
-              << std::endl;
 
     GameAction::Result result = game_.perform_raise(player_type, raise);
 
@@ -96,7 +90,9 @@ std::tuple<PokerEngineState*, GameAction::Result> PokerEngineState::raise(Player
 }
 
 std::tuple<PokerEngineState*, GameAction::Result> PreFlopState::transition_state() {
-    std::cout << "Transitioning to flop" << std::endl;
+    std::string from = to_string(game_.getStage());
+    game_.setStage(PokerEngineEnumState::Flop);
+    game_.notifyGameEvent(std::make_shared<StateTransitionEvent>(from, "Flop"));
 
     game_.clear_player_actions();
     game_.deal_flop();
@@ -105,7 +101,9 @@ std::tuple<PokerEngineState*, GameAction::Result> PreFlopState::transition_state
 }
 
 std::tuple<PokerEngineState*, GameAction::Result> FlopState::transition_state() {
-    std::cout << "Transitioning to turn" << std::endl;
+    std::string from = to_string(game_.getStage());
+    game_.setStage(PokerEngineEnumState::Turn);
+    game_.notifyGameEvent(std::make_shared<StateTransitionEvent>(from, "Turn"));
 
     game_.clear_player_actions();
     game_.deal_turn();
@@ -114,7 +112,9 @@ std::tuple<PokerEngineState*, GameAction::Result> FlopState::transition_state() 
 }
 
 std::tuple<PokerEngineState*, GameAction::Result> TurnState::transition_state() {
-    std::cout << "Transitioning to river" << std::endl;
+    std::string from = to_string(game_.getStage());
+    game_.setStage(PokerEngineEnumState::River);
+    game_.notifyGameEvent(std::make_shared<StateTransitionEvent>(from, "River"));
 
     game_.clear_player_actions();
     game_.deal_river();
@@ -123,7 +123,9 @@ std::tuple<PokerEngineState*, GameAction::Result> TurnState::transition_state() 
 }
 
 std::tuple<PokerEngineState*, GameAction::Result> RiverState::transition_state() {
-    std::cout << "Transitioning to showdown" << std::endl;
+    std::string from = to_string(game_.getStage());
+    game_.setStage(PokerEngineEnumState::Showdown);
+    game_.notifyGameEvent(std::make_shared<StateTransitionEvent>(from, "Showdown"));
 
     game_.clear_player_actions();
     game_.determine_winner();

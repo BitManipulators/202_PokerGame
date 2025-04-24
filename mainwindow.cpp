@@ -1,6 +1,7 @@
 #include "mainwindow.hpp"
 #include "ui_mainwindow.h"
 #include "poker_game.hpp"
+#include "console_logger.hpp"
 #include <QGraphicsPixmapItem>
 #include <QMessageBox>
 #include <QDebug>
@@ -22,7 +23,13 @@ MainWindow::MainWindow(QWidget *parent)
     , game()
     , engine(game)
 {
+
+    game.add_observer(this);
+
+    ConsoleLogger* consoleLogger = new ConsoleLogger();
+    game.add_observer(consoleLogger);
     ui->setupUi(this);
+
 
     this->setGeometry(
         QStyle::alignedRect(
@@ -97,7 +104,7 @@ void MainWindow::onNewGame() {
     updateChipDisplay();
     displayGame();
 
-    ui->computerMoveLabel->clear();
+    ui->moveHistoryList->clear();
 
     // Disable New Game button and Determine Winner button after game starts.
     ui->newGameButton->setDisabled(true);
@@ -281,14 +288,6 @@ void MainWindow::onFold() {
     const Player& computer = game.get_computer_player();
     const Move& move = computer.getLatestMove();
 
-    if (std::holds_alternative<Fold>(move)) {
-        showComputerAction("Computer folded!");
-    } else if (std::holds_alternative<Raise>(move)) {
-        showComputerAction(QString("Computer raised to %1 chips!").arg(computer.current_bet));
-    } else {
-        showComputerAction("Computer called!");
-    }
-
     // Only display winner if game has ended
     if (game.has_ended()) {
         displayGame();
@@ -314,15 +313,6 @@ void MainWindow::onCall() {
 
     const Player& computer = game.get_computer_player();
     const Move& move = computer.getLatestMove();
-
-    // Display computer's move
-    if (std::holds_alternative<Fold>(move)) {
-        showComputerAction("Computer folded!");
-    } else if (std::holds_alternative<Raise>(move)) {
-        showComputerAction(QString("Computer raised to %1 chips!").arg(computer.current_bet));
-    } else {
-        showComputerAction("Computer called!");
-    }
 
     // Check if game has ended
     if (game.has_ended()) {
@@ -355,15 +345,6 @@ void MainWindow::onRaise() {
 
     const Player& computer = game.get_computer_player();
     const Move& move = computer.getLatestMove();
-
-    // Show computer's action
-    if (std::holds_alternative<Fold>(move)) {
-        showComputerAction("Computer folded!");
-    } else if (std::holds_alternative<Raise>(move)) {
-        showComputerAction(QString("Computer raised to %1 chips!").arg(computer.current_bet));
-    } else {
-        showComputerAction("Computer called!");
-    }
 
     // Only display winner if game has ended
     if (game.has_ended()) {
@@ -404,7 +385,26 @@ void MainWindow::createGlowEffect(QGraphicsPixmapItem *cardItem) {
     glowGroup->start();
 }
 
-void MainWindow::showComputerAction(const QString& action) {
-    ui->computerMoveLabel->setText(action);
-    ui->computerMoveLabel->raise();
+void MainWindow::onGameEvent(const GameEvent& event) {
+
+qDebug() << "[DEBUG] onGameEvent triggered";
+    if (auto* moveEvent = dynamic_cast<const MoveEvent*>(&event)) {
+        QString text;
+        if (std::holds_alternative<Fold>(moveEvent->move)) {
+            text = moveEvent->player == PlayerType::Human ? "You folded!" : "Computer folded!";
+        } else if (std::holds_alternative<Call>(moveEvent->move)) {
+            text = moveEvent->player == PlayerType::Human ? "You called!" : "Computer called!";
+        } else if (std::holds_alternative<Raise>(moveEvent->move)) {
+            auto raiseVal = std::get<Raise>(moveEvent->move).amount;
+            text = moveEvent->player == PlayerType::Human
+                ? QString("You raised to %1!").arg(raiseVal)
+                : QString("Computer raised to %1!").arg(raiseVal);
+        }
+
+        qDebug() << "[DEBUG] MoveEvent received:" << text;
+
+        ui->moveHistoryList->addItem(text);
+        ui->moveHistoryList->scrollToBottom();
+
+    }
 }

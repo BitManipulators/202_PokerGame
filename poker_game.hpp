@@ -3,9 +3,11 @@
 #include "deck.hpp"
 #include "player.hpp"
 #include "poker_hand_evaluator.hpp"
+#include "observer.hpp"
 
 #include <optional>
 #include <vector>
+
 
 namespace GameAction {
 
@@ -69,6 +71,11 @@ public:
     std::tuple<Player*, Player*> get_acting_and_other_player(PlayerType player_type);
 
     PokerEngineEnumState stage;
+    PokerEngineEnumState getStage() const;
+    void setStage(PokerEngineEnumState newStage);
+
+    void add_observer(Observer* observer);
+    void notifyGameEvent(std::shared_ptr<GameEvent> event);
 
 
 private:
@@ -86,4 +93,6 @@ private:
 
     std::optional<PokerHandWinner> winner;
     std::optional<PokerHandEvaluation> hand_evaluation;
+
+    std::vector<Observer*> observers;
 };

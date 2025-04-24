@@ -4,6 +4,8 @@
 
 #include "poker_hand_evaluator.hpp"
 
+#include <QDebug>
+
 PokerGame::PokerGame()
     : pot(0)
     , small_blind(5)
@@ -286,6 +288,7 @@ void PokerGame::post_blinds() {
 
 void PokerGame::set_player_move(PlayerType player_type, Move move) {
     get_player(player_type)->set_move(move);
+    notifyGameEvent(std::make_shared<MoveEvent>(player_type, move));
 }
 
 std::string PokerGame::get_winning_hand_description() const {
@@ -293,4 +296,24 @@ std::string PokerGame::get_winning_hand_description() const {
         return "Unknown hand";
     }
     return hand_evaluation.value().to_string();
+}
+
+void PokerGame::add_observer(Observer* observer) {
+    observers.push_back(observer);
+}
+
+void PokerGame::notifyGameEvent(std::shared_ptr<GameEvent> event) {
+        qDebug() << "[DEBUG] Notifying observers of game event " << observers.size() << " observers";
+        for (auto* obs : observers) {
+            qDebug() << "[DEBUG] Notifying observer";
+            obs->onGameEvent(*event);
+        }
+}
+
+void PokerGame::setStage(PokerEngineEnumState newStage) {
+    stage = newStage;
+}
+
+PokerEngineEnumState PokerGame::getStage() const {
+    return stage;
 }
