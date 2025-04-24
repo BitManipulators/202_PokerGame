@@ -68,7 +68,7 @@ GameAction::Result PokerEngine::make_moves() {
         GameAction::Result result = make_move(PlayerType::Computer, computer_move);
 
         if (!result.ok || game.has_ended()) {
-            std::cout<< "Computer move failed!" << std::endl;
+            std::cout<< "Game Ended!" << std::endl;
             return result;
         }
     }

@@ -39,6 +39,7 @@ qt_add_library(
     move.hpp
     observer.hpp
     game_event.hpp
+    console_logger.hpp
 )
 
 set(PROJECT_SOURCES

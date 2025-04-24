@@ -1,6 +1,7 @@
 #include "mainwindow.hpp"
 #include "ui_mainwindow.h"
 #include "poker_game.hpp"
+#include "console_logger.hpp"
 #include <QGraphicsPixmapItem>
 #include <QMessageBox>
 #include <QDebug>
@@ -22,8 +23,12 @@ MainWindow::MainWindow(QWidget *parent)
     , game()
     , engine(game)
 {
-    ui->setupUi(this);
+
     game.add_observer(this);
+
+    ConsoleLogger* consoleLogger = new ConsoleLogger();
+    game.add_observer(consoleLogger);
+    ui->setupUi(this);
 
 
     this->setGeometry(

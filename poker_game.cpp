@@ -4,6 +4,8 @@
 
 #include "poker_hand_evaluator.hpp"
 
+#include <QDebug>
+
 PokerGame::PokerGame()
     : pot(0)
     , small_blind(5)
@@ -301,7 +303,17 @@ void PokerGame::add_observer(Observer* observer) {
 }
 
 void PokerGame::notifyGameEvent(std::shared_ptr<GameEvent> event) {
+        qDebug() << "[DEBUG] Notifying observers of game event " << observers.size() << " observers";
         for (auto* obs : observers) {
+            qDebug() << "[DEBUG] Notifying observer";
             obs->onGameEvent(*event);
         }
+}
+
+void PokerGame::setStage(PokerEngineEnumState newStage) {
+    stage = newStage;
+}
+
+PokerEngineEnumState PokerGame::getStage() const {
+    return stage;
 }
