@@ -37,7 +37,8 @@ qt_add_library(
     poker_engine.hpp
     poker_engine.cpp
     move.hpp
-
+    observer.hpp
+    game_event.hpp
 )
 
 set(PROJECT_SOURCES
@@ -131,18 +132,18 @@ if(APPLE)
       )
     endif()
 
-    if(MACDEPLOYQT_EXECUTABLE)
-      # Use macdeployqt to handle all deployment tasks automatically
-      add_custom_command(TARGET poker_gui POST_BUILD
-          COMMAND "${MACDEPLOYQT_EXECUTABLE}"
-              "${CMAKE_CURRENT_BINARY_DIR}/poker_gui.app"
-              -always-overwrite
-          COMMENT "Running macdeployqt to create a standalone application bundle"
-      )
-      message(STATUS "Found macdeployqt: ${MACDEPLOYQT_EXECUTABLE}")
-    else()
-      message(WARNING "macdeployqt not found. The application bundle may not be properly created.")
-    endif()
+    # if(MACDEPLOYQT_EXECUTABLE)
+    #   # Use macdeployqt to handle all deployment tasks automatically
+    #   add_custom_command(TARGET poker_gui POST_BUILD
+    #       COMMAND "${MACDEPLOYQT_EXECUTABLE}"
+    #           "${CMAKE_CURRENT_BINARY_DIR}/poker_gui.app"
+    #           -always-overwrite
+    #       COMMENT "Running macdeployqt to create a standalone application bundle"
+    #   )
+    #   message(STATUS "Found macdeployqt: ${MACDEPLOYQT_EXECUTABLE}")
+    # else()
+    #   message(WARNING "macdeployqt not found. The application bundle may not be properly created.")
+    # endif()
 endif()
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g")

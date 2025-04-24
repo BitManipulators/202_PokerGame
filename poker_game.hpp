@@ -3,9 +3,11 @@
 #include "deck.hpp"
 #include "player.hpp"
 #include "poker_hand_evaluator.hpp"
+#include "observer.hpp"
 
 #include <optional>
 #include <vector>
+
 
 namespace GameAction {
 
@@ -70,6 +72,8 @@ public:
 
     PokerEngineEnumState stage;
 
+    void add_observer(Observer* observer);
+    void notifyGameEvent(std::shared_ptr<GameEvent> event);
 
 private:
     std::size_t pot;
@@ -86,4 +90,6 @@ private:
 
     std::optional<PokerHandWinner> winner;
     std::optional<PokerHandEvaluation> hand_evaluation;
+
+    std::vector<Observer*> observers;
 };
