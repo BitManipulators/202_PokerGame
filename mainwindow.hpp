@@ -4,7 +4,7 @@
 #include <QMainWindow>
 #include <QPushButton>
 #include <QGraphicsScene>
-#include "poker_engine.hpp"
+#include "game_controller.hpp"
 
 
 QT_BEGIN_NAMESPACE
@@ -29,12 +29,12 @@ private slots:
 private:
     Ui::MainWindow *ui;
     QGraphicsScene *scene;
-    PokerGame game;
-    PokerEngine engine;
+    GameController controller;
 
-    void displayGame();
-    void displayWinner();
-    void updateChipDisplay();
+    void displayGame(UIComponents ui_components_state);
+    void displayWinner(UIComponents ui_components_state);
+    void updateChipDisplay(UIComponents ui_components_state);
+    void callEngine();
 
     static std::map<const Card*, QPixmap> card_image_cache;
 

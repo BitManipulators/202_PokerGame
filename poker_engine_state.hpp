@@ -7,6 +7,19 @@
 
 class PokerEngineStatesBlock;
 
+enum class ResultState{
+    HUMAN_PLAYER_ACTION,
+    HUMAN_PLAYER_ACTION_ERROR,
+    GAME_ENDED
+};
+
+
+struct ControllerResult{
+    ResultState state;
+    std::optional<Move> move;
+    std::optional<std::string> error_message;
+};
+
 class PokerEngineState {
 public:
     PokerEngineState(PokerGame& game,

@@ -13,6 +13,8 @@ enum class PlayerType {
     Computer
 };
 
+std::ostream& operator<<(std::ostream& os, PlayerType const& player_type);
+
 class Player {
 public:
     Player(PlayerType player_type);

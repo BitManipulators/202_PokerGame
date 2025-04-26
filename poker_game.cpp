@@ -12,7 +12,6 @@ PokerGame::PokerGame()
     , big_blind(10)
     , human_player(new HumanPlayer())
     , computer_player(new ComputerPlayer(Difficulty::Medium))
-    , player_turn(PlayerType::Human)
     , dealer(PlayerType::Human)
     , stage(PokerEngineEnumState::PreFlop) {}
 
@@ -32,9 +31,10 @@ Player* PokerGame::get_player(PlayerType player_type) {
 }
 
 std::tuple<Player*, Player*> PokerGame::get_acting_and_other_player(PlayerType player_type) {
-    Player* acting_player;
-    Player* other_player;
-    switch(player_turn) {
+    Player* acting_player = nullptr; // Initialize to nullptr
+    Player* other_player = nullptr;  // Initialize to nullptr
+
+    switch(player_type) {
     case PlayerType::Human:
         acting_player = human_player;
         other_player = computer_player;
@@ -43,15 +43,23 @@ std::tuple<Player*, Player*> PokerGame::get_acting_and_other_player(PlayerType p
         acting_player = computer_player;
         other_player = human_player;
         break;
+    default:
+        // Handle the case where player_type is unexpected
+        std::cerr << "Invalid PlayerType!" << std::endl;
+        // Optionally throw an exception or return nullptrs
+        acting_player = nullptr;
+        other_player = nullptr;
+        break;
     }
 
     return {acting_player, other_player};
 }
 
 GameAction::Result PokerGame::perform_call(PlayerType player_type) {
-    if (player_type != player_turn) {
+    
+    /*if (player_type != player_turn) {
         return GameAction::ERROR("Wrong players turn!");
-    }
+    }*/
 
     auto [calling_player, other_player] = get_acting_and_other_player(player_type);
 
@@ -67,15 +75,19 @@ GameAction::Result PokerGame::perform_call(PlayerType player_type) {
 
     pot += amount_to_call;
 
-    rotate_player_turn();
+    std::cout  << calling_player->player_type << "  player chips after call  " << calling_player->chips << std::endl;
+    std::cout  << other_player->player_type << "  player chips after call  " << other_player->chips << std::endl;
+    
+    next_player_turn();
 
     return GameAction::OK;
 }
 
 GameAction::Result PokerGame::perform_fold(PlayerType player_type) {
-    if (player_type != player_turn) {
+    
+    /*if (player_type != player_turn) {
         return GameAction::ERROR("Wrong players turn!");
-    }
+    }*/
 
     auto [folding_player, other_player] = get_acting_and_other_player(player_type);
 
@@ -87,9 +99,10 @@ GameAction::Result PokerGame::perform_fold(PlayerType player_type) {
 }
 
 GameAction::Result PokerGame::perform_raise(PlayerType player_type, const std::size_t raise) {
-    if (player_type != player_turn) {
+    
+    /*if (player_type != player_turn) {
         return GameAction::ERROR("Wrong players turn!");
-    }
+    }*/
 
     auto [raising_player, other_player] = get_acting_and_other_player(player_type);
 
@@ -109,8 +122,12 @@ GameAction::Result PokerGame::perform_raise(PlayerType player_type, const std::s
 
     pot += amount_raised;
 
-    rotate_player_turn();
+    std::cout << "amount to raised " << raise << std::endl;
 
+    std::cout  << raising_player->player_type << "  player chips after raise  " << raising_player->chips << std::endl;
+    std::cout  << other_player->player_type << "  player chips after raise  " << other_player->chips << std::endl;
+    
+    next_player_turn();
     return GameAction::OK;
 }
 
@@ -125,24 +142,17 @@ void PokerGame::rotate_dealer() {
     }
 }
 
-void PokerGame::rotate_player_turn() {
-    switch(player_turn) {
-    case PlayerType::Human:
-        player_turn = PlayerType::Computer;
-        break;
-    case PlayerType::Computer:
-        player_turn = PlayerType::Human;
-        break;
-    }
+void PokerGame::next_player_turn() {
+    playing_turn_queue.pop();
 }
 
-PlayerType PokerGame::get_player_turn() const{
-    return player_turn;
-
+void PokerGame::set_playing_order() {
+    playing_turn_queue.push(human_player);
+    playing_turn_queue.push(computer_player);
 }
 
-void PokerGame::set_player_turn(PlayerType type) {
-     player_turn = type;
+std::queue<Player*> PokerGame::get_playing_queue() const{
+    return playing_turn_queue;
 }
 
 void PokerGame::shuffle_deck() {
@@ -193,8 +203,20 @@ void PokerGame::clear_player_actions() {
     computer_player->has_acted = false;
 }
 
+void PokerGame::clear_player_bets() {
+    human_player->current_bet = 0;
+    computer_player->current_bet = 0;    
+}
+
+bool PokerGame::is_human_made_ui_choice() const{
+     return human_player_made_ui_choice;
+}
+void PokerGame::set_human_made_ui_choice(bool flag) {
+    human_player_made_ui_choice = flag;
+}
+
 bool PokerGame::all_players_have_acted() {
-    return human_player->has_acted && computer_player->has_acted;
+    return playing_turn_queue.size() == 0;
 }
 
 const bool PokerGame::has_ended() const {
@@ -249,19 +271,6 @@ void PokerGame::prepare_new_game() {
 
     // Reset stage and player turn
     stage = PokerEngineEnumState::PreFlop;
-
-    // Rotate dealer
-    rotate_dealer();
-
-    // Set player turn to Small Blind
-    if (dealer == PlayerType::Human) {
-        player_turn = PlayerType::Computer; // Human is dealer, so computer starts
-    } else {
-        player_turn = PlayerType::Human;    // Computer is dealer, so human starts
-    }
-
-    // Clear any previous moves/actions
-    clear_player_actions();
 }
 
 

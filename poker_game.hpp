@@ -7,6 +7,8 @@
 
 #include <optional>
 #include <vector>
+#include <queue>
+#include <iostream>
 
 
 namespace GameAction {
@@ -44,12 +46,22 @@ public:
     void deal_turn();
     void deal_river();
 
+    void clear_player_bets();
     void clear_player_actions();
     bool all_players_have_acted();
     void set_player_move(PlayerType type, Move move);
+    bool is_human_made_ui_choice() const;
+    void set_human_made_ui_choice(bool flag) ;
 
     void rotate_dealer();
-    void rotate_player_turn();
+    //void rotate_player_turn();
+
+    void next_player_turn();
+    void set_playing_order();
+    std::queue<Player*> get_playing_queue() const;
+
+    
+
     void post_blinds();
     void shuffle_deck();
     void prepare_new_game();
@@ -63,8 +75,7 @@ public:
     const std::vector<const Card*>& get_community_cards() const;
 
     std::string get_winning_hand_description() const;
-    PlayerType get_player_turn() const;
-    void set_player_turn(PlayerType type) ;
+    
 
 
     Player* get_player(PlayerType player_type);
@@ -89,7 +100,9 @@ private:
     std::vector<const Card*> community_cards;
 
     PlayerType dealer;
-    PlayerType player_turn;
+    //PlayerType player_turn;
+    std::queue<Player*> playing_turn_queue;
+    bool human_player_made_ui_choice = false;
 
     std::optional<PokerHandWinner> winner;
     std::optional<PokerHandEvaluation> hand_evaluation;
