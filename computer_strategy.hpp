@@ -49,3 +49,7 @@ private:
 
 };
 
+class HardStrategy : public ComputerStrategy {
+    Move getNextMove(GameState current_state) override;
+};    
+

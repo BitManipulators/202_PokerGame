@@ -11,7 +11,7 @@ PokerGame::PokerGame()
     , small_blind(5)
     , big_blind(10)
     , human_player(new HumanPlayer())
-    , computer_player(new ComputerPlayer(Difficulty::Medium))
+    , computer_player(new ComputerPlayer(Difficulty::Hard))
     , player_turn(PlayerType::Human)
     , dealer(PlayerType::Human)
     , stage(PokerEngineEnumState::PreFlop) {}
