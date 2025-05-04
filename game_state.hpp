@@ -10,5 +10,7 @@ struct GameState{
        std::vector<const Card*> community_cards;
        PokerEngineEnumState stage;
        std::size_t current_bet;
+       std::size_t pot_size;
+       std::size_t computer_chips;
 
 };
