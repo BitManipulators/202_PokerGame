@@ -7,13 +7,13 @@ set(CMAKE_AUTORCC ON)
 
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
-set(CMAKE_PREFIX_PATH "/home/suriya-018231499/Qt/6.8.2/gcc_64/lib/cmake")
+
 
 add_subdirectory(external/pokerstove)
 
 find_package(QT NAMES Qt6 Qt5 REQUIRED COMPONENTS Widgets Svg REQUIRED)
 find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Widgets)
-find_package(Boost REQUIRED COMPONENTS program_options)
+#find_package(Boost REQUIRED COMPONENTS program_options)
 
 qt_add_library(
     poker_game
@@ -76,7 +76,7 @@ else()
     endif()
 endif()
 
-target_link_libraries(poker_game PRIVATE Qt${QT_VERSION_MAJOR}::Widgets peval penum Boost::program_options )
+target_link_libraries(poker_game PRIVATE Qt${QT_VERSION_MAJOR}::Widgets peval penum )
 target_include_directories(poker_game PRIVATE ${CMAKE_SOURCE_DIR}/external/pokerstove/src/lib)
 target_link_libraries(poker_gui PRIVATE Qt${QT_VERSION_MAJOR}::Widgets poker_game)
 
