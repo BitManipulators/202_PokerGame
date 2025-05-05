@@ -40,6 +40,7 @@ private:
 
     void createGlowEffect(QGraphicsPixmapItem *cardItem);
     void onStrategyChanged(const QString& strategy);
+    void showPokerHandRanking();
 
 };
 

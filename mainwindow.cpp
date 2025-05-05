@@ -65,13 +65,15 @@ MainWindow::MainWindow(QWidget *parent)
     connect(ui->foldButton, &QPushButton::clicked, this, &MainWindow::onFold);
     connect(ui->callButton, &QPushButton::clicked, this, &MainWindow::onCall);
     connect(ui->strategyComboBox, &QComboBox::currentTextChanged, this, &MainWindow::onStrategyChanged);
-
+    connect(ui->menuButton, &QPushButton::clicked, this, &MainWindow::showPokerHandRanking);
 
     // Start with landing page
     ui->stackedWidget->setCurrentIndex(0);
     ui->foldButton->setDisabled(true);
     ui->callButton->setDisabled(true);
     ui->placeBetButton->setDisabled(true);
+    ui->gameFrameLayout->setContentsMargins(0, 0, 0, 0);
+
 
 
     // Update UI to show chips and pot
@@ -513,3 +515,61 @@ void MainWindow::onStrategyChanged(const QString& strategy) {
 
     qDebug() << "[INFO] Game started with strategy:" << strategy;
 }
+
+void MainWindow::showPokerHandRanking() {
+    QDialog *dialog = new QDialog(this);
+    dialog->setWindowTitle("Poker Hand Rankings");
+    dialog->setModal(true);
+    dialog->setAttribute(Qt::WA_DeleteOnClose);
+
+    QVBoxLayout *layout = new QVBoxLayout(dialog);
+
+    QLabel *imageLabel = new QLabel(dialog);
+    QPixmap image(":/images/poker_hands_resized.png");
+
+    if (!image.isNull()) {
+        imageLabel->setPixmap(image.scaled(800, 400, Qt::KeepAspectRatio, Qt::SmoothTransformation));
+        imageLabel->setAlignment(Qt::AlignCenter);
+    } else {
+        imageLabel->setText("Image failed to load.");
+    }
+
+    layout->addWidget(imageLabel);
+
+    // Add stretch before the button
+    layout->addStretch();
+
+    QPushButton *closeButton = new QPushButton("Close", dialog);
+    closeButton->setFixedSize(100, 30);
+    closeButton->setCursor(Qt::PointingHandCursor);
+    closeButton->setStyleSheet(R"(
+    QPushButton {
+        background-color: #e74c3c;   /* Bright red */
+        color: white;
+        font-weight: bold;
+        border: none;
+        border-radius: 5px;
+        padding: 6px 12px;
+    }
+    QPushButton:hover {
+        background-color: #c0392b;
+    }
+    QPushButton:pressed {
+        background-color: #a93226;
+    }
+)");
+
+    QHBoxLayout *buttonLayout = new QHBoxLayout();
+    buttonLayout->addStretch();
+    buttonLayout->addWidget(closeButton);
+    buttonLayout->addStretch();
+
+    layout->addLayout(buttonLayout);
+
+    QObject::connect(closeButton, &QPushButton::clicked, dialog, &QDialog::accept);
+
+    dialog->setLayout(layout);
+    dialog->resize(850, 500);
+    dialog->exec();
+}
+
