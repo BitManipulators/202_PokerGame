@@ -173,7 +173,6 @@ void MainWindow::onNewGame() {
     ui->foldButton->setEnabled(true);
     ui->callButton->setEnabled(true);
     ui->placeBetButton->setEnabled(true);
-    //ui->strategyComboBox->setEnabled(true);
 
     ui->player2Label->raise();
 }
@@ -210,8 +209,6 @@ void MainWindow::displayWinner() {
 
         msgBox.exec();
 
-        ui->strategyComboBox->setEnabled(true);
-        ui->strategyComboBox->setCurrentIndex(0);
         ui->foldButton->setDisabled(true);
         ui->callButton->setDisabled(true);
         ui->placeBetButton->setDisabled(true);
@@ -225,11 +222,6 @@ void MainWindow::displayWinner() {
     } catch (const std::exception &e) {
         QMessageBox::warning(this, "Error", e.what());
     }
-
-    // After determining the winner, enable New Game button to allow restarting.
-
-    ui->strategyComboBox->setEnabled(true);
-    ui->strategyComboBox->setCurrentIndex(0);
 
     ui->newGameButton->setEnabled(true);
     ui->foldButton->setDisabled(true);
