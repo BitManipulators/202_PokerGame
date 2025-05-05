@@ -215,6 +215,13 @@ QFrame#betFrame, QFrame#controlsFrame {
     margin-bottom: 5px;
     padding: 8px;
 }
+
+QListWidget {
+    color: white;
+    background-color: #113d2c;
+    selection-background-color: #004d99;
+}
+
    </string>
   </property>
   <widget class="QWidget" name="centralwidget">
@@ -314,38 +321,77 @@ QFrame#betFrame, QFrame#controlsFrame {
           </property>
           <layout class="QVBoxLayout" name="gameFrameLayout">
            <item>
-            <widget class="QComboBox" name="strategyComboBox">
-            <property name="minimumSize">
+            <layout class="QHBoxLayout" name="topBarLayout">
+             <item>
+              <widget class="QComboBox" name="strategyComboBox">
+               <property name="minimumSize">
                 <size>
-                <width>150</width>
-                <height>25</height>
+                 <width>150</width>
+                 <height>25</height>
                 </size>
-            </property>
-            <property name="maximumSize">
+               </property>
+               <property name="maximumSize">
                 <size>
-                <width>120</width>
-                <height>25</height>
+                 <width>120</width>
+                 <height>25</height>
                 </size>
-            </property>
-            <property name="currentIndex">
+               </property>
+               <property name="styleSheet">
+                <string notr="true">QComboBox {
+    color: black;
+}
+</string>
+               </property>
+               <property name="currentIndex">
                 <number>0</number>
-            </property>
-            <item>
+               </property>
+               <item>
                 <property name="text">
-                <string>Select Strategy</string>
+                 <string>Select Strategy</string>
                 </property>
-            </item>
-            <item>
+               </item>
+               <item>
                 <property name="text">
-                <string>Easy</string>
+                 <string>Easy</string>
                 </property>
-            </item>
-            <item>
+               </item>
+               <item>
                 <property name="text">
-                <string>Medium</string>
+                 <string>Medium</string>
                 </property>
-            </item>
-            </widget>
+               </item>
+              </widget>
+             </item>
+             <item>
+              <spacer name="horizontalSpacer">
+               <property name="orientation">
+                <enum>Qt::Orientation::Horizontal</enum>
+               </property>
+               <property name="sizeHint" stdset="0">
+                <size>
+                 <width>40</width>
+                 <height>20</height>
+                </size>
+               </property>
+              </spacer>
+             </item>
+             <item>
+              <widget class="QPushButton" name="menuButton">
+               <property name="minimumSize">
+                <size>
+                 <width>30</width>
+                 <height>56</height>
+                </size>
+               </property>
+               <property name="toolTip">
+                <string>Show Poker Hand Rankings</string>
+               </property>
+                <property name="text">
+                    <string>❓</string>
+                </property>
+              </widget>
+             </item>
+            </layout>
            </item>
            <item>
             <widget class="QLabel" name="player2Label">
