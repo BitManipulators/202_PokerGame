@@ -25,3 +25,7 @@ Move HumanPlayer::get_move(GameState current_state) const {
 Move ComputerPlayer::get_move(GameState current_state) const {
     return strategy->getNextMove(current_state);
 }
+
+void ComputerPlayer::set_strategy(std::unique_ptr<ComputerStrategy> new_strategy) {
+    strategy = std::move(new_strategy);
+}

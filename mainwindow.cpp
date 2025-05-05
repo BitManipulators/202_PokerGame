@@ -29,6 +29,7 @@ MainWindow::MainWindow(QWidget *parent)
     ConsoleLogger* consoleLogger = new ConsoleLogger();
     game.add_observer(consoleLogger);
     ui->setupUi(this);
+    ui->strategyComboBox->setCurrentIndex(0);
 
 
     this->setGeometry(
@@ -40,6 +41,7 @@ MainWindow::MainWindow(QWidget *parent)
 
     scene = new QGraphicsScene(this);
     ui->graphicsView->setScene(scene);
+   // ui->graphicsView->setMinimumHeight(500);
 
     // Set up the graphics view
     QGraphicsScene *backgroundScene = new QGraphicsScene(this);
@@ -62,9 +64,15 @@ MainWindow::MainWindow(QWidget *parent)
     connect(ui->exitButton, &QPushButton::clicked, this, &MainWindow::close);
     connect(ui->foldButton, &QPushButton::clicked, this, &MainWindow::onFold);
     connect(ui->callButton, &QPushButton::clicked, this, &MainWindow::onCall);
+    connect(ui->strategyComboBox, &QComboBox::currentTextChanged, this, &MainWindow::onStrategyChanged);
+
 
     // Start with landing page
     ui->stackedWidget->setCurrentIndex(0);
+    ui->foldButton->setDisabled(true);
+    ui->callButton->setDisabled(true);
+    ui->placeBetButton->setDisabled(true);
+
 
     // Update UI to show chips and pot
     updateChipDisplay();
@@ -90,15 +98,65 @@ void MainWindow::updateChipDisplay() {
 
 // Slot to handle landing page "Start New Game" click.
 void MainWindow::onStartNewGame() {
+
     // Switch to game page.
     ui->stackedWidget->setCurrentIndex(1);
     qApp->processEvents();
-    onNewGame();  // Start a new game.
-    ui->player2Label->raise();
+
+    QString selectedStrategy = ui->strategyComboBox->currentText();
+    if (selectedStrategy != "Easy" && selectedStrategy != "Medium") {
+        QMessageBox::warning(this, "Strategy Not Selected",
+                             "Please select a valid strategy to start the game.");
+        return; // Early return if no valid strategy is selected
+    }
+
+    // Reset buttons and UI — wait for strategy
+    ui->strategyComboBox->setEnabled(true);
+    ui->strategyComboBox->setCurrentIndex(0);  // Reset to default
+
+    ui->foldButton->setDisabled(true);
+    ui->callButton->setDisabled(true);
+    ui->placeBetButton->setDisabled(true);
+    ui->newGameButton->setDisabled(true);  // Disable until game ends
+
+    ui->moveHistoryList->clear();
+    scene->clear();
+    ui->betLabel->setText("Pot: 0 | Current Bet: 0");
+    ui->player1Label->setText("Player 1: -- chips");
+    ui->player2Label->setText("Player 2: -- chips");
+
+    qDebug() << "[INFO] Waiting for strategy selection...";
 }
 
 // Starts a new game and updates button states.
 void MainWindow::onNewGame() {
+    QString selectedStrategy = ui->strategyComboBox->currentText();
+
+    std::unique_ptr<ComputerStrategy> strategy;
+
+    if (selectedStrategy == "Easy") {
+        strategy = std::make_unique<EasyStrategy>();
+    } else if (selectedStrategy == "Medium") {
+        strategy = std::make_unique<MediumStrategy>();
+    } else {
+        QMessageBox::warning(this, "Strategy Not Selected",
+                             "Please select a valid strategy to start the game.");
+        return; // Early return if no valid strategy is selected
+    }
+
+    // Set the strategy directly to the computer player
+    const Player& playerRef = game.get_computer_player();
+    ComputerPlayer* computerPlayer = dynamic_cast<ComputerPlayer*>(const_cast<Player*>(&playerRef));
+
+
+    if (computerPlayer) {
+        computerPlayer->set_strategy(std::move(strategy));
+    } else {
+        QMessageBox::critical(this, "Error", "Computer player casting failed!");
+        return;
+    }
+    ui->strategyComboBox->setDisabled(true);
+
     engine.new_game();
 
     updateChipDisplay();
@@ -113,6 +171,7 @@ void MainWindow::onNewGame() {
     ui->foldButton->setEnabled(true);
     ui->callButton->setEnabled(true);
     ui->placeBetButton->setEnabled(true);
+    //ui->strategyComboBox->setEnabled(true);
 
     ui->player2Label->raise();
 }
@@ -149,6 +208,8 @@ void MainWindow::displayWinner() {
 
         msgBox.exec();
 
+        ui->strategyComboBox->setEnabled(true);
+        ui->strategyComboBox->setCurrentIndex(0);
         ui->foldButton->setDisabled(true);
         ui->callButton->setDisabled(true);
         ui->placeBetButton->setDisabled(true);
@@ -164,11 +225,15 @@ void MainWindow::displayWinner() {
     }
 
     // After determining the winner, enable New Game button to allow restarting.
-    ui->newGameButton->setEnabled(true);
 
+    ui->strategyComboBox->setEnabled(true);
+    ui->strategyComboBox->setCurrentIndex(0);
+
+    ui->newGameButton->setEnabled(true);
     ui->foldButton->setDisabled(true);
     ui->callButton->setDisabled(true);
     ui->placeBetButton->setDisabled(true);
+
 }
 
 static QPixmap& loadImage(const Card* card) {
@@ -193,7 +258,7 @@ void MainWindow::displayGame() {
     scene->setSceneRect(0, 0, 900, 600);
 
     // Better vertical positioning
-    int yPlayer1 = 420;  // Move player 1 cards lower
+    int yPlayer1 = 400;  // Move player 1 cards lower
     int yCommunity = 230; // Center community cards vertically
     int yPlayer2 = 50;   // Keep player 2 cards at top
 
@@ -407,4 +472,44 @@ qDebug() << "[DEBUG] onGameEvent triggered";
         ui->moveHistoryList->scrollToBottom();
 
     }
+}
+
+
+void MainWindow::onStrategyChanged(const QString& strategy) {
+    if (strategy != "Easy" && strategy != "Medium")
+        return;
+
+    std::unique_ptr<ComputerStrategy> selectedStrategy;
+
+    if (strategy == "Easy") {
+        selectedStrategy = std::make_unique<EasyStrategy>();
+    } else {
+        selectedStrategy = std::make_unique<MediumStrategy>();
+    }
+
+    const Player& playerRef = game.get_computer_player();
+    ComputerPlayer* computerPlayer = dynamic_cast<ComputerPlayer*>(const_cast<Player*>(&playerRef));
+
+    if (!computerPlayer) {
+        QMessageBox::critical(this, "Error", "Computer player casting failed!");
+        return;
+    }
+
+    computerPlayer->set_strategy(std::move(selectedStrategy));
+    ui->strategyComboBox->setDisabled(true);
+
+    engine.new_game();
+    updateChipDisplay();
+    displayGame();
+
+    ui->moveHistoryList->clear();
+
+    ui->foldButton->setEnabled(true);
+    ui->callButton->setEnabled(true);
+    ui->placeBetButton->setEnabled(true);
+    ui->newGameButton->setDisabled(true);  // Until game ends
+
+    ui->player2Label->raise();
+
+    qDebug() << "[INFO] Game started with strategy:" << strategy;
 }
