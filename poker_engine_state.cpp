@@ -1,6 +1,5 @@
 #include "poker_engine_state.hpp"
 
-#include <iostream>
 
 namespace {
 
@@ -47,10 +46,6 @@ std::tuple<PokerEngineState*, GameAction::Result> transition_to_preflop(PokerEng
 } // namespace
 
 std::tuple<PokerEngineState*, GameAction::Result> PokerEngineStatesBlock::initial_state() {
-
-    std::string from = to_string(game_.getStage());
-    game_.setStage(PokerEngineEnumState::PreFlop);
-    game_.notifyGameEvent(std::make_shared<StateTransitionEvent>(from, "PreFlop"));
     return transition_to_preflop(PREFLOP_STATE, game_);
 }
 
@@ -90,9 +85,9 @@ std::tuple<PokerEngineState*, GameAction::Result> PokerEngineState::raise(Player
 }
 
 std::tuple<PokerEngineState*, GameAction::Result> PreFlopState::transition_state() {
-    std::string from = to_string(game_.getStage());
-    game_.setStage(PokerEngineEnumState::Flop);
-    game_.notifyGameEvent(std::make_shared<StateTransitionEvent>(from, "Flop"));
+    std::string from = to_string(this->enum_state_);
+    std::string to = to_string(states_.FLOP_STATE->enum_state_);
+    game_.notify_game_event(std::make_shared<StateTransitionEvent>(from, to));
 
     game_.clear_player_actions();
     game_.deal_flop();
@@ -101,9 +96,9 @@ std::tuple<PokerEngineState*, GameAction::Result> PreFlopState::transition_state
 }
 
 std::tuple<PokerEngineState*, GameAction::Result> FlopState::transition_state() {
-    std::string from = to_string(game_.getStage());
-    game_.setStage(PokerEngineEnumState::Turn);
-    game_.notifyGameEvent(std::make_shared<StateTransitionEvent>(from, "Turn"));
+    std::string from = to_string(this->enum_state_);
+    std::string to = to_string(states_.TURN_STATE->enum_state_);
+    game_.notify_game_event(std::make_shared<StateTransitionEvent>(from, to));
 
     game_.clear_player_actions();
     game_.deal_turn();
@@ -112,9 +107,9 @@ std::tuple<PokerEngineState*, GameAction::Result> FlopState::transition_state() 
 }
 
 std::tuple<PokerEngineState*, GameAction::Result> TurnState::transition_state() {
-    std::string from = to_string(game_.getStage());
-    game_.setStage(PokerEngineEnumState::River);
-    game_.notifyGameEvent(std::make_shared<StateTransitionEvent>(from, "River"));
+    std::string from = to_string(this->enum_state_);
+    std::string to = to_string(states_.RIVER_STATE->enum_state_);
+    game_.notify_game_event(std::make_shared<StateTransitionEvent>(from, to));
 
     game_.clear_player_actions();
     game_.deal_river();
@@ -123,9 +118,9 @@ std::tuple<PokerEngineState*, GameAction::Result> TurnState::transition_state() 
 }
 
 std::tuple<PokerEngineState*, GameAction::Result> RiverState::transition_state() {
-    std::string from = to_string(game_.getStage());
-    game_.setStage(PokerEngineEnumState::Showdown);
-    game_.notifyGameEvent(std::make_shared<StateTransitionEvent>(from, "Showdown"));
+    std::string from = to_string(this->enum_state_);
+    std::string to = to_string(states_.SHOWDOWN_STATE->enum_state_);
+    game_.notify_game_event(std::make_shared<StateTransitionEvent>(from, to));
 
     game_.clear_player_actions();
     game_.determine_winner();

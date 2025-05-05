@@ -17,7 +17,7 @@ class MainWindow : public QMainWindow, public Observer
 public:
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
-    void onGameEvent(const GameEvent& event) override;
+    void on_game_event(const GameEvent& event) override;
 
 private slots:
     void onStartNewGame();

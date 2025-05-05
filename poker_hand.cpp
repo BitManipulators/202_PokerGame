@@ -1,4 +1,4 @@
-#include "pokerhand.hpp"
+#include "poker_hand.hpp"
 
 PokerHand::PokerHand(std::vector<const Card*>& cards)
     : cards_(cards) {}

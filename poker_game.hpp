@@ -66,16 +66,11 @@ public:
     PlayerType get_player_turn() const;
     void set_player_turn(PlayerType type) ;
 
-
     Player* get_player(PlayerType player_type);
     std::tuple<Player*, Player*> get_acting_and_other_player(PlayerType player_type);
 
-    PokerEngineEnumState stage;
-    PokerEngineEnumState getStage() const;
-    void setStage(PokerEngineEnumState newStage);
-
     void add_observer(Observer* observer);
-    void notifyGameEvent(std::shared_ptr<GameEvent> event);
+    void notify_game_event(std::shared_ptr<GameEvent> event);
 
 
 private:

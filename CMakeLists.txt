@@ -24,8 +24,8 @@ qt_add_library(
     player.hpp
     poker_game.cpp
     poker_game.hpp
-    pokerhand.cpp
-    pokerhand.hpp
+    poker_hand.cpp
+    poker_hand.hpp
     poker_hand_evaluation.cpp
     poker_hand_evaluation.hpp
     poker_hand_evaluator.cpp

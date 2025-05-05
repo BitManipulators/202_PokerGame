@@ -6,21 +6,21 @@ class PokerHandEvaluatorTests : public ::testing::Test {};
 
 TEST(PokerHandEvaluatorTests, RoyalFlush) {
     std::vector<const Card*> player1_hole_cards {
-        Card::getCard(Suit::Clubs, Rank::Ace).get(),
-        Card::getCard(Suit::Clubs, Rank::King).get(),
+        Card::get_card(Suit::Clubs, Rank::Ace).get(),
+        Card::get_card(Suit::Clubs, Rank::King).get(),
     };
 
     std::vector<const Card*> player2_hole_cards {
-        Card::getCard(Suit::Hearts, Rank::Five).get(),
-        Card::getCard(Suit::Hearts, Rank::Four).get(),
+        Card::get_card(Suit::Hearts, Rank::Five).get(),
+        Card::get_card(Suit::Hearts, Rank::Four).get(),
     };
 
     std::vector<const Card*> community_cards {
-        Card::getCard(Suit::Clubs, Rank::Queen).get(),
-        Card::getCard(Suit::Clubs, Rank::Jack).get(),
-        Card::getCard(Suit::Clubs, Rank::Ten).get(),
-        Card::getCard(Suit::Clubs, Rank::Nine).get(),
-        Card::getCard(Suit::Clubs, Rank::Eight).get(),
+        Card::get_card(Suit::Clubs, Rank::Queen).get(),
+        Card::get_card(Suit::Clubs, Rank::Jack).get(),
+        Card::get_card(Suit::Clubs, Rank::Ten).get(),
+        Card::get_card(Suit::Clubs, Rank::Nine).get(),
+        Card::get_card(Suit::Clubs, Rank::Eight).get(),
     };
 
     PokerHandResult poker_hand_result = PokerHandEvaluator::determine_winner(
@@ -33,21 +33,21 @@ TEST(PokerHandEvaluatorTests, RoyalFlush) {
 
 TEST(PokerHandEvaluatorTests, FourOfAKind) {
     std::vector<const Card*> player1_hole_cards {
-        Card::getCard(Suit::Clubs, Rank::Ace).get(),
-        Card::getCard(Suit::Hearts, Rank::Ace).get(),
+        Card::get_card(Suit::Clubs, Rank::Ace).get(),
+        Card::get_card(Suit::Hearts, Rank::Ace).get(),
     };
 
     std::vector<const Card*> player2_hole_cards {
-        Card::getCard(Suit::Hearts, Rank::Five).get(),
-        Card::getCard(Suit::Hearts, Rank::Four).get(),
+        Card::get_card(Suit::Hearts, Rank::Five).get(),
+        Card::get_card(Suit::Hearts, Rank::Four).get(),
     };
 
     std::vector<const Card*> community_cards {
-        Card::getCard(Suit::Clubs, Rank::Queen).get(),
-        Card::getCard(Suit::Clubs, Rank::Jack).get(),
-        Card::getCard(Suit::Spades, Rank::Ace).get(),
-        Card::getCard(Suit::Clubs, Rank::Nine).get(),
-        Card::getCard(Suit::Diamonds, Rank::Ace).get(),
+        Card::get_card(Suit::Clubs, Rank::Queen).get(),
+        Card::get_card(Suit::Clubs, Rank::Jack).get(),
+        Card::get_card(Suit::Spades, Rank::Ace).get(),
+        Card::get_card(Suit::Clubs, Rank::Nine).get(),
+        Card::get_card(Suit::Diamonds, Rank::Ace).get(),
     };
 
     PokerHandResult poker_hand_result = PokerHandEvaluator::determine_winner(
@@ -61,21 +61,21 @@ TEST(PokerHandEvaluatorTests, FourOfAKind) {
 
 TEST(PokerHandEvaluatorTests, FullHouseTripletHighCard) {
     std::vector<const Card*> player1_hole_cards {
-        Card::getCard(Suit::Hearts, Rank::Five).get(),
-        Card::getCard(Suit::Hearts, Rank::Four).get(),
+        Card::get_card(Suit::Hearts, Rank::Five).get(),
+        Card::get_card(Suit::Hearts, Rank::Four).get(),
     };
 
     std::vector<const Card*> player2_hole_cards {
-        Card::getCard(Suit::Clubs, Rank::Ace).get(),
-        Card::getCard(Suit::Hearts, Rank::Ace).get(),
+        Card::get_card(Suit::Clubs, Rank::Ace).get(),
+        Card::get_card(Suit::Hearts, Rank::Ace).get(),
     };
 
     std::vector<const Card*> community_cards {
-        Card::getCard(Suit::Clubs, Rank::Queen).get(),
-        Card::getCard(Suit::Spades, Rank::Queen).get(),
-        Card::getCard(Suit::Spades, Rank::Ten).get(),
-        Card::getCard(Suit::Clubs, Rank::Nine).get(),
-        Card::getCard(Suit::Diamonds, Rank::Ace).get(),
+        Card::get_card(Suit::Clubs, Rank::Queen).get(),
+        Card::get_card(Suit::Spades, Rank::Queen).get(),
+        Card::get_card(Suit::Spades, Rank::Ten).get(),
+        Card::get_card(Suit::Clubs, Rank::Nine).get(),
+        Card::get_card(Suit::Diamonds, Rank::Ace).get(),
     };
 
     PokerHandResult poker_hand_result = PokerHandEvaluator::determine_winner(
@@ -89,21 +89,21 @@ TEST(PokerHandEvaluatorTests, FullHouseTripletHighCard) {
 
 TEST(PokerHandEvaluatorTests, FullHousePairHighCard) {
     std::vector<const Card*> player1_hole_cards {
-        Card::getCard(Suit::Hearts, Rank::Five).get(),
-        Card::getCard(Suit::Hearts, Rank::Four).get(),
+        Card::get_card(Suit::Hearts, Rank::Five).get(),
+        Card::get_card(Suit::Hearts, Rank::Four).get(),
     };
 
     std::vector<const Card*> player2_hole_cards {
-        Card::getCard(Suit::Clubs, Rank::Ace).get(),
-        Card::getCard(Suit::Hearts, Rank::Ace).get(),
+        Card::get_card(Suit::Clubs, Rank::Ace).get(),
+        Card::get_card(Suit::Hearts, Rank::Ace).get(),
     };
 
     std::vector<const Card*> community_cards {
-        Card::getCard(Suit::Clubs, Rank::Queen).get(),
-        Card::getCard(Suit::Spades, Rank::Queen).get(),
-        Card::getCard(Suit::Spades, Rank::Ten).get(),
-        Card::getCard(Suit::Clubs, Rank::Nine).get(),
-        Card::getCard(Suit::Diamonds, Rank::Queen).get(),
+        Card::get_card(Suit::Clubs, Rank::Queen).get(),
+        Card::get_card(Suit::Spades, Rank::Queen).get(),
+        Card::get_card(Suit::Spades, Rank::Ten).get(),
+        Card::get_card(Suit::Clubs, Rank::Nine).get(),
+        Card::get_card(Suit::Diamonds, Rank::Queen).get(),
     };
 
     PokerHandResult poker_hand_result = PokerHandEvaluator::determine_winner(
@@ -117,21 +117,21 @@ TEST(PokerHandEvaluatorTests, FullHousePairHighCard) {
 
 TEST(PokerHandEvaluatorTests, Flush) {
     std::vector<const Card*> player1_hole_cards {
-        Card::getCard(Suit::Hearts, Rank::Five).get(),
-        Card::getCard(Suit::Hearts, Rank::Four).get(),
+        Card::get_card(Suit::Hearts, Rank::Five).get(),
+        Card::get_card(Suit::Hearts, Rank::Four).get(),
     };
 
     std::vector<const Card*> player2_hole_cards {
-        Card::getCard(Suit::Clubs, Rank::Ace).get(),
-        Card::getCard(Suit::Hearts, Rank::Ace).get(),
+        Card::get_card(Suit::Clubs, Rank::Ace).get(),
+        Card::get_card(Suit::Hearts, Rank::Ace).get(),
     };
 
     std::vector<const Card*> community_cards {
-        Card::getCard(Suit::Hearts, Rank::Queen).get(),
-        Card::getCard(Suit::Hearts, Rank::Jack).get(),
-        Card::getCard(Suit::Hearts, Rank::Ten).get(),
-        Card::getCard(Suit::Clubs, Rank::Nine).get(),
-        Card::getCard(Suit::Diamonds, Rank::Queen).get(),
+        Card::get_card(Suit::Hearts, Rank::Queen).get(),
+        Card::get_card(Suit::Hearts, Rank::Jack).get(),
+        Card::get_card(Suit::Hearts, Rank::Ten).get(),
+        Card::get_card(Suit::Clubs, Rank::Nine).get(),
+        Card::get_card(Suit::Diamonds, Rank::Queen).get(),
     };
 
     PokerHandResult poker_hand_result = PokerHandEvaluator::determine_winner(
@@ -144,21 +144,21 @@ TEST(PokerHandEvaluatorTests, Flush) {
 
 TEST(PokerHandEvaluatorTests, FlushBothHighCardKicker) {
     std::vector<const Card*> player1_hole_cards {
-        Card::getCard(Suit::Hearts, Rank::Jack).get(),
-        Card::getCard(Suit::Hearts, Rank::Ten).get(),
+        Card::get_card(Suit::Hearts, Rank::Jack).get(),
+        Card::get_card(Suit::Hearts, Rank::Ten).get(),
     };
 
     std::vector<const Card*> player2_hole_cards {
-        Card::getCard(Suit::Hearts, Rank::Queen).get(),
-        Card::getCard(Suit::Hearts, Rank::Three).get(),
+        Card::get_card(Suit::Hearts, Rank::Queen).get(),
+        Card::get_card(Suit::Hearts, Rank::Three).get(),
     };
 
     std::vector<const Card*> community_cards {
-        Card::getCard(Suit::Hearts, Rank::Two).get(),
-        Card::getCard(Suit::Hearts, Rank::Four).get(),
-        Card::getCard(Suit::Hearts, Rank::Seven).get(),
-        Card::getCard(Suit::Clubs, Rank::Nine).get(),
-        Card::getCard(Suit::Diamonds, Rank::Queen).get(),
+        Card::get_card(Suit::Hearts, Rank::Two).get(),
+        Card::get_card(Suit::Hearts, Rank::Four).get(),
+        Card::get_card(Suit::Hearts, Rank::Seven).get(),
+        Card::get_card(Suit::Clubs, Rank::Nine).get(),
+        Card::get_card(Suit::Diamonds, Rank::Queen).get(),
     };
 
     PokerHandResult poker_hand_result = PokerHandEvaluator::determine_winner(
@@ -171,21 +171,21 @@ TEST(PokerHandEvaluatorTests, FlushBothHighCardKicker) {
 
 TEST(PokerHandEvaluatorTests, Straight) {
     std::vector<const Card*> player1_hole_cards {
-        Card::getCard(Suit::Hearts, Rank::Five).get(),
-        Card::getCard(Suit::Hearts, Rank::Four).get(),
+        Card::get_card(Suit::Hearts, Rank::Five).get(),
+        Card::get_card(Suit::Hearts, Rank::Four).get(),
     };
 
     std::vector<const Card*> player2_hole_cards {
-        Card::getCard(Suit::Clubs, Rank::Six).get(),
-        Card::getCard(Suit::Spades, Rank::Three).get(),
+        Card::get_card(Suit::Clubs, Rank::Six).get(),
+        Card::get_card(Suit::Spades, Rank::Three).get(),
     };
 
     std::vector<const Card*> community_cards {
-        Card::getCard(Suit::Clubs, Rank::Queen).get(),
-        Card::getCard(Suit::Spades, Rank::Jack).get(),
-        Card::getCard(Suit::Hearts, Rank::Three).get(),
-        Card::getCard(Suit::Clubs, Rank::Two).get(),
-        Card::getCard(Suit::Diamonds, Rank::Ace).get(),
+        Card::get_card(Suit::Clubs, Rank::Queen).get(),
+        Card::get_card(Suit::Spades, Rank::Jack).get(),
+        Card::get_card(Suit::Hearts, Rank::Three).get(),
+        Card::get_card(Suit::Clubs, Rank::Two).get(),
+        Card::get_card(Suit::Diamonds, Rank::Ace).get(),
     };
 
     PokerHandResult poker_hand_result = PokerHandEvaluator::determine_winner(
@@ -198,21 +198,21 @@ TEST(PokerHandEvaluatorTests, Straight) {
 
 TEST(PokerHandEvaluatorTests, StraightBothHighCardKicker) {
     std::vector<const Card*> player1_hole_cards {
-        Card::getCard(Suit::Hearts, Rank::Five).get(),
-        Card::getCard(Suit::Hearts, Rank::Four).get(),
+        Card::get_card(Suit::Hearts, Rank::Five).get(),
+        Card::get_card(Suit::Hearts, Rank::Four).get(),
     };
 
     std::vector<const Card*> player2_hole_cards {
-        Card::getCard(Suit::Clubs, Rank::Six).get(),
-        Card::getCard(Suit::Spades, Rank::Five).get(),
+        Card::get_card(Suit::Clubs, Rank::Six).get(),
+        Card::get_card(Suit::Spades, Rank::Five).get(),
     };
 
     std::vector<const Card*> community_cards {
-        Card::getCard(Suit::Clubs, Rank::Queen).get(),
-        Card::getCard(Suit::Spades, Rank::Four).get(),
-        Card::getCard(Suit::Hearts, Rank::Three).get(),
-        Card::getCard(Suit::Clubs, Rank::Two).get(),
-        Card::getCard(Suit::Diamonds, Rank::Ace).get(),
+        Card::get_card(Suit::Clubs, Rank::Queen).get(),
+        Card::get_card(Suit::Spades, Rank::Four).get(),
+        Card::get_card(Suit::Hearts, Rank::Three).get(),
+        Card::get_card(Suit::Clubs, Rank::Two).get(),
+        Card::get_card(Suit::Diamonds, Rank::Ace).get(),
     };
 
     PokerHandResult poker_hand_result = PokerHandEvaluator::determine_winner(
@@ -225,21 +225,21 @@ TEST(PokerHandEvaluatorTests, StraightBothHighCardKicker) {
 
 TEST(PokerHandEvaluatorTests, ThreeOfAKind) {
     std::vector<const Card*> player1_hole_cards {
-        Card::getCard(Suit::Hearts, Rank::Five).get(),
-        Card::getCard(Suit::Hearts, Rank::Four).get(),
+        Card::get_card(Suit::Hearts, Rank::Five).get(),
+        Card::get_card(Suit::Hearts, Rank::Four).get(),
     };
 
     std::vector<const Card*> player2_hole_cards {
-        Card::getCard(Suit::Clubs, Rank::Six).get(),
-        Card::getCard(Suit::Spades, Rank::Five).get(),
+        Card::get_card(Suit::Clubs, Rank::Six).get(),
+        Card::get_card(Suit::Spades, Rank::Five).get(),
     };
 
     std::vector<const Card*> community_cards {
-        Card::getCard(Suit::Clubs, Rank::Queen).get(),
-        Card::getCard(Suit::Spades, Rank::Four).get(),
-        Card::getCard(Suit::Clubs, Rank::Four).get(),
-        Card::getCard(Suit::Clubs, Rank::Jack).get(),
-        Card::getCard(Suit::Diamonds, Rank::Ace).get(),
+        Card::get_card(Suit::Clubs, Rank::Queen).get(),
+        Card::get_card(Suit::Spades, Rank::Four).get(),
+        Card::get_card(Suit::Clubs, Rank::Four).get(),
+        Card::get_card(Suit::Clubs, Rank::Jack).get(),
+        Card::get_card(Suit::Diamonds, Rank::Ace).get(),
     };
 
     PokerHandResult poker_hand_result = PokerHandEvaluator::determine_winner(
@@ -253,21 +253,21 @@ TEST(PokerHandEvaluatorTests, ThreeOfAKind) {
 
 TEST(PokerHandEvaluatorTests, ThreeOfAKindBothHighCardKicker) {
     std::vector<const Card*> player1_hole_cards {
-        Card::getCard(Suit::Hearts, Rank::Five).get(),
-        Card::getCard(Suit::Hearts, Rank::Four).get(),
+        Card::get_card(Suit::Hearts, Rank::Five).get(),
+        Card::get_card(Suit::Hearts, Rank::Four).get(),
     };
 
     std::vector<const Card*> player2_hole_cards {
-        Card::getCard(Suit::Clubs, Rank::Queen).get(),
-        Card::getCard(Suit::Spades, Rank::Four).get(),
+        Card::get_card(Suit::Clubs, Rank::Queen).get(),
+        Card::get_card(Suit::Spades, Rank::Four).get(),
     };
 
     std::vector<const Card*> community_cards {
-        Card::getCard(Suit::Clubs, Rank::Nine).get(),
-        Card::getCard(Suit::Diamonds, Rank::Four).get(),
-        Card::getCard(Suit::Clubs, Rank::Four).get(),
-        Card::getCard(Suit::Clubs, Rank::Three).get(),
-        Card::getCard(Suit::Diamonds, Rank::Two).get(),
+        Card::get_card(Suit::Clubs, Rank::Nine).get(),
+        Card::get_card(Suit::Diamonds, Rank::Four).get(),
+        Card::get_card(Suit::Clubs, Rank::Four).get(),
+        Card::get_card(Suit::Clubs, Rank::Three).get(),
+        Card::get_card(Suit::Diamonds, Rank::Two).get(),
     };
 
     PokerHandResult poker_hand_result = PokerHandEvaluator::determine_winner(
@@ -281,21 +281,21 @@ TEST(PokerHandEvaluatorTests, ThreeOfAKindBothHighCardKicker) {
 
 TEST(PokerHandEvaluatorTests, TwoPair) {
     std::vector<const Card*> player1_hole_cards {
-        Card::getCard(Suit::Hearts, Rank::Five).get(),
-        Card::getCard(Suit::Hearts, Rank::Four).get(),
+        Card::get_card(Suit::Hearts, Rank::Five).get(),
+        Card::get_card(Suit::Hearts, Rank::Four).get(),
     };
 
     std::vector<const Card*> player2_hole_cards {
-        Card::getCard(Suit::Clubs, Rank::Queen).get(),
-        Card::getCard(Suit::Spades, Rank::Three).get(),
+        Card::get_card(Suit::Clubs, Rank::Queen).get(),
+        Card::get_card(Suit::Spades, Rank::Three).get(),
     };
 
     std::vector<const Card*> community_cards {
-        Card::getCard(Suit::Clubs, Rank::Five).get(),
-        Card::getCard(Suit::Diamonds, Rank::Four).get(),
-        Card::getCard(Suit::Clubs, Rank::Jack).get(),
-        Card::getCard(Suit::Clubs, Rank::Three).get(),
-        Card::getCard(Suit::Diamonds, Rank::Two).get(),
+        Card::get_card(Suit::Clubs, Rank::Five).get(),
+        Card::get_card(Suit::Diamonds, Rank::Four).get(),
+        Card::get_card(Suit::Clubs, Rank::Jack).get(),
+        Card::get_card(Suit::Clubs, Rank::Three).get(),
+        Card::get_card(Suit::Diamonds, Rank::Two).get(),
     };
 
     PokerHandResult poker_hand_result = PokerHandEvaluator::determine_winner(
@@ -309,21 +309,21 @@ TEST(PokerHandEvaluatorTests, TwoPair) {
 
 TEST(PokerHandEvaluatorTests, OnePair) {
     std::vector<const Card*> player1_hole_cards {
-        Card::getCard(Suit::Hearts, Rank::Five).get(),
-        Card::getCard(Suit::Hearts, Rank::King).get(),
+        Card::get_card(Suit::Hearts, Rank::Five).get(),
+        Card::get_card(Suit::Hearts, Rank::King).get(),
     };
 
     std::vector<const Card*> player2_hole_cards {
-        Card::getCard(Suit::Clubs, Rank::Queen).get(),
-        Card::getCard(Suit::Spades, Rank::Eight).get(),
+        Card::get_card(Suit::Clubs, Rank::Queen).get(),
+        Card::get_card(Suit::Spades, Rank::Eight).get(),
     };
 
     std::vector<const Card*> community_cards {
-        Card::getCard(Suit::Clubs, Rank::Five).get(),
-        Card::getCard(Suit::Diamonds, Rank::Seven).get(),
-        Card::getCard(Suit::Clubs, Rank::Jack).get(),
-        Card::getCard(Suit::Clubs, Rank::Three).get(),
-        Card::getCard(Suit::Diamonds, Rank::Two).get(),
+        Card::get_card(Suit::Clubs, Rank::Five).get(),
+        Card::get_card(Suit::Diamonds, Rank::Seven).get(),
+        Card::get_card(Suit::Clubs, Rank::Jack).get(),
+        Card::get_card(Suit::Clubs, Rank::Three).get(),
+        Card::get_card(Suit::Diamonds, Rank::Two).get(),
     };
 
     PokerHandResult poker_hand_result = PokerHandEvaluator::determine_winner(
@@ -337,21 +337,21 @@ TEST(PokerHandEvaluatorTests, OnePair) {
 
 TEST(PokerHandEvaluatorTests, HighCard) {
     std::vector<const Card*> player1_hole_cards {
-        Card::getCard(Suit::Hearts, Rank::Five).get(),
-        Card::getCard(Suit::Hearts, Rank::King).get(),
+        Card::get_card(Suit::Hearts, Rank::Five).get(),
+        Card::get_card(Suit::Hearts, Rank::King).get(),
     };
 
     std::vector<const Card*> player2_hole_cards {
-        Card::getCard(Suit::Clubs, Rank::Queen).get(),
-        Card::getCard(Suit::Spades, Rank::Eight).get(),
+        Card::get_card(Suit::Clubs, Rank::Queen).get(),
+        Card::get_card(Suit::Spades, Rank::Eight).get(),
     };
 
     std::vector<const Card*> community_cards {
-        Card::getCard(Suit::Clubs, Rank::Nine).get(),
-        Card::getCard(Suit::Diamonds, Rank::Seven).get(),
-        Card::getCard(Suit::Clubs, Rank::Jack).get(),
-        Card::getCard(Suit::Clubs, Rank::Three).get(),
-        Card::getCard(Suit::Diamonds, Rank::Two).get(),
+        Card::get_card(Suit::Clubs, Rank::Nine).get(),
+        Card::get_card(Suit::Diamonds, Rank::Seven).get(),
+        Card::get_card(Suit::Clubs, Rank::Jack).get(),
+        Card::get_card(Suit::Clubs, Rank::Three).get(),
+        Card::get_card(Suit::Diamonds, Rank::Two).get(),
     };
 
     PokerHandResult poker_hand_result = PokerHandEvaluator::determine_winner(

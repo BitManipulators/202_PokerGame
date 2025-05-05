@@ -1,13 +1,15 @@
 #include "deck.hpp"
+
 #include <algorithm>
 #include <random>
 #include <chrono>
+
 
 Deck::Deck() {
     // Create a standard 52-card deck.
     for (Suit suit : suits) {
         for (Rank rank : ranks) {
-            cards.push_back(Card::getCard(suit, rank));
+            cards.push_back(Card::get_card(suit, rank));
         }
     }
 }
@@ -18,12 +20,12 @@ void Deck::shuffle() {
 }
 
 // suriya- comment Why shared_ptr to normal ptr 
-const Card* Deck::dealCard() {
+const Card* Deck::deal_card() {
     std::shared_ptr<const Card> card = cards.back();
     cards.pop_back();
     return card.get();
 }
 
-bool Deck::isEmpty() const {
+bool Deck::is_empty() const {
     return cards.empty();
 }

@@ -1,6 +1,7 @@
 #pragma once
 
-#include "pokerhand.hpp"
+#include "card.hpp"
+#include "poker_hand_evaluation.hpp"
 
 enum class PokerHandWinner {
     Player1,
