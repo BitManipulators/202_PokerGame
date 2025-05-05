@@ -17,6 +17,15 @@
 
 std::map<const Card*, QPixmap> card_image_cache;
 
+const int EASY=0, MEDIUM=1, HARD=3;
+
+std::unordered_map<std::string, int> GAME_DIFFICULTY = {
+    {"Easy",EASY},
+    {"Medium", MEDIUM},
+    {"Hard", HARD}
+};
+
+
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::MainWindow)
@@ -106,7 +115,7 @@ void MainWindow::onStartNewGame() {
     qApp->processEvents();
 
     QString selectedStrategy = ui->strategyComboBox->currentText();
-    if (selectedStrategy != "Easy" && selectedStrategy != "Medium") {
+    if (selectedStrategy == "Select Strategy") {
         QMessageBox::warning(this, "Strategy Not Selected",
                              "Please select a valid strategy to start the game.");
         return; // Early return if no valid strategy is selected
@@ -134,18 +143,24 @@ void MainWindow::onStartNewGame() {
 void MainWindow::onNewGame() {
     QString selectedStrategy = ui->strategyComboBox->currentText();
 
-    std::unique_ptr<ComputerStrategy> strategy;
-
-    if (selectedStrategy == "Easy") {
-        strategy = std::make_unique<EasyStrategy>();
-    } else if (selectedStrategy == "Medium") {
-        strategy = std::make_unique<MediumStrategy>();
-    } else {
-        QMessageBox::warning(this, "Strategy Not Selected",
+   std::unique_ptr<ComputerStrategy> strategy;
+   
+   switch (GAME_DIFFICULTY[selectedStrategy.toStdString()]) {
+        case(EASY):
+            strategy = std::make_unique<EasyStrategy>();
+            break;
+        case(MEDIUM):
+            strategy = std::make_unique<MediumStrategy>();
+            break;
+        case(HARD):
+            strategy = std::make_unique<HardStrategy>();
+            break;  
+        default :
+            QMessageBox::warning(this, "Strategy Not Selected",
                              "Please select a valid strategy to start the game.");
-        return; // Early return if no valid strategy is selected
+            return; 
     }
-
+    
     // Set the strategy directly to the computer player
     const Player& playerRef = game.get_computer_player();
     ComputerPlayer* computerPlayer = dynamic_cast<ComputerPlayer*>(const_cast<Player*>(&playerRef));
@@ -478,16 +493,22 @@ qDebug() << "[DEBUG] onGameEvent triggered";
 
 
 void MainWindow::onStrategyChanged(const QString& strategy) {
-    if (strategy != "Easy" && strategy != "Medium")
-        return;
 
     std::unique_ptr<ComputerStrategy> selectedStrategy;
-
-    if (strategy == "Easy") {
-        selectedStrategy = std::make_unique<EasyStrategy>();
-    } else {
-        selectedStrategy = std::make_unique<MediumStrategy>();
+    switch (GAME_DIFFICULTY[strategy.toStdString()]) {
+        case(EASY):
+            selectedStrategy = std::make_unique<EasyStrategy>();
+            break;
+        case(MEDIUM):
+            selectedStrategy = std::make_unique<MediumStrategy>();
+            break;
+        case(HARD):
+            selectedStrategy = std::make_unique<HardStrategy>();
+            break;  
+        default :
+            return; 
     }
+    
 
     const Player& playerRef = game.get_computer_player();
     ComputerPlayer* computerPlayer = dynamic_cast<ComputerPlayer*>(const_cast<Player*>(&playerRef));
