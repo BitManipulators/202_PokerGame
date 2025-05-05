@@ -242,9 +242,9 @@ static QPixmap& loadImage(const Card* card) {
     auto it = card_image_cache.find(card);
 
     if (it == card_image_cache.end()) {
-        QPixmap pix(QString::fromStdString(card->getCardImagePath()));
+        QPixmap pix(QString::fromStdString(card->get_card_image_path()));
         if (pix.isNull()) {
-            qDebug() << "Failed to load image:" << card->getCardImagePath();
+            qDebug() << "Failed to load image:" << card->get_card_image_path();
         }
         pix = pix.scaled(90, 135, Qt::KeepAspectRatio, Qt::SmoothTransformation);
         card_image_cache[card] = pix;
@@ -352,9 +352,6 @@ void MainWindow::onFold() {
     updateChipDisplay();
     displayGame();
 
-    const Player& computer = game.get_computer_player();
-    const Move& move = computer.getLatestMove();
-
     // Only display winner if game has ended
     if (game.has_ended()) {
         displayGame();
@@ -377,9 +374,6 @@ void MainWindow::onCall() {
     // Update chip display and board
     updateChipDisplay();
     displayGame();
-
-    const Player& computer = game.get_computer_player();
-    const Move& move = computer.getLatestMove();
 
     // Check if game has ended
     if (game.has_ended()) {
@@ -409,9 +403,6 @@ void MainWindow::onRaise() {
     // Update chip display and board
     updateChipDisplay();
     displayGame();
-
-    const Player& computer = game.get_computer_player();
-    const Move& move = computer.getLatestMove();
 
     // Only display winner if game has ended
     if (game.has_ended()) {
@@ -452,7 +443,7 @@ void MainWindow::createGlowEffect(QGraphicsPixmapItem *cardItem) {
     glowGroup->start();
 }
 
-void MainWindow::onGameEvent(const GameEvent& event) {
+void MainWindow::on_game_event(const GameEvent& event) {
 
 qDebug() << "[DEBUG] onGameEvent triggered";
     if (auto* moveEvent = dynamic_cast<const MoveEvent*>(&event)) {

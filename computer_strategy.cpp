@@ -4,14 +4,14 @@
 #include <random>
 
 
-int getRandomInt(std::size_t min, std::size_t max) {
+int get_random_int(std::size_t min, std::size_t max) {
     static std::random_device rd;
     static std::mt19937 gen(rd());
     std::uniform_int_distribution<> dis(min, max);
     return dis(gen);
 }
 
-Move EasyStrategy::getNextMove(GameState current_state){
+Move EasyStrategy::get_next_move(GameState current_state) {
     std::random_device rd;
     std::mt19937 gen(rd());
     std::uniform_int_distribution<> distr(0,1);
@@ -27,9 +27,9 @@ Move EasyStrategy::getNextMove(GameState current_state){
     }
 }
 
-Move MediumStrategy::getNextMove(GameState current_state){
+Move MediumStrategy::get_next_move(GameState current_state) {
 
-    int strength = evaluateHandStrength(current_state.hands, current_state.community_cards, current_state.stage);
+    int strength = evaluate_hand_strength(current_state.hands, current_state.community_cards, current_state.stage);
     std::size_t bet = current_state.current_bet;
     if (bet == 0) {
         bet = 10;
@@ -37,7 +37,7 @@ Move MediumStrategy::getNextMove(GameState current_state){
 
     if (strength >= 80) {
 
-        int raiseChance = getRandomInt(0, 100);
+        int raiseChance = get_random_int(0, 100);
         if (raiseChance < 90) {
             return Raise{2 * bet};
         } else {
@@ -47,7 +47,7 @@ Move MediumStrategy::getNextMove(GameState current_state){
 
     if (strength >= 40) {
 
-        int callRaiseChance = getRandomInt(0, 100);
+        int callRaiseChance = get_random_int(0, 100);
         if (callRaiseChance < 70) {
             return Call{};
         } else {
@@ -60,7 +60,7 @@ Move MediumStrategy::getNextMove(GameState current_state){
         return Call{};
     }
 
-    int foldChance = getRandomInt(0, 100);
+    int foldChance = get_random_int(0, 100);
     if (foldChance < 30) {
         return Fold{};
     } else {
@@ -68,14 +68,14 @@ Move MediumStrategy::getNextMove(GameState current_state){
     }
 }
 
-int MediumStrategy::evaluateHandStrength(const std::vector<const Card*>& hand,
+int MediumStrategy::evaluate_hand_strength(const std::vector<const Card*>& hand,
                          const std::vector<const Card*>& community,
                          PokerEngineEnumState stage) {
     switch (stage) {
         case PokerEngineEnumState::PreFlop:
 
             //std::cout << "Preflop" << std::endl;
-            return evaluatePreflop(hand);  // returns 0-100 scale
+            return evaluate_preflop(hand);  // returns 0-100 scale
 
         case PokerEngineEnumState::Flop:
         case PokerEngineEnumState::Turn:
@@ -120,7 +120,7 @@ int MediumStrategy::evaluateHandStrength(const std::vector<const Card*>& hand,
             }
 
             // Bonus: high card contribution
-            int highCard = std::max((int)hand[0]->getRank(), (int)hand[1]->getRank());
+            int highCard = std::max((int)hand[0]->get_rank(), (int)hand[1]->get_rank());
             score += highCard / 10;
 
             return std::min(score, 100); // cap at 100
@@ -137,19 +137,19 @@ int MediumStrategy::evaluateHandStrength(const std::vector<const Card*>& hand,
 
 
 // Helper: Check if suited
-bool MediumStrategy::isSuited(const std::vector<const Card*>& hand) {
-    return hand[0]->getSuit() == hand[1]->getSuit();
+bool MediumStrategy::is_suited(const std::vector<const Card*>& hand) {
+    return hand[0]->get_suit() == hand[1]->get_suit();
 }
 
 // Helper: Preflop strength (0 - 100)
-int MediumStrategy::evaluatePreflop(const std::vector<const Card*>& hand) {
+int MediumStrategy::evaluate_preflop(const std::vector<const Card*>& hand) {
 
-    int hand1 = hand[0]->getValue();
-    int hand2 = hand[1]->getValue();
+    int hand1 = hand[0]->get_value();
+    int hand2 = hand[1]->get_value();
     int high = std::max(hand1, hand2);
-    bool ispair = hand1 == hand2;
+    bool is_pair = hand1 == hand2;
 
-    if(ispair){
+    if (is_pair) {
         if (high >= 10){
             return 90;
         }else if(high >= 7){
@@ -157,9 +157,9 @@ int MediumStrategy::evaluatePreflop(const std::vector<const Card*>& hand) {
         }
     }
 
-    bool is_suited = isSuited(hand);
+    bool cards_suited = is_suited(hand);
 
-    if(is_suited ){
+    if (cards_suited) {
         if(abs(hand1-hand2) == 1 && (hand1>=10 || hand2>=10)){
             return 90;
         }

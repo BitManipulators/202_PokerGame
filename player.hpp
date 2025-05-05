@@ -30,10 +30,6 @@ public:
     std::vector<const Card*> hand;
     PlayerType player_type;
 
-    const std::variant<Fold, Call, Raise>& getLatestMove() const {
-        return latest_move;
-    }
-
 protected:
     Move latest_move;
 };
@@ -48,21 +44,7 @@ public:
 
 class ComputerPlayer : public Player {
 public:
-    ComputerPlayer(Difficulty d) : Player(PlayerType::Computer) {
-        switch(d){
-            case Difficulty::Easy:
-                strategy = std::make_unique<EasyStrategy>();
-                break;
-            case Difficulty::Medium:
-                strategy = std::make_unique<MediumStrategy>();
-                break;
-
-            default :
-                throw std::runtime_error("Unexpected Input");
-        }
-
-
-    }
+    ComputerPlayer(Difficulty d);
     virtual ~ComputerPlayer() = default;
 
     virtual Move get_move(GameState current_state) const override;

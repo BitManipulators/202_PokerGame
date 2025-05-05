@@ -1,6 +1,7 @@
 #pragma once
-#include "player.hpp"
+
 #include "move.hpp"
+#include "player.hpp"
 
 struct GameEvent {
     virtual ~GameEvent() = default;

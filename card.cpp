@@ -2,7 +2,7 @@
 
 namespace {
 
-std::string getCardName(const Suit suit, const Rank rank) {
+std::string get_card_name(const Suit suit, const Rank rank) {
     std::string suitStr;
     switch(suit) {
     case Suit::Hearts:   suitStr = "hearts"; break;
@@ -21,8 +21,8 @@ std::string getCardName(const Suit suit, const Rank rank) {
     return rankStr + "_of_" + suitStr;
 }
 
-std::string loadCardImage(const Suit suit, const Rank rank) {
-    return ":/images/" + getCardName(suit, rank) + ".png";
+std::string load_card_image(const Suit suit, const Rank rank) {
+    return ":/images/" + get_card_name(suit, rank) + ".png";
 }
 
 } // namespace
@@ -32,11 +32,11 @@ std::map<std::pair<Suit, Rank>, std::shared_ptr<const Card>> Card::card_cache;
 Card::Card(Suit suit, Rank rank)
     : suit(suit)
     , rank(rank) {
-    image_path = loadCardImage(suit, rank);
+    image_path = load_card_image(suit, rank);
 }
 
 // Singleton function to get or create a card
-std::shared_ptr<const Card> Card::getCard(Suit suit, Rank rank) {
+std::shared_ptr<const Card> Card::get_card(Suit suit, Rank rank) {
     auto key = std::make_pair(suit, rank);
     auto it = card_cache.find(key);
     if (it == card_cache.end()) {
@@ -45,18 +45,18 @@ std::shared_ptr<const Card> Card::getCard(Suit suit, Rank rank) {
     return card_cache[key];
 }
 
-Suit Card::getSuit() const {
+Suit Card::get_suit() const {
     return suit;
 }
 
-Rank Card::getRank() const {
+Rank Card::get_rank() const {
     return rank;
 }
 
-int Card::getValue() const {
+int Card::get_value() const {
     return (int)rank;
 }
 
-const std::string& Card::getCardImagePath() const {
+const std::string& Card::get_card_image_path() const {
     return image_path;
 }

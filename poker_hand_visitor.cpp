@@ -1,7 +1,7 @@
 #include "poker_hand_visitor.hpp"
 
-#include "pokerhand.hpp"
 #include "card.hpp"
+#include "poker_hand.hpp"
 
 #include <algorithm>
 
@@ -11,9 +11,9 @@ namespace {
 bool isFlush(const PokerHand* hand) {
     const std::vector<const Card*>& cards = hand->get_cards();
 
-    Suit firstSuit = cards[0]->getSuit();
+    Suit firstSuit = cards[0]->get_suit();
     for (size_t i = 1; i < cards.size(); i++) {
-        if (cards[i]->getSuit() != firstSuit)
+        if (cards[i]->get_suit() != firstSuit)
             return false;
     }
 
@@ -25,7 +25,7 @@ bool isFlush(const PokerHand* hand) {
 int isStraight(const PokerHand* hand) {
     std::vector<int> values;
     for (const Card* c : hand->get_cards()) {
-        values.push_back(c->getValue());
+        values.push_back(c->get_value());
     }
 
     // Remove duplicates.
@@ -111,7 +111,7 @@ const PokerHandEvaluation FlushVisitor::visit(const PokerHand* poker_hand) const
     if (isFlush(poker_hand)) {
         std::vector<int> tiebreakers;
         for (const Card* c : poker_hand->get_cards()) {
-            tiebreakers.push_back(c->getValue());
+            tiebreakers.push_back(c->get_value());
         }
         return {Flush, tiebreakers};
     }
@@ -189,7 +189,7 @@ const PokerHandEvaluation HighCardVisitor::visit(const PokerHand* poker_hand) co
     {
         std::vector<int> tiebreakers;
         for (const Card* c : poker_hand->get_cards()) {
-            tiebreakers.push_back(c->getValue());
+            tiebreakers.push_back(c->get_value());
         }
         return {HighCard, tiebreakers};
     }
