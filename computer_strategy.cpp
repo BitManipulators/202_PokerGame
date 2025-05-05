@@ -80,7 +80,7 @@ int MediumStrategy::evaluate_hand_strength(const std::vector<const Card*>& hand,
         case PokerEngineEnumState::Flop:
         case PokerEngineEnumState::Turn:
         case PokerEngineEnumState::River: {
-            PokerHandEvaluation poker_hand_evaluation = PokerHandEvaluator::evaluate_hand(hand, community);
+            auto [poker_hand, poker_hand_evaluation] = PokerHandEvaluator::evaluate_hand(hand, community);
 
             int score = 0;
             switch(poker_hand_evaluation.category) {

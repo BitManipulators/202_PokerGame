@@ -59,6 +59,7 @@ public:
     const std::size_t get_pot() const;
     const Player& get_human_player() const;
     const Player& get_computer_player() const;
+    const std::optional<PokerHand> get_winning_hand() const;
     const std::optional<PokerHandWinner> get_winner() const;
     const std::vector<const Card*>& get_community_cards() const;
 
@@ -86,6 +87,7 @@ private:
     PlayerType dealer;
     PlayerType player_turn;
 
+    std::optional<PokerHand> winning_hand;
     std::optional<PokerHandWinner> winner;
     std::optional<PokerHandEvaluation> hand_evaluation;
 
