@@ -39,6 +39,7 @@ private:
     static std::map<const Card*, QPixmap> card_image_cache;
 
     void createGlowEffect(QGraphicsPixmapItem *cardItem);
+    void onStrategyChanged(const QString& strategy);
 
 };
 
