@@ -41,6 +41,7 @@ MainWindow::MainWindow(QWidget *parent)
 
     scene = new QGraphicsScene(this);
     ui->graphicsView->setScene(scene);
+   // ui->graphicsView->setMinimumHeight(500);
 
     // Set up the graphics view
     QGraphicsScene *backgroundScene = new QGraphicsScene(this);
@@ -68,6 +69,10 @@ MainWindow::MainWindow(QWidget *parent)
 
     // Start with landing page
     ui->stackedWidget->setCurrentIndex(0);
+    ui->foldButton->setDisabled(true);
+    ui->callButton->setDisabled(true);
+    ui->placeBetButton->setDisabled(true);
+
 
     // Update UI to show chips and pot
     updateChipDisplay();
@@ -203,6 +208,8 @@ void MainWindow::displayWinner() {
 
         msgBox.exec();
 
+        ui->strategyComboBox->setEnabled(true);
+        ui->strategyComboBox->setCurrentIndex(0);
         ui->foldButton->setDisabled(true);
         ui->callButton->setDisabled(true);
         ui->placeBetButton->setDisabled(true);
@@ -251,7 +258,7 @@ void MainWindow::displayGame() {
     scene->setSceneRect(0, 0, 900, 600);
 
     // Better vertical positioning
-    int yPlayer1 = 420;  // Move player 1 cards lower
+    int yPlayer1 = 400;  // Move player 1 cards lower
     int yCommunity = 230; // Center community cards vertically
     int yPlayer2 = 50;   // Keep player 2 cards at top
 
