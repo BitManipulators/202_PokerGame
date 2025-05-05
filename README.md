@@ -1,14 +1,9 @@
 # 202 Poker Game
 
-For linux
-- sudo apt install libboost-all-dev
-
-For Mac
-
-- brew install boost
+## Add External library  
 
 - git clone https://github.com/andrewprock/pokerstove.git
-- Place the pokerstove inside {Home}/External
+- Place the pokerstove inside {Home}/external
 
 
 

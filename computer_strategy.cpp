@@ -301,8 +301,16 @@ Move HardStrategy::getNextMove(GameState current_state) {
 
     std::cout << "The hand " << hands[0] << " has " << equity * 100.0 << " % equity." << std::endl;
 
-    // Minimum raise calculation (2x the current bet)
-    std::size_t raise_amount = 2 * bet;  
+    std::size_t raise_amount = 0 ;
+    
+    if (bet == 0) {
+        raise_amount = 20;  // Small starting bet if no bet has been placed
+    }else {
+        
+        // Minimum raise calculation (2x the current bet)
+        raise_amount = 2 * bet; 
+    }
+     
 
     
     std::size_t proportional_raise = 0;

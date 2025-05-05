@@ -7,13 +7,14 @@ set(CMAKE_AUTORCC ON)
 
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_PREFIX_PATH "/home/suriya-018231499/Qt/6.8.2/gcc_64/lib/cmake")
 
 
 add_subdirectory(external/pokerstove)
 
 find_package(QT NAMES Qt6 Qt5 REQUIRED COMPONENTS Widgets Svg REQUIRED)
 find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Widgets)
-#find_package(Boost REQUIRED COMPONENTS program_options)
+
 
 qt_add_library(
     poker_game
@@ -153,55 +154,55 @@ endif()
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g")
 
-# include(CTest)
-# include(FetchContent)
-# FetchContent_Declare(
-#   googletest
-#   GIT_REPOSITORY https://github.com/google/googletest.git
-#   GIT_TAG v1.16.0
-# )
+#include(CTest)
+#include(FetchContent)
+#FetchContent_Declare(
+#  googletest
+#  GIT_REPOSITORY https://github.com/google/googletest.git
+#  GIT_TAG v1.16.0
+#)
 
-# set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
-# FetchContent_MakeAvailable(googletest)
+set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
+#FetchContent_MakeAvailable(googletest)
 
-# enable_testing()
+enable_testing()
 
-# set(BENCHMARK_ENABLE_TESTING OFF)
-# set(BENCHMARK_ENABLE_GTEST_TESTS OFF)
-# set(BENCHMARK_ENABLE_ASSEMBLY_TESTS OFF)
+set(BENCHMARK_ENABLE_TESTING OFF)
+set(BENCHMARK_ENABLE_GTEST_TESTS OFF)
+set(BENCHMARK_ENABLE_ASSEMBLY_TESTS OFF)
 
-# add_executable(
-#   poker_hand_evaluator_tests
-#   tests/poker_hand_evaluator_tests.cpp
-# )
+add_executable(
+  poker_hand_evaluator_tests
+  tests/poker_hand_evaluator_tests.cpp
+)
 
-# target_link_libraries(
-#   poker_hand_evaluator_tests
-#   GTest::gtest_main
-#   poker_game
-# # )
+target_link_libraries(
+  poker_hand_evaluator_tests
+  GTest::gtest_main
+  poker_game
+)
 
-# add_executable(
-#   poker_engine_tests
-#   tests/poker_engine_tests.cpp
-# )
+add_executable(
+  poker_engine_tests
+  tests/poker_engine_tests.cpp
+)
 
-# target_link_libraries(
-#   poker_engine_tests
-#   GTest::gtest_main
-#   poker_game
-# )
+target_link_libraries(
+  poker_engine_tests
+  GTest::gtest_main
+  poker_game
+)
 
-# add_executable(
-#   poker_computer_strategy_tests
-#   tests/poker_computer_strategy_test.cpp
-# )
+add_executable(
+  poker_computer_strategy_tests
+  tests/poker_computer_strategy_test.cpp
+)
 
-# target_link_libraries(
-#   poker_computer_strategy_tests
-#   GTest::gtest_main
-#   poker_game
-# )
+target_link_libraries(
+  poker_computer_strategy_tests
+  GTest::gtest_main
+  poker_game
+)
 
-# include(GoogleTest)
-# gtest_discover_tests(poker_computer_strategy_tests)
+#include(GoogleTest)
+#gtest_discover_tests(poker_computer_strategy_tests)
