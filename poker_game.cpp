@@ -134,9 +134,8 @@ void PokerGame::rotate_player_turn() {
     }
 }
 
-PlayerType PokerGame::get_player_turn() const{
+PlayerType PokerGame::get_player_turn() const {
     return player_turn;
-
 }
 
 void PokerGame::set_player_turn(PlayerType type) {
@@ -199,6 +198,10 @@ const bool PokerGame::has_ended() const {
     return winner.has_value();
 }
 
+const std::optional<PokerHand> PokerGame::get_winning_hand() const {
+    return winning_hand;
+}
+
 const std::optional<PokerHandWinner> PokerGame::get_winner() const {
     return winner;
 }
@@ -222,6 +225,7 @@ const Player& PokerGame::get_computer_player() const {
 void PokerGame::determine_winner() {
     PokerHandResult poker_hand_result = PokerHandEvaluator::determine_winner(human_player->hand, computer_player->hand, community_cards);
     winner = poker_hand_result.winner;
+    winning_hand = poker_hand_result.hand;
     hand_evaluation = poker_hand_result.evaluation;
 
     switch(winner.value()) {
@@ -243,6 +247,7 @@ void PokerGame::prepare_new_game() {
     human_player->current_bet = 0;
     computer_player->current_bet = 0;
     winner = {};
+    winning_hand = {};
     hand_evaluation = {};
 
     // Rotate dealer

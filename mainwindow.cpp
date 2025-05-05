@@ -74,8 +74,6 @@ MainWindow::MainWindow(QWidget *parent)
     ui->placeBetButton->setDisabled(true);
     ui->gameFrameLayout->setContentsMargins(0, 0, 0, 0);
 
-
-
     // Update UI to show chips and pot
     updateChipDisplay();
 }
@@ -274,11 +272,31 @@ void MainWindow::displayGame() {
     // Center community cards
     int communityStartX = (scene->width() - (community.size() * spacing)) / 2;
 
+    std::optional<PokerHand> winning_hand;
+    if (game.has_ended() && game.get_winning_hand().has_value()) {
+        winning_hand = game.get_winning_hand().value();
+    }
+
     // Display community cards (center row)
     for (size_t i = 0; i < community.size(); i++) {
         const Card* card = community[i];
         QGraphicsPixmapItem *item = scene->addPixmap(loadImage(card));
         item->setPos(communityStartX + i * spacing, yCommunity);
+
+        if (winning_hand.has_value()) {
+            for (const Card* winning_card : winning_hand.value().get_cards()) {
+                if (card == winning_card) {
+                    QGraphicsRectItem *highlight = scene->addRect(
+                        communityStartX + i * spacing - 5, yCommunity - 5,
+                        cardWidth + 10, 135 + 10,
+                        QPen(QColor(255, 215, 0, 200), 3)
+                    );
+                    createGlowEffect(item);
+                    highlight->setZValue(-1);
+                    break;
+                }
+            }
+        }
     }
 
     // Display player 1's hand (bottom row)
@@ -290,23 +308,27 @@ void MainWindow::displayGame() {
         // Highlight player 1's cards if they are the winner
         if (game.has_ended() && game.get_winner().has_value() &&
             game.get_winner().value() == PokerHandWinner::Player1) {
-            QGraphicsRectItem *highlight = scene->addRect(
-                player1StartX + i * spacing - 5, yPlayer1 - 5,
-                cardWidth + 10, 135 + 10,
-                QPen(QColor(255, 215, 0, 200), 3)
-            );
-             createGlowEffect(item);
-            highlight->setZValue(-1);
+            for (const Card* winning_card : winning_hand.value().get_cards()) {
+                if (card == winning_card) {
+                    QGraphicsRectItem *highlight = scene->addRect(
+                        player1StartX + i * spacing - 5, yPlayer1 - 5,
+                        cardWidth + 10, 135 + 10,
+                        QPen(QColor(255, 215, 0, 200), 3)
+                    );
+                    createGlowEffect(item);
+                    highlight->setZValue(-1);
+                }
+            }
         }
     }
 
     // Display player 2's hand (top row)
     for (size_t i = 0; i < hand2.size(); i++) {
+        const Card* card = hand2[i];
         QGraphicsPixmapItem *item;
 
         if (game.has_ended()) {
             // Show actual cards when game has ended
-            const Card* card = hand2[i];
             item = scene->addPixmap(loadImage(card));
         } else {
             // Show card backs during gameplay
@@ -320,13 +342,17 @@ void MainWindow::displayGame() {
         // Highlight player 2's cards if they are the winner
         if (game.has_ended() && game.get_winner().has_value() &&
             game.get_winner().value() == PokerHandWinner::Player2) {
-            QGraphicsRectItem *highlight = scene->addRect(
-                player2StartX + i * spacing - 5, yPlayer2 - 5,
-                cardWidth + 10, 135 + 10,
-                QPen(QColor(255, 215, 0, 200), 3)
-            );
-            createGlowEffect(item);
-            highlight->setZValue(-1);
+            for (const Card* winning_card : winning_hand.value().get_cards()) {
+                if (card == winning_card) {
+                    QGraphicsRectItem *highlight = scene->addRect(
+                        player2StartX + i * spacing - 5, yPlayer2 - 5,
+                        cardWidth + 10, 135 + 10,
+                        QPen(QColor(255, 215, 0, 200), 3)
+                    );
+                    createGlowEffect(item);
+                    highlight->setZValue(-1);
+                }
+            }
         }
     }
 }
@@ -437,7 +463,7 @@ void MainWindow::createGlowEffect(QGraphicsPixmapItem *cardItem) {
 
 void MainWindow::on_game_event(const GameEvent& event) {
 
-qDebug() << "[DEBUG] onGameEvent triggered";
+    qDebug() << "[DEBUG] onGameEvent triggered";
     if (auto* moveEvent = dynamic_cast<const MoveEvent*>(&event)) {
         QString text;
         if (std::holds_alternative<Fold>(moveEvent->move)) {
