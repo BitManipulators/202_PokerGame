@@ -7,7 +7,6 @@ set(CMAKE_AUTORCC ON)
 
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
-set(CMAKE_PREFIX_PATH "/home/suriya-018231499/Qt/6.8.2/gcc_64/lib/cmake")
 
 
 add_subdirectory(external/pokerstove)
