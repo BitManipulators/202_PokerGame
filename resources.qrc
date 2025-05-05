@@ -77,5 +77,6 @@
 
         <file>images/texasholdem_image.png</file>
         <file>images/felt_texture.png</file>
+        <file>images/poker_hands_resized.png</file>
     </qresource>
 </RCC>

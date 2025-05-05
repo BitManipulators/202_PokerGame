@@ -70,6 +70,7 @@ public:
     virtual ~ComputerPlayer() = default;
 
     virtual Move get_move(GameState current_state) const override;
+    void set_strategy(std::unique_ptr<ComputerStrategy> strategy);
 private:
     std::unique_ptr<ComputerStrategy> strategy;
 };

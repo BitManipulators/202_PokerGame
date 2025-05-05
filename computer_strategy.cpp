@@ -30,7 +30,8 @@ Move EasyStrategy::getNextMove(GameState current_state){
             return Call{};
         default :
             std::size_t bet = current_state.current_bet;
-            return Raise{2*bet};
+            std::size_t raiseAmount = std::max<std::size_t>(2 * bet, 10); // Minimum raise of $10
+            return Raise{raiseAmount};
     }
 }
 
