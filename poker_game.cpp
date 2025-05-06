@@ -1,10 +1,11 @@
-#include <optional>
 #include "poker_game.hpp"
-#include "game_constants.hpp"
 
+#include "game_constants.hpp"
 #include "poker_hand_evaluator.hpp"
 
-#include <QDebug>
+#include <iostream>
+#include <optional>
+
 
 PokerGame::PokerGame()
     : pot(0)
@@ -13,8 +14,7 @@ PokerGame::PokerGame()
     , human_player(new HumanPlayer())
     , computer_player(new ComputerPlayer(Difficulty::Hard))
     , player_turn(PlayerType::Human)
-    , dealer(PlayerType::Human)
-    , stage(PokerEngineEnumState::PreFlop) {}
+    , dealer(PlayerType::Human) {}
 
 PokerGame::~PokerGame() {
     delete human_player;
@@ -91,8 +91,6 @@ GameAction::Result PokerGame::perform_fold(PlayerType player_type) {
 
     other_player->chips += pot;
     winner = (other_player->player_type == PlayerType::Human) ? PokerHandWinner::Player1 : PokerHandWinner::Player2;
-    stage = PokerEngineEnumState::Showdown;
-    //this->player_turn = std::nullopt;
     return GameAction::OK;
 }
 
@@ -146,9 +144,8 @@ void PokerGame::rotate_player_turn() {
     }
 }
 
-PlayerType PokerGame::get_player_turn() const{
+PlayerType PokerGame::get_player_turn() const {
     return player_turn;
-
 }
 
 void PokerGame::set_player_turn(PlayerType type) {
@@ -166,36 +163,36 @@ void PokerGame::shuffle_deck() {
 
 void PokerGame::deal_hole_cards() {
     // Deal 2 cards to each player.
-    human_player->add_card(deck.dealCard());
-    computer_player->add_card(deck.dealCard());
-    human_player->add_card(deck.dealCard());
-    computer_player->add_card(deck.dealCard());
+    human_player->add_card(deck.deal_card());
+    computer_player->add_card(deck.deal_card());
+    human_player->add_card(deck.deal_card());
+    computer_player->add_card(deck.deal_card());
 }
 
 void PokerGame::deal_flop() {
     // Burn one card.
-    deck.dealCard();
+    deck.deal_card();
 
     // Deal 3 community cards.
     for (int i = 0; i < 3; i++) {
-        community_cards.push_back(deck.dealCard());
+        community_cards.push_back(deck.deal_card());
     }
 }
 
 void PokerGame::deal_turn() {
     // Burn one card.
-    deck.dealCard();
+    deck.deal_card();
 
     // Deal one community card.
-    community_cards.push_back(deck.dealCard());
+    community_cards.push_back(deck.deal_card());
 }
 
 void PokerGame::deal_river() {
     // Burn one card.
-    deck.dealCard();
+    deck.deal_card();
 
     // Deal one community card.
-    community_cards.push_back(deck.dealCard());
+    community_cards.push_back(deck.deal_card());
 }
 
 void PokerGame::clear_player_actions() {
@@ -209,6 +206,10 @@ bool PokerGame::all_players_have_acted() {
 
 const bool PokerGame::has_ended() const {
     return winner.has_value();
+}
+
+const std::optional<PokerHand> PokerGame::get_winning_hand() const {
+    return winning_hand;
 }
 
 const std::optional<PokerHandWinner> PokerGame::get_winner() const {
@@ -234,6 +235,7 @@ const Player& PokerGame::get_computer_player() const {
 void PokerGame::determine_winner() {
     PokerHandResult poker_hand_result = PokerHandEvaluator::determine_winner(human_player->hand, computer_player->hand, community_cards);
     winner = poker_hand_result.winner;
+    winning_hand = poker_hand_result.hand;
     hand_evaluation = poker_hand_result.evaluation;
 
     switch(winner.value()) {
@@ -255,10 +257,8 @@ void PokerGame::prepare_new_game() {
     human_player->current_bet = 0;
     computer_player->current_bet = 0;
     winner = {};
+    winning_hand = {};
     hand_evaluation = {};
-
-    // Reset stage and player turn
-    stage = PokerEngineEnumState::PreFlop;
 
     // Rotate dealer
     rotate_dealer();
@@ -273,7 +273,6 @@ void PokerGame::prepare_new_game() {
     // Clear any previous moves/actions
     clear_player_actions();
 }
-
 
 void PokerGame::post_blinds() {
     Player* big_blind_player;
@@ -298,7 +297,7 @@ void PokerGame::post_blinds() {
 
 void PokerGame::set_player_move(PlayerType player_type, Move move) {
     get_player(player_type)->set_move(move);
-    notifyGameEvent(std::make_shared<MoveEvent>(player_type, move));
+    notify_game_event(std::make_shared<MoveEvent>(player_type, move));
 }
 
 std::string PokerGame::get_winning_hand_description() const {
@@ -312,18 +311,10 @@ void PokerGame::add_observer(Observer* observer) {
     observers.push_back(observer);
 }
 
-void PokerGame::notifyGameEvent(std::shared_ptr<GameEvent> event) {
-        qDebug() << "[DEBUG] Notifying observers of game event " << observers.size() << " observers";
-        for (auto* obs : observers) {
-            qDebug() << "[DEBUG] Notifying observer";
-            obs->onGameEvent(*event);
-        }
-}
-
-void PokerGame::setStage(PokerEngineEnumState newStage) {
-    stage = newStage;
-}
-
-PokerEngineEnumState PokerGame::getStage() const {
-    return stage;
+void PokerGame::notify_game_event(std::shared_ptr<GameEvent> event) {
+    std::cout << "[DEBUG] Notifying observers of game event " << observers.size() << " observers" << std::endl;
+    for (auto* obs : observers) {
+        std::cout << "[DEBUG] Notifying observer" << std::endl;
+        obs->on_game_event(*event);
+    }
 }

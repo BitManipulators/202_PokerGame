@@ -12,14 +12,24 @@
 //namespace po = boost::program_options;
 
 
-int getRandomInt(std::size_t min, std::size_t max) {
+int get_random_int(std::size_t min, std::size_t max) {
     static std::random_device rd;
     static std::mt19937 gen(rd());
     std::uniform_int_distribution<> dis(min, max);
     return dis(gen);
 }
 
-Move EasyStrategy::getNextMove(GameState current_state){
+bool ComputerStrategy::can_raise(GameState current_state){
+    
+    std::size_t bet = current_state.current_bet;
+    std::size_t computer_chips = current_state.computer_chips;
+    if (computer_chips >= MINIMUM_BET_MULTIPLIER * bet) {
+                return true;
+    }
+    return false;
+}
+
+Move EasyStrategy::get_next_move(GameState current_state) {
     std::random_device rd;
     std::mt19937 gen(rd());
     std::uniform_int_distribution<> distr(0,1);
@@ -28,15 +38,24 @@ Move EasyStrategy::getNextMove(GameState current_state){
     switch (random_number){
         case 0 :
             return Call{};
+        
         default :
+            
             std::size_t bet = current_state.current_bet;
-            std::size_t raiseAmount = std::max<std::size_t>(2 * bet, 10); // Minimum raise of $10
-            return Raise{raiseAmount};
+            std::size_t computer_chips = current_state.computer_chips;
+            if (can_raise(current_state)) {
+                std::size_t raiseAmount = std::max<std::size_t>(2 * bet, 10); // Minimum raise of $10
+                return Raise{raiseAmount};
+            }else{
+                // Handle low chip count
+                return Call{};
+            }
     }
 }
 
-Move MediumStrategy::getNextMove(GameState current_state) {
-    int strength = evaluateHandStrength(current_state.hands, current_state.community_cards, current_state.stage);
+Move MediumStrategy::get_next_move(GameState current_state) {
+
+    int strength = evaluate_hand_strength(current_state.hands, current_state.community_cards, current_state.stage);
     std::size_t bet = current_state.current_bet;
     std::size_t pot = current_state.pot_size;
     std::size_t computer_chips = current_state.computer_chips;
@@ -46,19 +65,20 @@ Move MediumStrategy::getNextMove(GameState current_state) {
     }
     
     std::size_t raise_amount = MINIMUM_BET_MULTIPLIER * bet;  // Minimum raise is always 2x the current bet
-    std::size_t pot_portion = calculatePotPortion(strength, pot);
+    std::size_t pot_portion = calculate_pot_portion(strength, pot);
 
     // Add the pot portion to the raise amount
     raise_amount += pot_portion;
 
-    if (computer_chips < MINIMUM_BET_MULTIPLIER * bet) {
-        return handleLowChipCount(strength);
+    // Handle low chip count
+    if (!can_raise(current_state)) {
+        return handle_low_chip_count(strength);
     }
 
-    return handleNormalBetting(strength, raise_amount, current_state.current_bet);
+    return handle_normal_betting(strength, raise_amount, current_state.current_bet);
 }
 
-std::size_t MediumStrategy::calculatePotPortion(int strength, std::size_t pot) {
+std::size_t MediumStrategy::calculate_pot_portion(int strength, std::size_t pot) {
     std::size_t pot_portion = 0;
     if (strength >= HIGH_HAND_THRESHOLD) {
         pot_portion = static_cast<std::size_t>(pot * 0.5);
@@ -71,11 +91,12 @@ std::size_t MediumStrategy::calculatePotPortion(int strength, std::size_t pot) {
     return (pot_portion / 10) * 10;
 }
 
-Move MediumStrategy::handleLowChipCount(int strength) {
+Move MediumStrategy::handle_low_chip_count(int strength) {
+    
     if (strength >= MEDIUM_HAND_THRESHOLD) {
         return Call{};  // If hand is strong, prefer calling
     } else {
-        int fold_chance = getRandomInt(0, 100);
+        int fold_chance = get_random_int(0, 100);
         if (fold_chance < FOLD_CHANCE_LOW_HAND_LOW_BET) {  // 50% chance to fold if hand strength is lower
             return Fold{};
         } else {
@@ -84,13 +105,13 @@ Move MediumStrategy::handleLowChipCount(int strength) {
     }
 }
 
-Move MediumStrategy::handleNormalBetting(int strength, std::size_t raise_amount, std::size_t current_bet) {
+Move MediumStrategy::handle_normal_betting(int strength, std::size_t raise_amount, std::size_t current_bet) {
     if (strength >= HIGH_HAND_THRESHOLD) {
         return Raise{raise_amount};
     } else if (strength >= MEDIUM_HAND_THRESHOLD) {
         return Raise{raise_amount};
     } else if (strength >= WEAK_HAND_THRESHOLD) {
-        int call_raise_chance = getRandomInt(0, 100);
+        int call_raise_chance = get_random_int(0, 100);
         if (call_raise_chance < CALL_CHANCE_WEAKER_HAND) {
             return Call{};  // Call more often with weaker hands
         } else {
@@ -103,7 +124,9 @@ Move MediumStrategy::handleNormalBetting(int strength, std::size_t raise_amount,
         return Call{};  // If the bet is small, do not fold immediately
     }
 
-    int fold_chance = getRandomInt(0, 100);
+    
+    
+    int fold_chance = get_random_int(0, 100);
     if (fold_chance < FOLD_CHANCE_LOW_HAND) {
         return Fold{};  // Low hand strength and large bet: Consider folding
     } else {
@@ -111,19 +134,21 @@ Move MediumStrategy::handleNormalBetting(int strength, std::size_t raise_amount,
     }
 }
 
-int MediumStrategy::evaluateHandStrength(const std::vector<const Card*>& hand,
-                                         const std::vector<const Card*>& community,
-                                         PokerEngineEnumState stage) {
+int MediumStrategy::evaluate_hand_strength(const std::vector<const Card*>& hand,
+                         const std::vector<const Card*>& community,
+                         PokerEngineEnumState stage) {
     switch (stage) {
         case PokerEngineEnumState::PreFlop:
-            return evaluatePreflop(hand);  // returns 0-100 scale
+
+            //std::cout << "Preflop" << std::endl;
+            return evaluate_preflop(hand);  // returns 0-100 scale
 
         case PokerEngineEnumState::Flop:
         case PokerEngineEnumState::Turn:
         case PokerEngineEnumState::River: {
-            PokerHandEvaluation poker_hand_evaluation = PokerHandEvaluator::evaluate_hand(hand, community);
-            int score = getHandCategoryScore(poker_hand_evaluation.category);
-            int high_card = std::max((int)hand[0]->getRank(), (int)hand[1]->getRank());
+            auto [poker_hand, poker_hand_evaluation] = PokerHandEvaluator::evaluate_hand(hand, community);
+            int score = get_hand_category_score(poker_hand_evaluation.category);
+            int high_card = std::max((int)hand[0]->get_rank(), (int)hand[1]->get_rank());
             score += high_card / 10;
             return std::min(score, 100); // cap at 100
         }
@@ -136,7 +161,7 @@ int MediumStrategy::evaluateHandStrength(const std::vector<const Card*>& hand,
     return 0;
 }
 
-int MediumStrategy::getHandCategoryScore(PokerHandEvaluationCategory category) {
+int MediumStrategy::get_hand_category_score(PokerHandEvaluationCategory category) {
     switch (category) {
         case HighCard: return 15;
         case OnePair: return 30;
@@ -153,27 +178,29 @@ int MediumStrategy::getHandCategoryScore(PokerHandEvaluationCategory category) {
     return 0;
 }
 
-bool MediumStrategy::isSuited(const std::vector<const Card*>& hand) {
-    return hand[0]->getSuit() == hand[1]->getSuit();
+bool MediumStrategy::is_suited(const std::vector<const Card*>& hand) {
+    return hand[0]->get_suit() == hand[1]->get_suit();
 }
 
-int MediumStrategy::evaluatePreflop(const std::vector<const Card*>& hand) {
-    int hand1 = hand[0]->getValue();
-    int hand2 = hand[1]->getValue();
-    int high = std::max(hand1, hand2);
-    bool ispair = hand1 == hand2;
+// Helper: Preflop strength (0 - 100)
+int MediumStrategy::evaluate_preflop(const std::vector<const Card*>& hand) {
 
-    if (ispair) {
-        if (high >= STRONG_PAIR_THRESHOLD) {
+    int hand1 = hand[0]->get_value();
+    int hand2 = hand[1]->get_value();
+    int high = std::max(hand1, hand2);
+    bool is_pair = hand1 == hand2;
+
+    if(is_pair){
+        if (high >= 10){
             return 90;
         } else if (high >= 7) {
             return 70;
         }
     }
 
-    bool is_suited = isSuited(hand);
+    bool cards_suited = is_suited(hand);
 
-    if (is_suited) {
+    if (cards_suited) {
         if (std::abs(hand1 - hand2) == 1 && (hand1 >= STRONG_SUITED_THRESHOLD || hand2 >= STRONG_SUITED_THRESHOLD)) {
             return 90;
         } else if (hand1 >= 9 || hand2 >= 9) {
@@ -201,7 +228,7 @@ std::vector<std::string> convertHandToStringFormat(const std::vector<const Card*
 
         // Convert the Rank to string
         std::string rankStr;
-        switch (card->getRank()) {
+        switch (card->get_rank()) {
             case Rank::Two:    rankStr = "2"; break;
             case Rank::Three:  rankStr = "3"; break;
             case Rank::Four:   rankStr = "4"; break;
@@ -220,7 +247,7 @@ std::vector<std::string> convertHandToStringFormat(const std::vector<const Card*
 
         // Convert the Suit to string
         std::string suitStr;
-        switch (card->getSuit()) {
+        switch (card->get_suit()) {
             case Suit::Hearts:   suitStr = "h"; break;
             case Suit::Diamonds: suitStr = "d"; break;
             case Suit::Clubs:    suitStr = "c"; break;
@@ -237,7 +264,7 @@ std::vector<std::string> convertHandToStringFormat(const std::vector<const Card*
 }
 
 // HardStrategy's getNextMove function
-Move HardStrategy::getNextMove(GameState current_state) {
+Move HardStrategy::get_next_move(GameState current_state) {
     std::cout << "Hard Strategy !!!" << std::endl;
     
     std::string game = "h";  // game type Texas Holdem Poker
@@ -335,6 +362,22 @@ Move HardStrategy::getNextMove(GameState current_state) {
     // Ensure that the raise amount does not exceed available chips
     raise_amount = std::min(raise_amount, computer_chips);
 
+    // Handle low chip count
+    if (!can_raise(current_state)){
+            
+            if(equity >= 0.40){
+                return Call{};
+            
+            }else {
+                int foldChance = get_random_int(0, 100);
+                if (foldChance < 70) {
+                    return Fold{};
+                } else {
+                    return Call{};
+                }
+            }
+    }
+
     // Strong hand decision (high equity)
     if (equity >= 0.80) {
         return Raise{raise_amount};
@@ -359,7 +402,7 @@ Move HardStrategy::getNextMove(GameState current_state) {
     // Very weak hand decision (low equity)
     else {
         // Very weak hand: fold or call with a small chance
-        int foldChance = getRandomInt(0, 100);
+        int foldChance = get_random_int(0, 100);
         if (foldChance < 70) {
             return Fold{};
         } else {

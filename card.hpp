@@ -23,12 +23,12 @@ constexpr std::array<Rank, 13> ranks = {
 class Card {
 public:
     // Singleton get or create card
-    static std::shared_ptr<const Card> getCard(Suit suit, Rank rank);
+    static std::shared_ptr<const Card> get_card(Suit suit, Rank rank);
 
-    Suit getSuit() const;
-    Rank getRank() const;
-    int getValue() const;
-    const std::string& getCardImagePath() const;
+    Suit get_suit() const;
+    Rank get_rank() const;
+    int get_value() const;
+    const std::string& get_card_image_path() const;
 
 private:
     // Private constructor to ensure singleton

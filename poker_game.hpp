@@ -59,6 +59,7 @@ public:
     const std::size_t get_pot() const;
     const Player& get_human_player() const;
     const Player& get_computer_player() const;
+    const std::optional<PokerHand> get_winning_hand() const;
     const std::optional<PokerHandWinner> get_winner() const;
     const std::vector<const Card*>& get_community_cards() const;
 
@@ -66,16 +67,11 @@ public:
     PlayerType get_player_turn() const;
     void set_player_turn(PlayerType type) ;
 
-
     Player* get_player(PlayerType player_type);
     std::tuple<Player*, Player*> get_acting_and_other_player(PlayerType player_type);
 
-    PokerEngineEnumState stage;
-    PokerEngineEnumState getStage() const;
-    void setStage(PokerEngineEnumState newStage);
-
     void add_observer(Observer* observer);
-    void notifyGameEvent(std::shared_ptr<GameEvent> event);
+    void notify_game_event(std::shared_ptr<GameEvent> event);
 
 
 private:
@@ -91,6 +87,7 @@ private:
     PlayerType dealer;
     PlayerType player_turn;
 
+    std::optional<PokerHand> winning_hand;
     std::optional<PokerHandWinner> winner;
     std::optional<PokerHandEvaluation> hand_evaluation;
 

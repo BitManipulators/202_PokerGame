@@ -1,13 +1,15 @@
 #include "poker_hand_evaluator.hpp"
 
+#include "poker_hand.hpp"
+
 #include <algorithm>
 #include <memory>
 
 namespace {
 
 // Compare function for sorting cards in descending order.
-bool compareCardDesc(const Card* a, const Card* b) {
-    return a->getValue() > b->getValue();
+bool compare_card_desc(const Card* a, const Card* b) {
+    return a->get_value() > b->get_value();
 }
 
 // Create all possible 5 card combinations from 7 cards (2 player cards and 5 community cards)
@@ -33,7 +35,7 @@ std::vector<PokerHand> all_five_card_combinations(const std::vector<const Card*>
         }
 
         // Sort cards by rank
-        std::sort(combination.begin(), combination.end(), compareCardDesc);
+        std::sort(combination.begin(), combination.end(), compare_card_desc);
 
         poker_hands.push_back(PokerHand(combination));
     } while (std::prev_permutation(indices.begin(), indices.end()));
@@ -58,14 +60,15 @@ std::vector<std::unique_ptr<PokerHandVisitor>> make_visitors(const std::vector<s
     return visitors;
 }
 
-PokerHandEvaluation evaluate_poker_hands(const std::vector<PokerHand>& poker_hands) {
+std::tuple<PokerHand, PokerHandEvaluation> evaluate_poker_hands(const std::vector<PokerHand>& poker_hands) {
+    PokerHand best_hand = poker_hands.at(0);
     PokerHandEvaluation best_evaluation = lowest_evaluation;
 
     for (const PokerHand& poker_hand : poker_hands) {
         // Count rank frequencies.
         std::map<int, int> freq;
         for (const Card* c : poker_hand.get_cards()) {
-            freq[c->getValue()]++;
+            freq[c->get_value()]++;
         }
 
         // Create a sorted vector of pairs (frequency, rank) for tiebreakers.
@@ -87,18 +90,19 @@ PokerHandEvaluation evaluate_poker_hands(const std::vector<PokerHand>& poker_han
         for (std::unique_ptr<PokerHandVisitor>& visitor : visitors) {
             PokerHandEvaluation visitor_evaluation = poker_hand.accept(*visitor);
             if (visitor_evaluation > best_evaluation) {
+                best_hand = poker_hand;
                 best_evaluation = visitor_evaluation;
                 break;
             }
         }
     }
 
-    return best_evaluation;
+    return std::tuple(best_hand, best_evaluation);
 }
 
 } // namespace
 
-PokerHandEvaluation PokerHandEvaluator::evaluate_hand(const std::vector<const Card*>& player_cards,
+std::tuple<PokerHand, PokerHandEvaluation> PokerHandEvaluator::evaluate_hand(const std::vector<const Card*>& player_cards,
                                                       const std::vector<const Card*>& community_cards) {
 
     // Ensure we have enough cards (this assumes at least 3 community cards are dealt)
@@ -108,9 +112,9 @@ PokerHandEvaluation PokerHandEvaluator::evaluate_hand(const std::vector<const Ca
 
     std::vector<PokerHand> player_poker_hands = all_five_card_combinations(player_cards, community_cards);
 
-    PokerHandEvaluation player_best_evaluation = evaluate_poker_hands(player_poker_hands);
+    auto [player_best_hand, player_best_evaluation] = evaluate_poker_hands(player_poker_hands);
 
-    return player_best_evaluation;
+    return std::tuple(player_best_hand, player_best_evaluation);
 }
 
 PokerHandResult PokerHandEvaluator::determine_winner(const std::vector<const Card*>& player1_cards,
@@ -122,14 +126,14 @@ PokerHandResult PokerHandEvaluator::determine_winner(const std::vector<const Car
         throw std::runtime_error("Not enough cards to evaluate.");
     }
 
-    PokerHandEvaluation player1_best_evaluation = evaluate_hand(player1_cards, community_cards);
-    PokerHandEvaluation player2_best_evaluation = evaluate_hand(player2_cards, community_cards);
+    auto [player1_best_hand, player1_best_evaluation] = evaluate_hand(player1_cards, community_cards);
+    auto [player2_best_hand, player2_best_evaluation] = evaluate_hand(player2_cards, community_cards);
 
     if (player1_best_evaluation > player2_best_evaluation) {
-        return {PokerHandWinner::Player1, player1_best_evaluation};
+        return {player1_best_hand, PokerHandWinner::Player1, player1_best_evaluation};
     } else if (player2_best_evaluation > player1_best_evaluation) {
-        return {PokerHandWinner::Player2, player2_best_evaluation};
+        return {player2_best_hand, PokerHandWinner::Player2, player2_best_evaluation};
     } else {
-        return {PokerHandWinner::Tie, player1_best_evaluation};
+        return {std::nullopt, PokerHandWinner::Tie, player1_best_evaluation};
     }
 }

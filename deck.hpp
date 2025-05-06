@@ -1,17 +1,15 @@
-#ifndef DECK_H
-#define DECK_H
+#pragma once
+
+#include "card.hpp"
 
 #include <vector>
-#include "card.hpp"
 
 class Deck {
 public:
     Deck();
     void shuffle();
-    const Card* dealCard();
-    bool isEmpty() const;
+    const Card* deal_card();
+    bool is_empty() const;
 private:
     std::vector<std::shared_ptr<const Card>> cards;
 };
-
-#endif // DECK_H

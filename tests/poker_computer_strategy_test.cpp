@@ -1,21 +1,19 @@
-#include <gtest/gtest.h>
-#include "../player.hpp"
 #include "../card.hpp"
-#include "../computer_strategy.hpp"
+#include "../player.hpp"
+
+#include <gtest/gtest.h>
 
 
-//class ComputerStrategyTest : public ::testing::Test{};
-
-TEST(ComputerStrategyTest, flush_straight){
+TEST(ComputerStrategyTest, flush_straight) {
     
     // All the cards and Round to determine the next move {call,fold, raise}
     ComputerPlayer p(Difficulty::Easy);
     
-    const Card *c1 = Card::getCard(Suit::Diamonds, Rank::Ace).get();
-    const Card *c2 = Card::getCard(Suit::Diamonds, Rank::King).get();
-    const Card *c3 = Card::getCard(Suit::Diamonds, Rank::Queen).get();
-    const Card *c4 = Card::getCard(Suit::Diamonds, Rank::Ten).get();
-    const Card *c5 = Card::getCard(Suit::Diamonds, Rank::Jack).get();
+    const Card *c1 = Card::get_card(Suit::Diamonds, Rank::Ace).get();
+    const Card *c2 = Card::get_card(Suit::Diamonds, Rank::King).get();
+    const Card *c3 = Card::get_card(Suit::Diamonds, Rank::Queen).get();
+    const Card *c4 = Card::get_card(Suit::Diamonds, Rank::Ten).get();
+    const Card *c5 = Card::get_card(Suit::Diamonds, Rank::Jack).get();
 
     std::vector<const Card*> cards = {c1,c2,c3,c4,c5};
     
@@ -24,9 +22,9 @@ TEST(ComputerStrategyTest, flush_straight){
     std::vector<int> ranks;
 
     for (const auto& c : cards){
-        rankCount[c->getRank()]++;
-        suitCount[c->getSuit()]++;
-        ranks.push_back(static_cast<int>(c->getRank()));
+        rankCount[c->get_rank()]++;
+        suitCount[c->get_suit()]++;
+        ranks.push_back(static_cast<int>(c->get_rank()));
     }
 
     std::sort(ranks.begin(),ranks.end());
@@ -85,11 +83,11 @@ TEST(ComputerStrategyTest, fourofkind){
     // All the cards and Round to determine the next move {call,fold, raise}
     ComputerPlayer p(Difficulty::Easy);
     
-    const Card *c1 = Card::getCard(Suit::Diamonds, Rank::Ace).get();
-    const Card *c2 = Card::getCard(Suit::Clubs, Rank::Ace).get();
-    const Card *c3 = Card::getCard(Suit::Hearts, Rank::Ace).get();
-    const Card *c4 = Card::getCard(Suit::Spades, Rank::Ace).get();
-    const Card *c5 = Card::getCard(Suit::Diamonds, Rank::Jack).get();
+    const Card *c1 = Card::get_card(Suit::Diamonds, Rank::Ace).get();
+    const Card *c2 = Card::get_card(Suit::Clubs, Rank::Ace).get();
+    const Card *c3 = Card::get_card(Suit::Hearts, Rank::Ace).get();
+    const Card *c4 = Card::get_card(Suit::Spades, Rank::Ace).get();
+    const Card *c5 = Card::get_card(Suit::Diamonds, Rank::Jack).get();
 
     std::vector<const Card*> cards = {c1,c2,c3,c4,c5};
     
@@ -98,9 +96,9 @@ TEST(ComputerStrategyTest, fourofkind){
     std::vector<int> ranks;
 
     for (const auto& c : cards){
-        rankCount[c->getRank()]++;
-        suitCount[c->getSuit()]++;
-        ranks.push_back(static_cast<int>(c->getRank()));
+        rankCount[c->get_rank()]++;
+        suitCount[c->get_suit()]++;
+        ranks.push_back(static_cast<int>(c->get_rank()));
     }
 
     std::sort(ranks.begin(),ranks.end());
