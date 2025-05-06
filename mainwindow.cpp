@@ -150,9 +150,9 @@ void MainWindow::onNewGame() {
         case(MEDIUM):
             strategy = std::make_unique<MediumStrategy>();
             break;
-        case(HARD):
-            strategy = std::make_unique<HardStrategy>();
-            break;  
+        // case(HARD):
+        //     strategy = std::make_unique<HardStrategy>();
+        //     break;  
         default :
             QMessageBox::warning(this, "Strategy Not Selected",
                              "Please select a valid strategy to start the game.");
@@ -511,9 +511,9 @@ void MainWindow::onStrategyChanged(const QString& strategy) {
         case(MEDIUM):
             selectedStrategy = std::make_unique<MediumStrategy>();
             break;
-        case(HARD):
-            selectedStrategy = std::make_unique<HardStrategy>();
-            break;  
+        // case(HARD):
+        //     selectedStrategy = std::make_unique<HardStrategy>();
+        //     break;  
         default :
             return; 
     }

@@ -55,8 +55,8 @@ private:
 
 };
 
-class HardStrategy : public ComputerStrategy {
-    Move get_next_move(GameState current_state) override;
+// class HardStrategy : public ComputerStrategy {
+//     Move get_next_move(GameState current_state) override;
     
-};    
+// };    
 

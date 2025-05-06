@@ -9,26 +9,25 @@ set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 
+# include(FetchContent)
+# # Fetch Boost
+# FetchContent_Declare(
+#     Boost
+#     GIT_REPOSITORY https://github.com/boostorg/boost.git
+#     GIT_TAG master
+# )
 
-include(FetchContent)
-# Fetch Boost
-FetchContent_Declare(
-    Boost
-    GIT_REPOSITORY https://github.com/boostorg/boost.git
-    GIT_TAG master
-)
-
-# Make Boost available
-FetchContent_MakeAvailable(Boost)
+# # Make Boost available
+# FetchContent_MakeAvailable(Boost)
 
 
-include(FetchContent)
-FetchContent_Declare(
-    pokerstove
-    GIT_REPOSITORY https://github.com/andrewprock/pokerstove.git
-    GIT_TAG master
-)
-FetchContent_MakeAvailable(pokerstove)
+# include(FetchContent)
+# FetchContent_Declare(
+#     pokerstove
+#     GIT_REPOSITORY https://github.com/andrewprock/pokerstove.git
+#     GIT_TAG master
+# )
+# FetchContent_MakeAvailable(pokerstove)
 
 find_package(QT NAMES Qt6 Qt5 REQUIRED COMPONENTS Widgets Svg REQUIRED)
 find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Widgets)
@@ -96,8 +95,8 @@ else()
     endif()
 endif()
 
-target_link_libraries(poker_game PRIVATE Qt${QT_VERSION_MAJOR}::Widgets peval penum )
-target_include_directories(poker_game PRIVATE "${pokerstove_SOURCE_DIR}/src/lib")
+target_link_libraries(poker_game PRIVATE Qt${QT_VERSION_MAJOR}::Widgets )
+# target_include_directories(poker_game PRIVATE "${pokerstove_SOURCE_DIR}/src/lib")
 target_link_libraries(poker_gui PRIVATE Qt${QT_VERSION_MAJOR}::Widgets poker_game)
 
 # Qt for iOS sets MACOSX_BUNDLE_GUI_IDENTIFIER automatically since Qt 6.1.
@@ -173,16 +172,16 @@ endif()
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g")
 
-# include(CTest)
-# include(FetchContent)
-# FetchContent_Declare(
-#  googletest
-#  GIT_REPOSITORY https://github.com/google/googletest.git
-#  GIT_TAG v1.16.0
-# )
+include(CTest)
+include(FetchContent)
+FetchContent_Declare(
+ googletest
+ GIT_REPOSITORY https://github.com/google/googletest.git
+ GIT_TAG v1.16.0
+)
 
 set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
-# FetchContent_MakeAvailable(googletest)
+FetchContent_MakeAvailable(googletest)
 
 enable_testing()
 
