@@ -31,10 +31,12 @@ Player* PokerGame::get_player(PlayerType player_type) {
     }
 }
 
+
 std::tuple<Player*, Player*> PokerGame::get_acting_and_other_player(PlayerType player_type) {
-    Player* acting_player;
-    Player* other_player;
-    switch(player_turn) {
+    Player* acting_player = nullptr; // Initialize to nullptr
+    Player* other_player = nullptr;  // Initialize to nullptr
+
+    switch(player_type) {
     case PlayerType::Human:
         acting_player = human_player;
         other_player = computer_player;
@@ -43,10 +45,18 @@ std::tuple<Player*, Player*> PokerGame::get_acting_and_other_player(PlayerType p
         acting_player = computer_player;
         other_player = human_player;
         break;
+    default:
+        // Handle the case where player_type is unexpected
+        // std::cerr << "Invalid PlayerType!" << std::endl;
+        // Optionally throw an exception or return nullptrs
+        acting_player = nullptr;
+        other_player = nullptr;
+        break;
     }
 
     return {acting_player, other_player};
 }
+
 
 GameAction::Result PokerGame::perform_call(PlayerType player_type) {
     if (player_type != player_turn) {
