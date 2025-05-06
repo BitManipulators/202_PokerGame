@@ -323,7 +323,12 @@ void MainWindow::displayGame() {
         // Highlight player 1's cards if they are the winner
         if (game.has_ended() && game.get_winner().has_value() &&
             game.get_winner().value() == PokerHandWinner::Player1) {
-            for (const Card* winning_card : winning_hand.value().get_cards()) {
+            std::vector<const Card*> winning_cards = game.get_player(PlayerType::Human)->hand;
+            if (winning_hand.has_value()) {
+                winning_cards = winning_hand.value().get_cards();
+            }
+
+            for (const Card* winning_card : winning_cards) {
                 if (card == winning_card) {
                     QGraphicsRectItem *highlight = scene->addRect(
                         player1StartX + i * spacing - 5, yPlayer1 - 5,
@@ -357,7 +362,12 @@ void MainWindow::displayGame() {
         // Highlight player 2's cards if they are the winner
         if (game.has_ended() && game.get_winner().has_value() &&
             game.get_winner().value() == PokerHandWinner::Player2) {
-            for (const Card* winning_card : winning_hand.value().get_cards()) {
+            std::vector<const Card*> winning_cards = game.get_player(PlayerType::Computer)->hand;
+            if (winning_hand.has_value()) {
+                winning_cards = winning_hand.value().get_cards();
+            }
+
+            for (const Card* winning_card : winning_cards) {
                 if (card == winning_card) {
                     QGraphicsRectItem *highlight = scene->addRect(
                         player2StartX + i * spacing - 5, yPlayer2 - 5,
