@@ -73,6 +73,7 @@ public:
     void add_observer(Observer* observer);
     void notify_game_event(std::shared_ptr<GameEvent> event);
 
+    void reset_game();
 
 private:
     std::size_t pot;

@@ -24,6 +24,8 @@ public:
     void add_card(const Card* card);
     void clear_hand();
 
+    virtual void reset();
+
     bool has_acted;
     std::size_t chips;
     std::size_t current_bet;

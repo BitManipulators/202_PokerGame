@@ -42,6 +42,8 @@ private:
     void onStrategyChanged(const QString& strategy);
     void showPokerHandRanking();
 
+    void onRestartGame();
+
 };
 
 #endif // MAINWINDOW_H

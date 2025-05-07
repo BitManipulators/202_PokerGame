@@ -188,10 +188,10 @@ QPushButton#startNewGameButton {
     color: white;
     font-weight: bold;
     font-size: 14px;
-    border-radius: 6px;
-    min-height: 50px;
-    min-width: 250px;
-    padding: 10px 20px;
+    border-radius: 4px;
+    min-height: 40px;
+    max-width: 200px;
+    padding: 8px 16px;
     border: 2px solid #663399;
 }
 
@@ -200,8 +200,27 @@ QPushButton#startNewGameButton:hover {
     border: 2px solid #8e44ad;
 }
 
+QPushButton#startNewGameButton:disabled {
+    background-color: #99a4ad;
+    color: #d0d0d0;
+    border: 1px solid #7f8c8d;
+}
+
 QPushButton#startNewGameButton:pressed {
     background-color: #6c3483;
+}
+
+QPushButton#restartButton {
+    background-color: #8e44ad;
+    color: white;
+    font-weight: bold;
+    font-size: 12px;
+    border-radius: 3px;
+    min-height: 28px;
+    max-width: 120px;
+    padding: 4px 10px;
+    border: none;
+    box-shadow: 0px 2px 4px rgba(0,0,0,0.25);
 }
 
 QFrame {
@@ -281,18 +300,70 @@ QListWidget {
           </property>
          </spacer>
         </item>
+        <item>
+         <layout class="QVBoxLayout" name="verticalLayout">
+          <item alignment="Qt::AlignmentFlag::AlignHCenter">
+           <widget class="QComboBox" name="strategyComboBox">
+            <property name="minimumSize">
+             <size>
+              <width>150</width>
+              <height>25</height>
+             </size>
+            </property>
+            <property name="maximumSize">
+             <size>
+              <width>120</width>
+              <height>25</height>
+             </size>
+            </property>
+            <property name="styleSheet">
+             <string notr="true">
+            QComboBox {
+              color: white;
+            }
+          </string>
+            </property>
+            <property name="currentIndex">
+             <number>0</number>
+            </property>
+            <item>
+             <property name="text">
+              <string>Select Strategy</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>Easy</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>Medium</string>
+             </property>
+            </item>
+           </widget>
+          </item>
+          <item>
+           <spacer name="bottomSpacer">
+            <property name="orientation">
+             <enum>Qt::Orientation::Vertical</enum>
+            </property>
+            <property name="sizeHint" stdset="0">
+             <size>
+              <width>20</width>
+              <height>40</height>
+             </size>
+            </property>
+           </spacer>
+          </item>
         <item alignment="Qt::AlignmentFlag::AlignHCenter">
-         <widget class="QPushButton" name="startNewGameButton">
-          <property name="minimumSize">
-           <size>
-            <width>294</width>
-            <height>74</height>
-           </size>
-          </property>
-          <property name="text">
-           <string>Start New Game</string>
-          </property>
-         </widget>
+           <widget class="QPushButton" name="startNewGameButton">
+            <property name="text">
+             <string>Start New Game</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
         </item>
         <item>
          <spacer name="bottomSpacer">
@@ -323,43 +394,19 @@ QListWidget {
            <item>
             <layout class="QHBoxLayout" name="topBarLayout">
              <item>
-              <widget class="QComboBox" name="strategyComboBox">
+              <widget class="QPushButton" name="menuButton">
                <property name="minimumSize">
                 <size>
-                 <width>150</width>
-                 <height>25</height>
+                 <width>30</width>
+                 <height>56</height>
                 </size>
                </property>
-               <property name="maximumSize">
-                <size>
-                 <width>120</width>
-                 <height>25</height>
-                </size>
+               <property name="toolTip">
+                <string>Show Poker Hand Rankings</string>
                </property>
-               <property name="styleSheet">
-                <string notr="true">QComboBox {
-    color: black;
-}
-</string>
+               <property name="text">
+                <string>❓</string>
                </property>
-               <property name="currentIndex">
-                <number>0</number>
-               </property>
-               <item>
-                <property name="text">
-                 <string>Select Strategy</string>
-                </property>
-               </item>
-               <item>
-                <property name="text">
-                 <string>Easy</string>
-                </property>
-               </item>
-               <item>
-                <property name="text">
-                 <string>Medium</string>
-                </property>
-               </item>
               </widget>
              </item>
              <item>
@@ -376,19 +423,10 @@ QListWidget {
               </spacer>
              </item>
              <item>
-              <widget class="QPushButton" name="menuButton">
-               <property name="minimumSize">
-                <size>
-                 <width>30</width>
-                 <height>56</height>
-                </size>
+              <widget class="QPushButton" name="restartButton">
+               <property name="text">
+                <string>Restart Game</string>
                </property>
-               <property name="toolTip">
-                <string>Show Poker Hand Rankings</string>
-               </property>
-                <property name="text">
-                    <string>❓</string>
-                </property>
               </widget>
              </item>
             </layout>

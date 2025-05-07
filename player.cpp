@@ -43,3 +43,10 @@ Move ComputerPlayer::get_move(GameState current_state) const {
 void ComputerPlayer::set_strategy(std::unique_ptr<ComputerStrategy> new_strategy) {
     strategy = std::move(new_strategy);
 }
+
+void Player::reset() {
+    chips = 1000;
+    current_bet = 0;
+    has_acted = false;
+    hand.clear();
+}
