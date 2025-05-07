@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1200</width>
-    <height>1040</height>
+    <width>1000</width>
+    <height>500</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -338,18 +338,18 @@ QListWidget {
                </property>
                <property name="styleSheet">
                 <string notr="true">QComboBox {
-    color: black;
+    color: white;
 }
 </string>
                </property>
                <property name="currentIndex">
                 <number>0</number>
                </property>
-               <item>
+               <!-- <item>
                 <property name="text">
                  <string>Select Strategy</string>
                 </property>
-               </item>
+               </item> -->
                <item>
                 <property name="text">
                  <string>Easy</string>

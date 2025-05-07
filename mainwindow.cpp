@@ -103,12 +103,12 @@ void MainWindow::onStartNewGame() {
     ui->stackedWidget->setCurrentIndex(1);
     qApp->processEvents();
 
-    QString selectedStrategy = ui->strategyComboBox->currentText();
-    if (selectedStrategy != "Easy" && selectedStrategy != "Medium") {
-        QMessageBox::warning(this, "Strategy Not Selected",
-                             "Please select a valid strategy to start the game.");
-        return; // Early return if no valid strategy is selected
-    }
+   // QString selectedStrategy = ui->strategyComboBox->currentText();
+    // if (selectedStrategy == "Select Strategy") {
+    //     QMessageBox::warning(this, "Strategy Not Selected",
+    //                          "Please select a valid strategy to start the game.");
+    //     return; // Early return if no valid strategy is selected
+    // }
 
     // Reset buttons and UI — wait for strategy
     ui->strategyComboBox->setEnabled(true);
@@ -126,22 +126,28 @@ void MainWindow::onStartNewGame() {
     ui->player2Label->setText("Player 2: -- chips");
 
     qDebug() << "[INFO] Waiting for strategy selection...";
+    onNewGame();
 }
 
 // Starts a new game and updates button states.
 void MainWindow::onNewGame() {
     QString selectedStrategy = ui->strategyComboBox->currentText();
 
-    std::unique_ptr<ComputerStrategy> strategy;
+   std::unique_ptr<ComputerStrategy> strategy;
 
-    if (selectedStrategy == "Easy") {
-        strategy = std::make_unique<EasyStrategy>();
-    } else if (selectedStrategy == "Medium") {
-        strategy = std::make_unique<MediumStrategy>();
-    } else {
-        QMessageBox::warning(this, "Strategy Not Selected",
-                             "Please select a valid strategy to start the game.");
-        return; // Early return if no valid strategy is selected
+   switch (GAME_DIFFICULTY[selectedStrategy.toStdString()]) {
+        case(EASY):
+            strategy = std::make_unique<EasyStrategy>();
+            break;
+        case(MEDIUM):
+            strategy = std::make_unique<MediumStrategy>();
+            break;
+        // case(HARD):
+        //     strategy = std::make_unique<HardStrategy>();
+        //     break;
+        default:
+            strategy = std::make_unique<EasyStrategy>();
+            break;
     }
 
     // Set the strategy directly to the computer player
@@ -171,6 +177,7 @@ void MainWindow::onNewGame() {
     ui->foldButton->setEnabled(true);
     ui->callButton->setEnabled(true);
     ui->placeBetButton->setEnabled(true);
+    ui->strategyComboBox->setEnabled(true);
 
     ui->player2Label->raise();
 }
@@ -491,12 +498,20 @@ void MainWindow::onStrategyChanged(const QString& strategy) {
         return;
 
     std::unique_ptr<ComputerStrategy> selectedStrategy;
-
-    if (strategy == "Easy") {
-        selectedStrategy = std::make_unique<EasyStrategy>();
-    } else {
-        selectedStrategy = std::make_unique<MediumStrategy>();
+    switch (GAME_DIFFICULTY[strategy.toStdString()]) {
+        case(EASY):
+            selectedStrategy = std::make_unique<EasyStrategy>();
+            break;
+        case(MEDIUM):
+            selectedStrategy = std::make_unique<MediumStrategy>();
+            break;
+        // case(HARD):
+        //     selectedStrategy = std::make_unique<HardStrategy>();
+        //     break;
+        default :
+            return;
     }
+
 
     const Player& playerRef = game.get_computer_player();
     ComputerPlayer* computerPlayer = dynamic_cast<ComputerPlayer*>(const_cast<Player*>(&playerRef));
