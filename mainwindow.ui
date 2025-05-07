@@ -338,18 +338,13 @@ QListWidget {
                </property>
                <property name="styleSheet">
                 <string notr="true">QComboBox {
-    color: black;
+    color: white;
 }
 </string>
                </property>
                <property name="currentIndex">
                 <number>0</number>
                </property>
-               <item>
-                <property name="text">
-                 <string>Select Strategy</string>
-                </property>
-               </item>
                <item>
                 <property name="text">
                  <string>Easy</string>
