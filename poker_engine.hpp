@@ -14,6 +14,7 @@ public:
     GameAction::Result new_game();
     GameAction::Result make_move(PlayerType player_type, Move move);
     GameAction::Result make_moves();
+    void reset();
 
     friend class PokerEngineTests;
 
