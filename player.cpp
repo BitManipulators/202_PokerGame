@@ -30,6 +30,9 @@ ComputerPlayer::ComputerPlayer(Difficulty d) : Player(PlayerType::Computer) {
     case Difficulty::Medium:
         strategy = std::make_unique<MediumStrategy>();
         break;
+    // case Difficulty::Hard:
+    //     strategy = std::make_unique<HardStrategy>();
+    //     break;
 
     default:
         throw std::runtime_error("Unexpected Input");

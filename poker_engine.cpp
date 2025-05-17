@@ -57,10 +57,15 @@ GameAction::Result PokerEngine::make_moves() {
     }
 
     if (game.get_player_turn() == PlayerType::Computer) {
+        
+        const Player& computer_player = game.get_computer_player();
+        const Player& human_player = game.get_human_player();
         current_state.community_cards = game.get_community_cards();
-        current_state.hands = game.get_computer_player().hand;
+        current_state.hands = computer_player.hand;
         current_state.stage = state->enum_state_;
-        current_state.current_bet = game.get_human_player().current_bet;
+        current_state.current_bet = std::max(computer_player.current_bet,human_player.current_bet);
+        current_state.pot_size = game.get_pot();
+        current_state.computer_chips = computer_player.chips;
 
         Move computer_move = game.get_computer_player().get_move(current_state);
         game.set_player_move(PlayerType::Computer, computer_move);

@@ -14,14 +14,20 @@
 #include <QSequentialAnimationGroup>
 #include <QScreen>
 
-std::map<const Card *, QPixmap> card_image_cache;
 
-const int EASY = 0, MEDIUM = 1, HARD = 3;
+
+
+
+std::map<const Card*, QPixmap> card_image_cache;
+
+const int EASY=0, MEDIUM=1, HARD=3;
 
 std::unordered_map<std::string, int> GAME_DIFFICULTY = {
-    {"Easy", EASY},
+    {"Easy",EASY},
     {"Medium", MEDIUM},
-    {"Hard", HARD}};
+    {"Hard", HARD}
+};
+
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent), ui(new Ui::MainWindow), game(), engine(game)
@@ -109,6 +115,21 @@ void MainWindow::updateChipDisplay()
     ui->betLabel->setText(QString("Pot: %1 | Current Bet: %2").arg(pot).arg(current_bet));
 }
 
+void MainWindow::handleEndGame(){
+    
+    displayGame();
+    displayWinner();
+    const Player& human_player = game.get_human_player();
+    const Player& computer_player = game.get_computer_player();
+
+    if(human_player.chips == 0 || computer_player.chips == 0){
+        ui->exitButton->setEnabled(true);
+        ui->newGameButton->setEnabled(false);
+    }else{
+        ui->newGameButton->setEnabled(true);
+    }
+}
+
 // Slot to handle landing page "Start New Game" click.
 void MainWindow::onStartNewGame()
 {
@@ -117,12 +138,7 @@ void MainWindow::onStartNewGame()
     ui->stackedWidget->setCurrentIndex(1);
     qApp->processEvents();
 
-    // QString selectedStrategy = ui->strategyComboBox->currentText();
-    // if (selectedStrategy == "Select Strategy") {
-    //     QMessageBox::warning(this, "Strategy Not Selected",
-    //                          "Please select a valid strategy to start the game.");
-    //     return; // Early return if no valid strategy is selected
-    // }
+    
 
     // Reset buttons and UI — wait for strategy
     ui->strategyComboBox->setEnabled(true);
@@ -148,24 +164,22 @@ void MainWindow::onNewGame()
 {
     QString selectedStrategy = ui->strategyComboBox->currentText();
 
-    std::unique_ptr<ComputerStrategy> strategy;
-
-    switch (GAME_DIFFICULTY[selectedStrategy.toStdString()])
-    {
-    case (EASY):
-        strategy = std::make_unique<EasyStrategy>();
-        break;
-    case (MEDIUM):
-        strategy = std::make_unique<MediumStrategy>();
-        break;
-    // case(HARD):
-    //     strategy = std::make_unique<HardStrategy>();
-    //     break;
-    default:
-        strategy = std::make_unique<EasyStrategy>();
-        break;
+   std::unique_ptr<ComputerStrategy> strategy;
+   
+   switch (GAME_DIFFICULTY[selectedStrategy.toStdString()]) {
+        case(EASY):
+            strategy = std::make_unique<EasyStrategy>();
+            break;
+        case(MEDIUM):
+            strategy = std::make_unique<MediumStrategy>();
+            break;
+         
+        default :
+            QMessageBox::warning(this, "Strategy Not Selected",
+                             "Please select a valid strategy to start the game.");
+            return; 
     }
-
+    
     // Set the strategy directly to the computer player
     const Player &playerRef = game.get_computer_player();
     ComputerPlayer *computerPlayer = dynamic_cast<ComputerPlayer *>(const_cast<Player *>(&playerRef));
@@ -344,7 +358,12 @@ void MainWindow::displayGame()
         // Highlight player 1's cards if they are the winner
         if (game.has_ended() && game.get_winner().has_value() &&
             game.get_winner().value() == PokerHandWinner::Player1) {
-            for (const Card* winning_card : winning_hand.value().get_cards()) {
+            std::vector<const Card*> winning_cards = game.get_player(PlayerType::Human)->hand;
+            if (winning_hand.has_value()) {
+                winning_cards = winning_hand.value().get_cards();
+            }
+
+            for (const Card* winning_card : winning_cards) {
                 if (card == winning_card) {
                     QGraphicsRectItem *highlight = scene->addRect(
                         player1StartX + i * spacing - 5, yPlayer1 - 5,
@@ -381,7 +400,12 @@ void MainWindow::displayGame()
         // Highlight player 2's cards if they are the winner
         if (game.has_ended() && game.get_winner().has_value() &&
             game.get_winner().value() == PokerHandWinner::Player2) {
-            for (const Card* winning_card : winning_hand.value().get_cards()) {
+            std::vector<const Card*> winning_cards = game.get_player(PlayerType::Computer)->hand;
+            if (winning_hand.has_value()) {
+                winning_cards = winning_hand.value().get_cards();
+            }
+
+            for (const Card* winning_card : winning_cards) {
                 if (card == winning_card) {
                     QGraphicsRectItem *highlight = scene->addRect(
                         player2StartX + i * spacing - 5, yPlayer2 - 5,
@@ -414,9 +438,7 @@ void MainWindow::onFold()
     // Only display winner if game has ended
     if (game.has_ended())
     {
-        displayGame();
-        displayWinner();
-        ui->newGameButton->setEnabled(true);
+        handleEndGame();
     }
 }
 
@@ -439,9 +461,7 @@ void MainWindow::onCall()
     // Check if game has ended
     if (game.has_ended())
     {
-        displayGame();
-        displayWinner();
-        ui->newGameButton->setEnabled(true);
+        handleEndGame();
     }
 }
 
@@ -472,10 +492,7 @@ void MainWindow::onRaise()
     // Only display winner if game has ended
     if (game.has_ended())
     {
-        displayGame();
-        displayWinner();
-        ui->newGameButton->setEnabled(true);
-        return;
+        handleEndGame();
     }
 }
 
@@ -539,29 +556,24 @@ void MainWindow::on_game_event(const GameEvent &event)
     }
 }
 
-void MainWindow::onStrategyChanged(const QString &strategy)
-{
-    if (strategy != "Easy" && strategy != "Medium")
-        return;
+
+void MainWindow::onStrategyChanged(const QString& strategy) {
 
     std::unique_ptr<ComputerStrategy> selectedStrategy;
-    switch (GAME_DIFFICULTY[strategy.toStdString()])
-    {
-    case (EASY):
-        selectedStrategy = std::make_unique<EasyStrategy>();
-        break;
-    case (MEDIUM):
-        selectedStrategy = std::make_unique<MediumStrategy>();
-        break;
-    // case(HARD):
-    //     selectedStrategy = std::make_unique<HardStrategy>();
-    //     break;
-    default:
-        return;
+    switch (GAME_DIFFICULTY[strategy.toStdString()]) {
+        case(EASY):
+            selectedStrategy = std::make_unique<EasyStrategy>();
+            break;
+        case(MEDIUM):
+            selectedStrategy = std::make_unique<MediumStrategy>();
+            break;
+        
+        default :
+            return; 
     }
 
-    const Player &playerRef = game.get_computer_player();
-    ComputerPlayer *computerPlayer = dynamic_cast<ComputerPlayer *>(const_cast<Player *>(&playerRef));
+    const Player& playerRef = game.get_computer_player();
+    ComputerPlayer* computerPlayer = dynamic_cast<ComputerPlayer*>(const_cast<Player*>(&playerRef));
 
     if (!computerPlayer)
     {
