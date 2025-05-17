@@ -31,3 +31,12 @@ This project is a poker game GUI built using Qt, with various components such as
 ### PokerStove
 
 PokerStove is used for poker hand evaluation and is fetched directly from its **[GitHub repository](https://github.com/andrewprock/pokerstove)**. It is linked into the project for hand evaluation computations.
+
+## Steps to Install
+
+```bash
+mkdir build && cd build
+
+cmake ..
+
+make
