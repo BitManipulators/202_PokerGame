@@ -115,6 +115,21 @@ void MainWindow::updateChipDisplay()
     ui->betLabel->setText(QString("Pot: %1 | Current Bet: %2").arg(pot).arg(current_bet));
 }
 
+void MainWindow::handleEndGame(){
+    
+    displayGame();
+    displayWinner();
+    const Player& human_player = game.get_human_player();
+    const Player& computer_player = game.get_computer_player();
+
+    if(human_player.chips == 0 || computer_player.chips == 0){
+        ui->exitButton->setEnabled(true);
+        ui->newGameButton->setEnabled(false);
+    }else{
+        ui->newGameButton->setEnabled(true);
+    }
+}
+
 // Slot to handle landing page "Start New Game" click.
 void MainWindow::onStartNewGame()
 {
@@ -423,9 +438,7 @@ void MainWindow::onFold()
     // Only display winner if game has ended
     if (game.has_ended())
     {
-        displayGame();
-        displayWinner();
-        ui->newGameButton->setEnabled(true);
+        handleEndGame();
     }
 }
 
@@ -448,9 +461,7 @@ void MainWindow::onCall()
     // Check if game has ended
     if (game.has_ended())
     {
-        displayGame();
-        displayWinner();
-        ui->newGameButton->setEnabled(true);
+        handleEndGame();
     }
 }
 
@@ -481,10 +492,7 @@ void MainWindow::onRaise()
     // Only display winner if game has ended
     if (game.has_ended())
     {
-        displayGame();
-        displayWinner();
-        ui->newGameButton->setEnabled(true);
-        return;
+        handleEndGame();
     }
 }
 

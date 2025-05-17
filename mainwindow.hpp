@@ -35,6 +35,7 @@ private:
     void displayGame();
     void displayWinner();
     void updateChipDisplay();
+    void handleEndGame();
 
     static std::map<const Card*, QPixmap> card_image_cache;
 
