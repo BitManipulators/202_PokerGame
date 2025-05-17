@@ -1,11 +1,20 @@
-# 202 Poker Game
+# Poker GUI Project
 
-## Add External library  
+This project is a poker game GUI built using Qt, with various components such as game logic, poker hand evaluation, and computer strategy.
 
-- git clone https://github.com/andrewprock/pokerstove.git
-- Place the pokerstove inside {Home}/external
+## Requirements
+
+- **CMake** >= 3.16
+- **Qt** (version 5 or 6) for the GUI components
+
+## Features
+
+- Poker game logic and mechanics
+- Poker hand evaluation using PokerStove
+- Computer AI to play poker hands
 
 
+## Steps to Install
 
 ```bash
 mkdir build && cd build
