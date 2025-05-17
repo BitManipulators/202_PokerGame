@@ -16,7 +16,7 @@
 
 
 
-const int EASY = 0, MEDIUM = 1, HARD = 3;
+
 
 std::map<const Card*, QPixmap> card_image_cache;
 
