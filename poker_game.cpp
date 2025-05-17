@@ -318,3 +318,18 @@ void PokerGame::notify_game_event(std::shared_ptr<GameEvent> event) {
         obs->on_game_event(*event);
     }
 }
+
+void PokerGame::reset_game() {
+    pot = 0;
+    winner = {};
+    hand_evaluation = {};
+
+    human_player->reset();
+    computer_player->reset();
+
+    player_turn = PlayerType::Human;
+    dealer = PlayerType::Human;
+
+    deck = Deck();
+    community_cards.clear();
+}

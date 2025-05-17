@@ -80,3 +80,10 @@ GameAction::Result PokerEngine::make_moves() {
 
     return GameAction::OK;
 }
+
+void PokerEngine::reset() {
+    delete block;
+    block = new PokerEngineStatesBlock(game);
+    auto [initial_state, _] = block->initial_state();
+    state = initial_state;
+}
