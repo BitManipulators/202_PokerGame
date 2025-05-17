@@ -80,7 +80,7 @@ MainWindow::MainWindow(QWidget *parent)
     connect(ui->strategyComboBox, &QComboBox::currentIndexChanged, this, [this](int index)
             {
     QString selected = ui->strategyComboBox->currentText();
-    bool valid = (selected == "Easy" || selected == "Medium");  // Only enable for valid choices
+    bool valid = (selected == "Easy" || selected == "Medium" || selected == "Hard");  // Only enable for valid choices
     ui->startNewGameButton->setEnabled(valid); });
 
     // Start with landing page
@@ -173,6 +173,9 @@ void MainWindow::onNewGame()
         case(MEDIUM):
             strategy = std::make_unique<MediumStrategy>();
             break;
+        case(HARD):
+             strategy = std::make_unique<HardStrategy>();
+             break;    
          
         default :
             QMessageBox::warning(this, "Strategy Not Selected",
@@ -567,6 +570,9 @@ void MainWindow::onStrategyChanged(const QString& strategy) {
         case(MEDIUM):
             selectedStrategy = std::make_unique<MediumStrategy>();
             break;
+        case(HARD):
+            selectedStrategy = std::make_unique<HardStrategy>();
+            break;     
         
         default :
             return; 

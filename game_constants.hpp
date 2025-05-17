@@ -1,7 +1,7 @@
 #pragma once
 
 enum class Difficulty {
-    Easy = 0,Medium
+    Easy = 0,Medium,Hard
 };
 
 enum class PokerEngineEnumState {

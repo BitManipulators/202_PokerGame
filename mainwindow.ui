@@ -341,6 +341,11 @@ QListWidget {
               <string>Medium</string>
              </property>
             </item>
+            <item>
+                <property name="text">
+                 <string>Hard</string>
+                </property>
+            </item>
            </widget>
           </item>
           <item>

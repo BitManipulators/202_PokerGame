@@ -6,10 +6,10 @@
 #include <algorithm>
 #include <vector>
 
-// #include <boost/program_options.hpp>
-// #include <pokerstove/penum/ShowdownEnumerator.h>
+#include <boost/program_options.hpp>
+#include <pokerstove/penum/ShowdownEnumerator.h>
 
-// //namespace po = boost::program_options;
+//namespace po = boost::program_options;
 
 
 int get_random_int(std::size_t min, std::size_t max) {
@@ -215,198 +215,198 @@ int MediumStrategy::evaluate_preflop(const std::vector<const Card*>& hand) {
     return 30;
 }
 
-// Convert hand (vector of Card pointers) into a vector of strings in the expected format
-// std::vector<std::string> convertHandToStringFormat(const std::vector<const Card*>& hand) {
-//     std::vector<std::string> handStrings;
+//Convert hand (vector of Card pointers) into a vector of strings in the expected format
+std::vector<std::string> convertHandToStringFormat(const std::vector<const Card*>& hand) {
+    std::vector<std::string> handStrings;
 
-//     for (const auto& card : hand) {
-//         if (card == nullptr) {
-//             throw std::invalid_argument("Null card detected in hand");
-//         }
+    for (const auto& card : hand) {
+        if (card == nullptr) {
+            throw std::invalid_argument("Null card detected in hand");
+        }
 
-//         std::ostringstream cardStr;
+        std::ostringstream cardStr;
 
-//         // Convert the Rank to string
-//         std::string rankStr;
-//         switch (card->get_rank()) {
-//             case Rank::Two:    rankStr = "2"; break;
-//             case Rank::Three:  rankStr = "3"; break;
-//             case Rank::Four:   rankStr = "4"; break;
-//             case Rank::Five:   rankStr = "5"; break;
-//             case Rank::Six:    rankStr = "6"; break;
-//             case Rank::Seven:  rankStr = "7"; break;
-//             case Rank::Eight:  rankStr = "8"; break;
-//             case Rank::Nine:   rankStr = "9"; break;
-//             case Rank::Ten:    rankStr = "T"; break;
-//             case Rank::Jack:   rankStr = "J"; break;
-//             case Rank::Queen:  rankStr = "Q"; break;
-//             case Rank::King:   rankStr = "K"; break;
-//             case Rank::Ace:    rankStr = "A"; break;
-//             default: throw std::invalid_argument("Invalid rank");
-//         }
+        // Convert the Rank to string
+        std::string rankStr;
+        switch (card->get_rank()) {
+            case Rank::Two:    rankStr = "2"; break;
+            case Rank::Three:  rankStr = "3"; break;
+            case Rank::Four:   rankStr = "4"; break;
+            case Rank::Five:   rankStr = "5"; break;
+            case Rank::Six:    rankStr = "6"; break;
+            case Rank::Seven:  rankStr = "7"; break;
+            case Rank::Eight:  rankStr = "8"; break;
+            case Rank::Nine:   rankStr = "9"; break;
+            case Rank::Ten:    rankStr = "T"; break;
+            case Rank::Jack:   rankStr = "J"; break;
+            case Rank::Queen:  rankStr = "Q"; break;
+            case Rank::King:   rankStr = "K"; break;
+            case Rank::Ace:    rankStr = "A"; break;
+            default: throw std::invalid_argument("Invalid rank");
+        }
 
-//         // Convert the Suit to string
-//         std::string suitStr;
-//         switch (card->get_suit()) {
-//             case Suit::Hearts:   suitStr = "h"; break;
-//             case Suit::Diamonds: suitStr = "d"; break;
-//             case Suit::Clubs:    suitStr = "c"; break;
-//             case Suit::Spades:   suitStr = "s"; break;
-//             default: throw std::invalid_argument("Invalid suit");
-//         }
+        // Convert the Suit to string
+        std::string suitStr;
+        switch (card->get_suit()) {
+            case Suit::Hearts:   suitStr = "h"; break;
+            case Suit::Diamonds: suitStr = "d"; break;
+            case Suit::Clubs:    suitStr = "c"; break;
+            case Suit::Spades:   suitStr = "s"; break;
+            default: throw std::invalid_argument("Invalid suit");
+        }
 
-//         // Combine Rank and Suit
-//         cardStr << rankStr << suitStr;
-//         handStrings.push_back(cardStr.str());
-//     }
+        // Combine Rank and Suit
+        cardStr << rankStr << suitStr;
+        handStrings.push_back(cardStr.str());
+    }
 
-//     return handStrings;
-// }
+    return handStrings;
+}
 
-// // HardStrategy's getNextMove function
-// Move HardStrategy::get_next_move(GameState current_state) {
-//     std::cout << "Hard Strategy !!!" << std::endl;
+// HardStrategy's getNextMove function
+Move HardStrategy::get_next_move(GameState current_state) {
+    std::cout << "Hard Strategy !!!" << std::endl;
     
-//     std::string game = "h";  // game type Texas Holdem Poker
+    std::string game = "h";  // game type Texas Holdem Poker
     
-//     // Convert hand and board to the expected string format
-//     std::vector<std::string> hands = convertHandToStringFormat(current_state.hands);
-//     std::vector<std::string> board_card = convertHandToStringFormat(current_state.community_cards);
+    // Convert hand and board to the expected string format
+    std::vector<std::string> hands = convertHandToStringFormat(current_state.hands);
+    std::vector<std::string> board_card = convertHandToStringFormat(current_state.community_cards);
     
-//     std::size_t bet = current_state.current_bet;
-//     std::size_t pot = current_state.pot_size;
-//     std::size_t computer_chips = current_state.computer_chips;
+    std::size_t bet = current_state.current_bet;
+    std::size_t pot = current_state.pot_size;
+    std::size_t computer_chips = current_state.computer_chips;
     
-//     if (board_card.size() == 0 || computer_chips < 2 * bet) {
-//         return Call{};
-//     }
+    if (board_card.size() == 0 || computer_chips < 2 * bet) {
+        return Call{};
+    }
 
-//     std::cout << "Conversion Done" << std::endl;
+    std::cout << "Conversion Done" << std::endl;
 
-//     // Concatenate board cards into a single string
-//     std::string board;
-//     for (size_t i = 0; i < board_card.size(); ++i) {
-//         board += board_card[i];
-//     }
+    // Concatenate board cards into a single string
+    std::string board;
+    for (size_t i = 0; i < board_card.size(); ++i) {
+        board += board_card[i];
+    }
 
-//     std::cout << "Board is: " << board << std::endl;
+    std::cout << "Board is: " << board << std::endl;
 
-//     // Allocate evaluator and create card distributions
-//     std::shared_ptr<pokerstove::PokerHandEvaluator> evaluator = pokerstove::PokerHandEvaluator::alloc(game);
-//     std::vector<pokerstove::CardDistribution> handDists;
+    // Allocate evaluator and create card distributions
+    std::shared_ptr<pokerstove::PokerHandEvaluator> evaluator = pokerstove::PokerHandEvaluator::alloc(game);
+    std::vector<pokerstove::CardDistribution> handDists;
 
-//     // Check if the hand is valid and prepare card distributions
-//     if (hands.empty()) {
-//         throw std::invalid_argument("No hands provided for evaluation");
-//     }
+    // Check if the hand is valid and prepare card distributions
+    if (hands.empty()) {
+        throw std::invalid_argument("No hands provided for evaluation");
+    }
 
-//     for (const std::string& hand : hands) {
-//         handDists.emplace_back();
-//         handDists.back().parse(hand);
-//     }
+    for (const std::string& hand : hands) {
+        handDists.emplace_back();
+        handDists.back().parse(hand);
+    }
 
-//     // Fill with random if necessary (e.g., for multi-hand evaluations)
-//     if (handDists.size() == 1) {
-//         handDists.emplace_back();
-//         handDists.back().fill(evaluator->handSize());
-//     }
+    // Fill with random if necessary (e.g., for multi-hand evaluations)
+    if (handDists.size() == 1) {
+        handDists.emplace_back();
+        handDists.back().fill(evaluator->handSize());
+    }
 
-//     // Calculate equity results
-//     pokerstove::ShowdownEnumerator showdown;
-//     std::vector<pokerstove::EquityResult> results =
-//         showdown.calculateEquity(handDists, pokerstove::CardSet(board), evaluator);
+    // Calculate equity results
+    pokerstove::ShowdownEnumerator showdown;
+    std::vector<pokerstove::EquityResult> results =
+        showdown.calculateEquity(handDists, pokerstove::CardSet(board), evaluator);
 
-//     double total = 0.0;
-//     for (const pokerstove::EquityResult& result : results) {
-//         total += result.winShares + result.tieShares;
-//     }
+    double total = 0.0;
+    for (const pokerstove::EquityResult& result : results) {
+        total += result.winShares + result.tieShares;
+    }
 
-//     // Calculate equity for the first hand
-//     double equity = 0.0;
-//     if (!results.empty()) {
-//         equity = (results[0].winShares + results[0].tieShares) / total;
-//     }
+    // Calculate equity for the first hand
+    double equity = 0.0;
+    if (!results.empty()) {
+        equity = (results[0].winShares + results[0].tieShares) / total;
+    }
 
-//     std::cout << "The hand " << hands[0] << " has " << equity * 100.0 << " % equity." << std::endl;
+    std::cout << "The hand " << hands[0] << " has " << equity * 100.0 << " % equity." << std::endl;
 
-//     std::size_t raise_amount = 0 ;
+    std::size_t raise_amount = 0 ;
     
-//     if (bet == 0) {
-//         raise_amount = 20;  // Small starting bet if no bet has been placed
-//     }else {
+    if (bet == 0) {
+        raise_amount = 20;  // Small starting bet if no bet has been placed
+    }else {
         
-//         // Minimum raise calculation (2x the current bet)
-//         raise_amount = 2 * bet; 
-//     }
+        // Minimum raise calculation (2x the current bet)
+        raise_amount = 2 * bet; 
+    }
      
 
     
-//     std::size_t proportional_raise = 0;
-//     if (equity >= 0.80) {
-//         proportional_raise = static_cast<std::size_t>(pot * 0.20);
-//     } else if (equity >= 0.50) {
-//         proportional_raise = static_cast<std::size_t>(pot * 0.15);
-//     } else if (equity >= 0.30) {
-//         proportional_raise = static_cast<std::size_t>(pot * 0.10);
-//     } else {
+    std::size_t proportional_raise = 0;
+    if (equity >= 0.80) {
+        proportional_raise = static_cast<std::size_t>(pot * 0.20);
+    } else if (equity >= 0.50) {
+        proportional_raise = static_cast<std::size_t>(pot * 0.15);
+    } else if (equity >= 0.30) {
+        proportional_raise = static_cast<std::size_t>(pot * 0.10);
+    } else {
        
-//         proportional_raise = 0;
-//     }
+        proportional_raise = 0;
+    }
 
-//     // Add proportional raise to the minimum raise amount
-//     raise_amount += proportional_raise;
+    // Add proportional raise to the minimum raise amount
+    raise_amount += proportional_raise;
 
-//     // Round the raise amount to the nearest multiple of 10
-//     raise_amount = (raise_amount / 10) * 10;
+    // Round the raise amount to the nearest multiple of 10
+    raise_amount = (raise_amount / 10) * 10;
 
-//     // Ensure that the raise amount does not exceed available chips
-//     raise_amount = std::min(raise_amount, computer_chips);
+    // Ensure that the raise amount does not exceed available chips
+    raise_amount = std::min(raise_amount, computer_chips);
 
-//     // Handle low chip count
-//     if (!can_raise(current_state)){
+    // Handle low chip count
+    if (!can_raise(current_state)){
             
-//             if(equity >= 0.40){
-//                 return Call{};
+            if(equity >= 0.40){
+                return Call{};
             
-//             }else {
-//                 int foldChance = get_random_int(0, 100);
-//                 if (foldChance < 70) {
-//                     return Fold{};
-//                 } else {
-//                     return Call{};
-//                 }
-//             }
-//     }
+            }else {
+                int foldChance = get_random_int(0, 100);
+                if (foldChance < 70) {
+                    return Fold{};
+                } else {
+                    return Call{};
+                }
+            }
+    }
 
-//     // Strong hand decision (high equity)
-//     if (equity >= 0.80) {
-//         return Raise{raise_amount};
-//     }
-//     // Moderate hand decision (medium equity)
-//     else if (equity >= 0.50) {
-//         if (computer_chips > 2 * bet) {
-//             return Raise{raise_amount};  
-//         } else {
-//             return Call{};  
-//         }
-//     }
-//     // Weak hand decision (low equity)
-//     else if (equity >= 0.30) {
-//         if (bet <= 60) {
-//             return Call{};  // If the bet is small, call
-//         } else {
-//             // Fold if bet is large and hand is weak
-//             return Fold{};
-//         }
-//     }
-//     // Very weak hand decision (low equity)
-//     else {
-//         // Very weak hand: fold or call with a small chance
-//         int foldChance = get_random_int(0, 100);
-//         if (foldChance < 70) {
-//             return Fold{};
-//         } else {
-//             return Call{};
-//         }
-//     }
-// }
+    // Strong hand decision (high equity)
+    if (equity >= 0.80) {
+        return Raise{raise_amount};
+    }
+    // Moderate hand decision (medium equity)
+    else if (equity >= 0.50) {
+        if (computer_chips > 2 * bet) {
+            return Raise{raise_amount};  
+        } else {
+            return Call{};  
+        }
+    }
+    // Weak hand decision (low equity)
+    else if (equity >= 0.30) {
+        if (bet <= 60) {
+            return Call{};  // If the bet is small, call
+        } else {
+            // Fold if bet is large and hand is weak
+            return Fold{};
+        }
+    }
+    // Very weak hand decision (low equity)
+    else {
+        // Very weak hand: fold or call with a small chance
+        int foldChance = get_random_int(0, 100);
+        if (foldChance < 70) {
+            return Fold{};
+        } else {
+            return Call{};
+        }
+    }
+}
