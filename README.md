@@ -1,27 +1,80 @@
-# Poker GUI Project
+# Poker Game
 
-This project is a poker game GUI built using Qt, with various components such as game logic, poker hand evaluation, and computer strategy.
-
-## Requirements
-
-- **CMake** >= 3.16
-- **Qt** (version 5 or 6) for the GUI components
+A modern poker game implementation with a graphical user interface built using Qt6. This project implements a fully functional poker game where players can play against computer opponents.
 
 ## Features
 
-- Poker game logic and mechanics
-- Poker hand evaluation using PokerStove
-- Computer AI to play poker hands
+- Graphical user interface built with Qt6
+- Single-player gameplay against computer opponents
+- Advanced poker hand evaluation
+- Computer AI with strategic decision making
+- Real-time game state visualization
+- Unit tests using Google Test framework
 
+## Prerequisites
 
-## Steps to Install
+- CMake (minimum version 3.16)
+- Qt6 (with Widgets and SVG components)
+- C++20 compatible compiler
+- Google Test (automatically fetched during build)
 
+## Building the Project
+
+1. Clone the repository:
+```bash
+git clone https://github.com/BitManipulators/202_PokerGame.git
+cd poker_gui
+```
+
+2. Create and navigate to the build directory:
 ```bash
 mkdir build && cd build
-
-cmake ..
-
-make
-
-Add CmakeLists.txt to QT creator, build and run the poker_gui
 ```
+
+3. Configure with CMake:
+```bash
+cmake ..
+```
+
+4. Build the project:
+```bash
+make
+```
+
+## Running the Application
+
+After building successfully, you can run the application:
+
+```bash
+./poker_gui
+```
+
+## Project Structure
+
+- `src/` - Source files for the poker game implementation
+  - `card.*` - Card representation and operations
+  - `deck.*` - Deck management and shuffling
+  - `poker_game.*` - Core game logic
+  - `poker_hand_evaluator.*` - Hand evaluation algorithms
+  - `computer_strategy.*` - AI opponent logic
+  - `mainwindow.*` - GUI implementation
+
+- `tests/` - Unit tests for game components
+- `images/` - Game assets and card images
+- `resources.qrc` - Qt resource file for managing assets
+
+## Running Tests
+
+The project includes unit tests built with Google Test. To run the tests:
+
+```bash
+cd build
+ctest
+```
+
+## Development
+
+- The project uses CMake for build configuration
+- Qt Creator can be used for development by opening the CMakeLists.txt file
+- Code follows C++20 standards
+- Unit tests are provided for core game logic
