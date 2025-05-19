@@ -122,51 +122,51 @@ if(QT_VERSION_MAJOR EQUAL 6)
     qt_finalize_executable(poker_gui)
 endif()
 
-if(APPLE)
-    include_directories(SYSTEM /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/usr/include)
+# if(APPLE)
+#     include_directories(SYSTEM /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/usr/include)
 
-    set(CMAKE_OSX_ARCHITECTURES "arm64")
+#     set(CMAKE_OSX_ARCHITECTURES "arm64")
 
-    # Add C++ standard library flags for Clang
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -stdlib=libc++")
+#     # Add C++ standard library flags for Clang
+#     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -stdlib=libc++")
 
-  # Find Qt path from the Qt library targets
-    get_target_property(_qmake_executable Qt::qmake IMPORTED_LOCATION)
-    if(NOT _qmake_executable)
-      get_target_property(_qmake_executable Qt6::qmake IMPORTED_LOCATION)
-    endif()
+#   # Find Qt path from the Qt library targets
+#     get_target_property(_qmake_executable Qt::qmake IMPORTED_LOCATION)
+#     if(NOT _qmake_executable)
+#       get_target_property(_qmake_executable Qt6::qmake IMPORTED_LOCATION)
+#     endif()
 
-    if(_qmake_executable)
-      # Extract Qt directory from qmake path
-      get_filename_component(_qt_bin_dir "${_qmake_executable}" DIRECTORY)
-      # Find macdeployqt in the same directory as qmake
-      find_program(MACDEPLOYQT_EXECUTABLE macdeployqt HINTS "${_qt_bin_dir}")
-    endif()
+#     if(_qmake_executable)
+#       # Extract Qt directory from qmake path
+#       get_filename_component(_qt_bin_dir "${_qmake_executable}" DIRECTORY)
+#       # Find macdeployqt in the same directory as qmake
+#       find_program(MACDEPLOYQT_EXECUTABLE macdeployqt HINTS "${_qt_bin_dir}")
+#     endif()
 
-    if(NOT MACDEPLOYQT_EXECUTABLE)
-      # Fallback search paths if qmake wasn't found
-      find_program(MACDEPLOYQT_EXECUTABLE macdeployqt
-        HINTS
-          "$ENV{QTDIR}/bin"
-          "/usr/local/opt/qt/bin"
-          "/usr/local/Homebrew/opt/qt/bin"
-          "/opt/homebrew/opt/qt/bin"
-      )
-    endif()
+#     if(NOT MACDEPLOYQT_EXECUTABLE)
+#       # Fallback search paths if qmake wasn't found
+#       find_program(MACDEPLOYQT_EXECUTABLE macdeployqt
+#         HINTS
+#           "$ENV{QTDIR}/bin"
+#           "/usr/local/opt/qt/bin"
+#           "/usr/local/Homebrew/opt/qt/bin"
+#           "/opt/homebrew/opt/qt/bin"
+#       )
+#     endif()
 
-    # if(MACDEPLOYQT_EXECUTABLE)
-    #   # Use macdeployqt to handle all deployment tasks automatically
-    #   add_custom_command(TARGET poker_gui POST_BUILD
-    #       COMMAND "${MACDEPLOYQT_EXECUTABLE}"
-    #           "${CMAKE_CURRENT_BINARY_DIR}/poker_gui.app"
-    #           -always-overwrite
-    #       COMMENT "Running macdeployqt to create a standalone application bundle"
-    #   )
-    #   message(STATUS "Found macdeployqt: ${MACDEPLOYQT_EXECUTABLE}")
-    # else()
-    #   message(WARNING "macdeployqt not found. The application bundle may not be properly created.")
-    # endif()
-endif()
+#     # if(MACDEPLOYQT_EXECUTABLE)
+#     #   # Use macdeployqt to handle all deployment tasks automatically
+#     #   add_custom_command(TARGET poker_gui POST_BUILD
+#     #       COMMAND "${MACDEPLOYQT_EXECUTABLE}"
+#     #           "${CMAKE_CURRENT_BINARY_DIR}/poker_gui.app"
+#     #           -always-overwrite
+#     #       COMMENT "Running macdeployqt to create a standalone application bundle"
+#     #   )
+#     #   message(STATUS "Found macdeployqt: ${MACDEPLOYQT_EXECUTABLE}")
+#     # else()
+#     #   message(WARNING "macdeployqt not found. The application bundle may not be properly created.")
+#     # endif()
+# endif()
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g")
 
