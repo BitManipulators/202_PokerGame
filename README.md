@@ -17,16 +17,20 @@ A modern poker game implementation with a graphical user interface built using Q
 - Qt6 (with Widgets and SVG components)
 - C++20 compatible compiler
 - Google Test (automatically fetched during build)
-- **[Boost](https://github.com/boostorg/boost)** library for general utility  (**Install Manually**)
+- **[PokerStove](https://github.com/andrewprock/pokerstove)** library for poker hand evaluation
+- **[Boost](https://github.com/boostorg/boost)** library dependency for PokerStove  (**Install Manually**)
 
-## Mac
+
+## Boost Installation
+
+### Mac
 - brew install boost
 
-## Linux
+### Linux
 
 - sudo apt update
 - sudo apt install libboost-all-dev
-- **[PokerStove](https://github.com/andrewprock/pokerstove)** library for poker hand evaluation
+
 
 
 
